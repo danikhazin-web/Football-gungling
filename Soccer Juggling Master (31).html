@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מלך ההקפצות - משחק כדורגל</title>
+
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="מלך ההקפצות">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- PWA Manifest links (Embedded JSON) -->
+    <link rel="manifest" href='data:application/json,{"name":"מלך ההקפצות","short_name":"הקפצות","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","orientation":"portrait"}'>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Rubik', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0f172a;
+        }
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+        .custom-glass {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .btn-bounce {
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            cursor: pointer;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen w-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- GAME CONTAINER -->
+    <div id="game-container" class="relative w-full h-full flex items-center justify-center overflow-hidden">
+        <canvas id="gameCanvas" class="w-full h-full absolute inset-0 z-0"></canvas>
+
+        <!-- IN-GAME HUD -->
+        <div id="hud" class="absolute top-0 left-0 right-0 p-4 z-10 flex justify-between items-start hidden pointer-events-none">
+            <div class="flex flex-col gap-2 pointer-events-auto">
+                <div class="custom-glass px-4 py-2 rounded-2xl flex items-center gap-3 border-l-4 border-emerald-500 shadow-lg">
+                    <i class="fa-solid fa-trophy text-amber-400 text-xl"></i>
+                    <div>
+                        <div id="hud-score-label" class="text-xs text-slate-400 font-bold">ניקוד / הקפצות</div>
+                        <div id="hud-score" class="text-2xl font-black text-emerald-400">0</div>
+                    </div>
+                </div>
+                <div id="hud-tournament-tag" class="hidden custom-glass px-3 py-1 rounded-xl text-xs font-bold text-amber-300 border border-amber-500/30">
+                    שלב הטורניר: <span id="tour-stage-num">1</span>/3
+                </div>
+            </div>
+
+            <div class="flex flex-col items-end gap-2 pointer-events-auto">
+                <div class="flex gap-2">
+                    <button id="btn-sound" onclick="toggleSound()" class="w-11 h-11 custom-glass rounded-xl flex items-center justify-center text-lg hover:bg-slate-700/50 btn-bounce text-amber-400">
+                        <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button id="btn-pause" onclick="togglePause()" class="w-11 h-11 custom-glass rounded-xl flex items-center justify-center text-lg hover:bg-slate-700/50 btn-bounce">
+                        <i id="pause-icon" class="fa-solid fa-pause"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN MENU -->
+        <div id="menu-main" class="absolute inset-0 z-40 flex flex-col items-center justify-between p-6 bg-slate-950 overflow-y-auto">
+            <div class="w-full max-w-md flex justify-between items-center pt-2">
+                <div class="flex items-center gap-2">
+                    <div class="custom-glass px-4 py-1.5 rounded-full flex items-center gap-2 border border-amber-500/30">
+                        <i class="fa-solid fa-coins text-amber-400 text-lg"></i>
+                        <span id="menu-coins" class="font-black text-amber-300 text-lg">0</span>
+                    </div>
+                    <!-- Language selector -->
+                    <select id="select-lang" onchange="changeLanguage(this.value)" class="custom-glass bg-slate-900 text-white text-xs font-bold py-2 px-3 rounded-xl border border-slate-700 outline-none cursor-pointer">
+                        <option value="he">🇮🇱 עברית</option>
+                        <option value="en">🇺🇸 English</option>
+                    </select>
+                </div>
+                <select id="select-difficulty" class="custom-glass bg-slate-900 text-white text-xs font-bold py-2 px-3 rounded-xl border border-emerald-500/50 outline-none cursor-pointer">
+                    <option value="EASY">🟢 קל</option>
+                    <option value="MEDIUM" selected>🟡 בינוני</option>
+                    <option value="HARD">🟠 קשה</option>
+                </select>
+            </div>
+
+            <div class="text-center my-auto py-4">
+                <div class="inline-block bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-widest mb-3 shadow-md">
+                    סימולטור הקפצות ריאליסטי
+                </div>
+                <h1 id="txt-title" class="text-4xl sm:text-6xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-amber-300 drop-shadow-lg">
+                    מלך ההקפצות
+                </h1>
+                <p id="txt-subtitle" class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xs mx-auto">שליטה בכדור, תחרותיות וקירות צדדיים חכמים!</p>
+            </div>
+
+            <div class="w-full max-w-md my-auto flex flex-col gap-3">
+                <button onclick="startGame('SOLO')" class="w-full p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-right flex items-center justify-between shadow-lg btn-bounce border border-emerald-400/30">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-slate-950/40 flex items-center justify-center text-emerald-300 text-2xl">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div>
+                            <div id="txt-btn-solo" class="font-black text-lg text-white">שבירת שיא (סולו)</div>
+                            <div id="txt-desc-solo" class="text-xs text-emerald-100/80">הקפץ כמה שיותר בלי להפיל</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-left text-emerald-200 text-sm"></i>
+                </button>
+
+                <button onclick="startGame('VS')" class="w-full p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-right flex items-center justify-between shadow-lg btn-bounce border border-blue-400/30">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-slate-950/40 flex items-center justify-center text-blue-300 text-2xl">
+                            <i class="fa-solid fa-user-ninja"></i>
+                        </div>
+                        <div>
+                            <div id="txt-btn-vs" class="font-black text-lg text-white">תחרות 1 נגד 1</div>
+                            <div id="txt-desc-vs" class="text-xs text-blue-100/80">דו-קרב מול בוט חכם</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-left text-blue-200 text-sm"></i>
+                </button>
+
+                <button onclick="startTournament()" class="w-full p-4 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-right flex items-center justify-between shadow-lg border border-amber-400/30 btn-bounce">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-slate-950/40 flex items-center justify-center text-amber-300 text-2xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <div id="txt-btn-tour" class="font-black text-lg text-white">טורניר אלופים</div>
+                            <div id="txt-desc-tour" class="text-xs text-amber-100/80">התחרה בשלבי נוקאאוט עד הגביע</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-left text-amber-200 text-sm"></i>
+                </button>
+            </div>
+
+            <div class="w-full max-w-md pb-4 mt-4 flex gap-3">
+                <button onclick="openAchievements()" class="w-1/2 py-3 custom-glass rounded-xl flex items-center justify-center gap-2 hover:bg-slate-800 text-yellow-400 font-bold text-sm btn-bounce border border-yellow-500/20">
+                    <i class="fa-solid fa-medal"></i>
+                    <span id="txt-achievements">הישגים</span>
+                </button>
+                <button onclick="openShop()" class="w-1/2 py-3 custom-glass rounded-xl flex items-center justify-center gap-2 hover:bg-slate-800 text-amber-400 font-bold text-sm btn-bounce border border-amber-500/20">
+                    <i class="fa-solid fa-store"></i>
+                    <span id="txt-shop">חנות סקינים</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- GAME OVER MODAL -->
+        <div id="modal-gameover" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-6">
+            <div class="custom-glass p-6 rounded-3xl max-w-sm w-full text-center border border-red-500/30 shadow-2xl">
+                <div class="w-16 h-16 bg-red-500/20 text-red-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+                    <i class="fa-solid fa-face-dizzy"></i>
+                </div>
+                <h2 id="go-title" class="text-3xl font-black text-white mb-1">המשחק נגמר!</h2>
+                <p id="go-subtitle" class="text-slate-400 text-xs mb-6">הכדור נגע ברצפה...</p>
+
+                <div class="bg-slate-900/80 p-4 rounded-2xl mb-6 flex justify-around border border-slate-800">
+                    <div>
+                        <div class="text-xs text-slate-400">הקפצות סופי</div>
+                        <div id="go-score" class="text-2xl font-black text-emerald-400">0</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">מטבעות שהרווחת</div>
+                        <div id="go-coins-earned" class="text-2xl font-black text-amber-400">+0</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <button onclick="restartGame()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl font-black text-white shadow-lg btn-bounce flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>שחק שוב</span>
+                    </button>
+                    <button onclick="returnToMenu()" class="w-full py-3 custom-glass rounded-xl font-bold text-slate-300 hover:bg-slate-800 btn-bounce">
+                        חזרה לתפריט הראשי
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOP MODAL -->
+        <div id="modal-shop" onclick="closeShopOutside(event)" class="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex flex-col p-6">
+            <div class="flex justify-between items-center mb-6 max-w-xl w-full mx-auto">
+                <div class="flex items-center gap-3">
+                    <h2 id="shop-title" class="text-2xl font-black text-amber-400">חנות סקינים ועיצובים</h2>
+                    <div class="custom-glass px-3 py-1 rounded-full flex items-center gap-2 border border-amber-500/30">
+                        <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
+                        <span id="shop-coins" class="font-black text-amber-300 text-sm">0</span>
+                    </div>
+                </div>
+                <button onclick="closeShop()" class="w-10 h-10 custom-glass rounded-xl flex items-center justify-center text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Shop Items Grid -->
+            <div class="flex-1 max-w-xl w-full mx-auto space-y-6 overflow-y-auto pb-4">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 mb-3">עיצובי כדורים</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="balls-shop-grid"></div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 mb-3">עיצובי פדל (שחקן)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="paddles-shop-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACHIEVEMENTS MODAL -->
+        <div id="modal-achievements" onclick="closeAchievementsOutside(event)" class="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex flex-col p-6">
+            <div class="flex justify-between items-center mb-6 max-w-xl w-full mx-auto">
+                <div class="flex items-center gap-3">
+                    <h2 id="ach-title" class="text-2xl font-black text-yellow-400">הישגים ומשימות</h2>
+                </div>
+                <button onclick="closeAchievements()" class="w-10 h-10 custom-glass rounded-xl flex items-center justify-center text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div id="achievements-list" class="flex-1 max-w-xl w-full mx-auto space-y-3 overflow-y-auto pb-4">
+                <!-- Achievements items populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME LOGIC SCRIPT -->
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let gameMode = 'SOLO'; // SOLO, VS, TOURNAMENT
+        let isRunning = false;
+        let isPaused = false;
+        let soundEnabled = true;
+        let score = 0;
+        let coins = parseInt(localStorage.getItem('juggle_coins')) || 100;
+        
+        let ownedSkins = JSON.parse(localStorage.getItem('juggle_skins')) || ['classic'];
+        let currentSkin = localStorage.getItem('juggle_current_skin') || 'classic';
+        
+        let ownedPaddles = JSON.parse(localStorage.getItem('juggle_paddles')) || ['emerald'];
+        let currentPaddle = localStorage.getItem('juggle_current_paddle') || 'emerald';
+
+        let difficulty = 'MEDIUM';
+        let currentLang = localStorage.getItem('juggle_lang') || 'he';
+        let tournamentStage = 1;
+        let animationFrameId = null;
+
+        // Audio Context for built-in Web Audio API sound effects (No external audio files needed)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(freq, type = 'sine', duration = 0.1) {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                playSound(600, 'sine', 0.1);
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark';
+            }
+        }
+
+        // Achievements system state
+        let stats = JSON.parse(localStorage.getItem('juggle_stats')) || {
+            maxScore: 0,
+            gamesPlayed: 0,
+            totalCoinsEarned: 0
+        };
+        let claimedAchievements = JSON.parse(localStorage.getItem('juggle_claimed_ach')) || [];
+
+        const achievements = [
+            { id: 'juggle_20', title: 'מקפיץ מתחיל', desc: 'הגע ל-20 הקפצות במשחק אחד', reward: 50, req: (s) => s.maxScore >= 20 },
+            { id: 'juggle_50', title: 'מקפיץ מקצוען', desc: 'הגע ל-50 הקפצות במשחק אחד', reward: 100, req: (s) => s.maxScore >= 50 },
+            { id: 'play_3', title: 'מתמיד', desc: 'שחק 3 משחקים', reward: 40, req: (s) => s.gamesPlayed >= 3 },
+            { id: 'play_10', title: 'מכור למשחק', desc: 'שחק 10 משחקים', reward: 120, req: (s) => s.gamesPlayed >= 10 }
+        ];
+
+        const ballSkins = [
+            { id: 'classic', name: 'כדור קלאסי', price: 0, icon: '⚽', color: '#ffffff' },
+            { id: 'gold', name: 'כדור זהב', price: 50, icon: '⭐', color: '#fbbf24' },
+            { id: 'fire', name: 'כדור לוהט', price: 100, icon: '🔥', color: '#ec4899' },
+            { id: 'basket', name: 'כדור סל', price: 150, icon: '🏀', color: '#f97316' },
+            { id: 'tennis', name: 'כדור טניס', price: 200, icon: '🎾', color: '#facc15' }
+        ];
+
+        const paddleSkins = [
+            { id: 'emerald', name: 'ירוק קלאסי', price: 0, color: '#10b981' },
+            { id: 'blue', name: 'כחול ניאון', price: 40, color: '#06b6d4' },
+            { id: 'purple', name: 'סגול מלכותי', price: 80, color: '#a855f7' },
+            { id: 'gold', name: 'זהב נוצץ', price: 120, color: '#eab308' }
+        ];
+
+        document.getElementById('menu-coins').innerText = coins;
+
+        const translations = {
+            he: {
+                title: "מלך ההקפצות",
+                subtitle: "שליטה בכדור, תחרותיות וקירות צדדיים חכמים!",
+                solo: "שבירת שיא (סולו)",
+                soloDesc: "הקפץ כמה שיותר בלי להפיל",
+                vs: "תחרות 1 נגד 1",
+                vsDesc: "דו-קרב מול בוט חכם",
+                tour: "טורניר אלופים",
+                tourDesc: "התחרה בשלבי נוקאאוט עד הגביע",
+                shop: "חנות סקינים",
+                achievements: "הישגים"
+            },
+            en: {
+                title: "Juggling King",
+                subtitle: "Ball control, competition & smart side walls!",
+                solo: "Solo High Score",
+                soloDesc: "Juggle as much as you can",
+                vs: "1v1 Match",
+                vsDesc: "Duel against a smart bot",
+                tour: "Champions Tournament",
+                tourDesc: "Knockout stages to the trophy",
+                shop: "Shop",
+                achievements: "Achievements"
+            }
+        };
+
+        function applyTranslations() {
+            const t = translations[currentLang];
+            document.getElementById('txt-title').innerText = t.title;
+            document.getElementById('txt-subtitle').innerText = t.subtitle;
+            document.getElementById('txt-btn-solo').innerText = t.solo;
+            document.getElementById('txt-desc-solo').innerText = t.soloDesc;
+            document.getElementById('txt-btn-vs').innerText = t.vs;
+            document.getElementById('txt-desc-vs').innerText = t.vsDesc;
+            document.getElementById('txt-btn-tour').innerText = t.tour;
+            document.getElementById('txt-desc-tour').innerText = t.tourDesc;
+            document.getElementById('txt-shop').innerText = t.shop;
+            document.getElementById('txt-achievements').innerText = t.achievements;
+            document.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+        }
+
+        document.getElementById('select-lang').value = currentLang;
+        applyTranslations();
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player.y = canvas.height - 120;
+            if (bot.y < 50) bot.y = 70;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const player = { x: 100, y: 0, w: 90, h: 20 };
+        const bot = { x: 100, y: 70, w: 90, h: 20 };
+        const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 15, rot: 0 };
+
+        function startTournament() {
+            tournamentStage = 1;
+            document.getElementById('hud-tournament-tag').classList.remove('hidden');
+            document.getElementById('tour-stage-num').innerText = tournamentStage;
+            startGame('TOURNAMENT');
+        }
+
+        function startGame(mode) {
+            gameMode = mode;
+            difficulty = document.getElementById('select-difficulty').value;
+            
+            if (mode !== 'TOURNAMENT') {
+                document.getElementById('hud-tournament-tag').classList.add('hidden');
+            }
+
+            document.getElementById('menu-main').classList.add('hidden');
+            document.getElementById('modal-gameover').classList.add('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            
+            resizeCanvas();
+            initGameValues();
+            
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+
+            isRunning = true;
+            isPaused = false;
+            playSound(523, 'triangle', 0.2); // Start sound
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function initGameValues() {
+            // Force recalculation of canvas layout before setting coordinates
+            resizeCanvas();
+
+            // Set ball position to center of top area
+            ball.x = canvas.width / 2;
+            ball.y = Math.max(120, canvas.height * 0.25);
+            ball.vx = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2);
+            ball.vy = -3;
+            score = 0;
+            document.getElementById('hud-score').innerText = score;
+
+            // Player Paddle initialization
+            player.w = Math.min(120, Math.max(80, canvas.width * 0.25));
+            player.h = 18;
+            player.x = (canvas.width - player.w) / 2;
+            player.y = canvas.height - 120;
+
+            // Bot Paddle initialization
+            if (gameMode === 'VS' || gameMode === 'TOURNAMENT') {
+                bot.w = Math.min(120, Math.max(80, canvas.width * 0.25));
+                bot.h = 18;
+                bot.x = (canvas.width - bot.w) / 2;
+                bot.y = 80;
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('modal-gameover').classList.add('hidden');
+            startGame(gameMode);
+        }
+
+        function returnToMenu() {
+            isRunning = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            document.getElementById('modal-gameover').classList.add('hidden');
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('menu-main').classList.remove('hidden');
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            const icon = document.getElementById('pause-icon');
+            if (isPaused) {
+                icon.className = 'fa-solid fa-play';
+            } else {
+                icon.className = 'fa-solid fa-pause';
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function openShop() {
+            updateShopUI();
+            document.getElementById('modal-shop').classList.remove('hidden');
+        }
+
+        function closeShop() {
+            document.getElementById('modal-shop').classList.add('hidden');
+        }
+
+        function closeShopOutside(e) {
+            if (e.target.id === 'modal-shop') closeShop();
+        }
+
+        function updateShopUI() {
+            document.getElementById('shop-coins').innerText = coins;
+            
+            // Render Ball Skins
+            const ballGrid = document.getElementById('balls-shop-grid');
+            ballGrid.innerHTML = '';
+            ballSkins.forEach(item => {
+                const isOwned = ownedSkins.includes(item.id);
+                const isCurrent = currentSkin === item.id;
+                
+                const div = document.createElement('div');
+                div.className = 'custom-glass p-3 rounded-2xl flex items-center justify-between border border-slate-800';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-xl">${item.icon}</div>
+                        <div>
+                            <div class="font-bold text-white text-xs">${item.name}</div>
+                            <div class="text-[10px] text-amber-400">${item.price === 0 ? 'חינם' : item.price + ' מטבעות'}</div>
+                        </div>
+                    </div>
+                    <button onclick="handleBallClick('${item.id}', ${item.price})" 
+                        class="px-3 py-1.5 text-xs font-black rounded-xl ${
+                            isCurrent ? 'bg-emerald-600 text-white' : 
+                            isOwned ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'
+                        }">
+                        ${isCurrent ? 'בשימוש' : isOwned ? 'בחר' : 'קנה'}
+                    </button>
+                `;
+                ballGrid.appendChild(div);
+            });
+
+            // Render Paddle Skins
+            const paddleGrid = document.getElementById('paddles-shop-grid');
+            paddleGrid.innerHTML = '';
+            paddleSkins.forEach(item => {
+                const isOwned = ownedPaddles.includes(item.id);
+                const isCurrent = currentPaddle === item.id;
+
+                const div = document.createElement('div');
+                div.className = 'custom-glass p-3 rounded-2xl flex items-center justify-between border border-slate-800';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-3 rounded-md" style="background-color: ${item.color}"></div>
+                        <div>
+                            <div class="font-bold text-white text-xs">${item.name}</div>
+                            <div class="text-[10px] text-amber-400">${item.price === 0 ? 'חינם' : item.price + ' מטבעות'}</div>
+                        </div>
+                    </div>
+                    <button onclick="handlePaddleClick('${item.id}', ${item.price})" 
+                        class="px-3 py-1.5 text-xs font-black rounded-xl ${
+                            isCurrent ? 'bg-emerald-600 text-white' : 
+                            isOwned ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'
+                        }">
+                        ${isCurrent ? 'בשימוש' : isOwned ? 'בחר' : 'קנה'}
+                    </button>
+                `;
+                paddleGrid.appendChild(div);
+            });
+        }
+
+        function handleBallClick(skinId, price) {
+            if (ownedSkins.includes(skinId)) {
+                currentSkin = skinId;
+                localStorage.setItem('juggle_current_skin', skinId);
+                playSound(440, 'sine', 0.08);
+            } else if (coins >= price) {
+                coins -= price;
+                ownedSkins.push(skinId);
+                currentSkin = skinId;
+                localStorage.setItem('juggle_coins', coins);
+                localStorage.setItem('juggle_skins', JSON.stringify(ownedSkins));
+                localStorage.setItem('juggle_current_skin', skinId);
+                document.getElementById('menu-coins').innerText = coins;
+                playSound(880, 'square', 0.15);
+            }
+            updateShopUI();
+        }
+
+        function handlePaddleClick(paddleId, price) {
+            if (ownedPaddles.includes(paddleId)) {
+                currentPaddle = paddleId;
+                localStorage.setItem('juggle_current_paddle', paddleId);
+                playSound(440, 'sine', 0.08);
+            } else if (coins >= price) {
+                coins -= price;
+                ownedPaddles.push(paddleId);
+                currentPaddle = paddleId;
+                localStorage.setItem('juggle_coins', coins);
+                localStorage.setItem('juggle_paddles', JSON.stringify(ownedPaddles));
+                localStorage.setItem('juggle_current_paddle', paddleId);
+                document.getElementById('menu-coins').innerText = coins;
+                playSound(880, 'square', 0.15);
+            }
+            updateShopUI();
+        }
+
+        function openAchievements() {
+            updateAchievementsUI();
+            document.getElementById('modal-achievements').classList.remove('hidden');
+        }
+
+        function closeAchievements() {
+            document.getElementById('modal-achievements').classList.add('hidden');
+        }
+
+        function closeAchievementsOutside(e) {
+            if (e.target.id === 'modal-achievements') closeAchievements();
+        }
+
+        function updateAchievementsUI() {
+            const container = document.getElementById('achievements-list');
+            container.innerHTML = '';
+
+            achievements.forEach(ach => {
+                const isCompleted = ach.req(stats);
+                const isClaimed = claimedAchievements.includes(ach.id);
+
+                const div = document.createElement('div');
+                div.className = 'custom-glass p-4 rounded-2xl flex items-center justify-between border border-slate-800';
+
+                let btnHtml = '';
+                if (isClaimed) {
+                    btnHtml = `<span class="text-xs font-bold text-slate-500">נאסף ✔</span>`;
+                } else if (isCompleted) {
+                    btnHtml = `<button onclick="claimAchievement('${ach.id}', ${ach.reward})" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-xs font-black rounded-xl btn-bounce">אוסף +${ach.reward} 🪙</button>`;
+                } else {
+                    btnHtml = `<span class="text-xs font-bold text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">בתהליך</span>`;
+                }
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl ${isCompleted ? 'bg-yellow-500/20 text-yellow-400' : 'bg-slate-800 text-slate-500'} flex items-center justify-center text-lg font-black">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white text-sm">${ach.title}</div>
+                            <div class="text-xs text-slate-400">${ach.desc}</div>
+                        </div>
+                    </div>
+                    <div>${btnHtml}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function claimAchievement(id, reward) {
+            if (claimedAchievements.includes(id)) return;
+            claimedAchievements.push(id);
+            localStorage.setItem('juggle_claimed_ach', JSON.stringify(claimedAchievements));
+
+            coins += reward;
+            localStorage.setItem('juggle_coins', coins);
+            document.getElementById('menu-coins').innerText = coins;
+
+            playSound(784, 'triangle', 0.2);
+            updateAchievementsUI();
+        }
+
+        // Controls
+        function handleInputMove(clientX, clientY) {
+            if (!isRunning || isPaused) return;
+            player.x = clientX - player.w / 2;
+            player.y = Math.max(canvas.height / 2 + 30, Math.min(canvas.height - 50, clientY - player.h / 2));
+            
+            if (player.x < 10) player.x = 10;
+            if (player.x + player.w > canvas.width - 10) player.x = canvas.width - 10 - player.w;
+        }
+
+        window.addEventListener('mousemove', (e) => handleInputMove(e.clientX, e.clientY));
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                handleInputMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        function update() {
+            if (!isRunning || isPaused) return;
+
+            // Physics
+            ball.vy += 0.35;
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+            ball.rot += ball.vx * 0.05;
+
+            // Side Walls
+            const wallMargin = 15;
+            if (ball.x - ball.radius < wallMargin) {
+                ball.x = wallMargin + ball.radius;
+                ball.vx = Math.abs(ball.vx) * 0.75 + 1;
+                playSound(220, 'sine', 0.05);
+            } else if (ball.x + ball.radius > canvas.width - wallMargin) {
+                ball.x = canvas.width - wallMargin - ball.radius;
+                ball.vx = -Math.abs(ball.vx) * 0.75 - 1;
+                playSound(220, 'sine', 0.05);
+            }
+
+            // Player Bounce
+            if (
+                ball.x + ball.radius > player.x &&
+                ball.x - ball.radius < player.x + player.w &&
+                ball.y + ball.radius > player.y &&
+                ball.y - ball.radius < player.y + player.h &&
+                ball.vy > 0
+            ) {
+                let hitPoint = (ball.x - (player.x + player.w / 2)) / (player.w / 2);
+                ball.vy = -12;
+                ball.vx = hitPoint * 7;
+                ball.y = player.y - ball.radius;
+                score++;
+                document.getElementById('hud-score').innerText = score;
+                playSound(440, 'triangle', 0.08);
+
+                // Tournament Progression check
+                if (gameMode === 'TOURNAMENT' && score >= tournamentStage * 10) {
+                    if (tournamentStage < 3) {
+                        tournamentStage++;
+                        document.getElementById('tour-stage-num').innerText = tournamentStage;
+                        playSound(659, 'sine', 0.15);
+                    }
+                }
+            }
+
+            // Bot logic (VS / Tournament)
+            if (gameMode === 'VS' || gameMode === 'TOURNAMENT') {
+                let botSpeed = difficulty === 'EASY' ? 2.8 : difficulty === 'MEDIUM' ? 4.2 : 5.8;
+                if (gameMode === 'TOURNAMENT') {
+                    botSpeed += (tournamentStage - 1) * 1.0;
+                }
+
+                let targetX = ball.x - bot.w / 2;
+                if (bot.x < targetX) {
+                    bot.x = Math.min(bot.x + botSpeed, targetX);
+                } else if (bot.x > targetX) {
+                    bot.x = Math.max(bot.x - botSpeed, targetX);
+                }
+
+                if (bot.x < 10) bot.x = 10;
+                if (bot.x + bot.w > canvas.width - 10) bot.x = canvas.width - 10 - bot.w;
+
+                // Bot Bounce
+                if (
+                    ball.x + ball.radius > bot.x &&
+                    ball.x - ball.radius < bot.x + bot.w &&
+                    ball.y - ball.radius <= bot.y + bot.h &&
+                    ball.y + ball.radius >= bot.y &&
+                    ball.vy < 0
+                ) {
+                    let botHitPoint = (ball.x - (bot.x + bot.w / 2)) / (bot.w / 2);
+                    ball.vy = 10;
+                    ball.vx = botHitPoint * 6;
+                    ball.y = bot.y + bot.h + ball.radius;
+                    playSound(350, 'sine', 0.08);
+                }
+            }
+
+            // Game Over Condition
+            if (ball.y > canvas.height + 40) {
+                isRunning = false;
+                playSound(150, 'sawtooth', 0.25);
+
+                stats.gamesPlayed++;
+                if (score > stats.maxScore) {
+                    stats.maxScore = score;
+                }
+                let earnedCoins = Math.floor(score / 3);
+                coins += earnedCoins;
+                stats.totalCoinsEarned += earnedCoins;
+
+                localStorage.setItem('juggle_stats', JSON.stringify(stats));
+                localStorage.setItem('juggle_coins', coins);
+                document.getElementById('menu-coins').innerText = coins;
+
+                document.getElementById('go-score').innerText = score;
+                document.getElementById('go-coins-earned').innerText = '+' + earnedCoins;
+                document.getElementById('modal-gameover').classList.remove('hidden');
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Field Background
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Center Line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+
+            // Side Bumper Visuals
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(0, 0, 15, canvas.height);
+            ctx.fillRect(canvas.width - 15, 0, 15, canvas.height);
+
+            // Player Paddle
+            const activePaddleObj = paddleSkins.find(p => p.id === currentPaddle) || paddleSkins[0];
+            ctx.fillStyle = activePaddleObj.color;
+            ctx.beginPath();
+            ctx.roundRect(player.x, player.y, player.w, player.h, 8);
+            ctx.fill();
+
+            // Bot Paddle
+            if (gameMode === 'VS' || gameMode === 'TOURNAMENT') {
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.roundRect(bot.x, bot.y, bot.w, bot.h, 8);
+                ctx.fill();
+            }
+
+            // Ball Rendering
+            const activeBallObj = ballSkins.find(b => b.id === currentSkin) || ballSkins[0];
+            ctx.save();
+            ctx.translate(ball.x, ball.y);
+            ctx.rotate(ball.rot);
+            
+            ctx.fillStyle = activeBallObj.color;
+            ctx.beginPath();
+            ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            
+            if (currentSkin === 'classic') {
+                ctx.beginPath();
+                ctx.arc(0, 0, ball.radius * 0.4, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            if (!isRunning || isPaused) return;
+            update();
+            draw();
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+            window.addEventListener('load', () => {
+                const swCode = `self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request)); });`;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>
