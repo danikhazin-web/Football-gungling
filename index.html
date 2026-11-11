@@ -39,7 +39,7 @@
         .custom-glass {
             background: rgba(15, 23, 42, 0.92);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .btn-bounce {
             transition: transform 0.1s ease, background-color 0.2s ease;
@@ -82,7 +82,7 @@
         </div>
 
         <!-- MAIN MENU -->
-        <div id="menu-overlay" class="absolute inset-0 z-20 flex flex-col justify-between p-6 overflow-y-auto">
+        <div id="menu-overlay" class="absolute inset-0 z-20 flex flex-col justify-between p-6 overflow-y-auto pointer-events-auto">
             <div class="flex justify-between items-center w-full max-w-md mx-auto pt-2">
                 <div class="flex gap-2">
                     <button id="diff-btn" class="custom-glass px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 btn-bounce">
@@ -109,7 +109,7 @@
             </div>
 
             <div class="flex flex-col gap-3 w-full max-w-md mx-auto pb-4">
-                <button id="mode-solo-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-emerald-400/30 btn-bounce">
+                <button id="mode-solo-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-emerald-400/30 btn-bounce">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-user"></i>
@@ -122,7 +122,7 @@
                     <i class="fa-solid fa-chevron-left text-slate-300"></i>
                 </button>
 
-                <button id="mode-1v1-btn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-indigo-400/30 btn-bounce">
+                <button id="mode-1v1-btn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-indigo-400/30 btn-bounce">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-user-ninja"></i>
@@ -135,7 +135,7 @@
                     <i class="fa-solid fa-chevron-left text-slate-300"></i>
                 </button>
 
-                <button id="mode-tour-btn" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-amber-400/30 btn-bounce">
+                <button id="mode-tour-btn" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-amber-400/30 btn-bounce">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-trophy text-amber-200"></i>
@@ -150,67 +150,53 @@
 
                 <!-- BOTTOM NAV -->
                 <div class="flex justify-around items-center w-full pt-4 mt-2 border-t border-slate-800">
-                    <button id="shop-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 btn-bounce">
+                    <button id="shop-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 btn-bounce p-2">
                         <i class="fa-solid fa-store text-xl"></i>
                         <span class="text-xs font-bold">חנות סקינים</span>
                     </button>
-                    <button id="stats-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 btn-bounce">
+                    <button id="stats-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 btn-bounce p-2">
                         <i class="fa-solid fa-award text-xl"></i>
-                        <span class="text-xs font-bold">משימות והישגים</span>
+                        <span class="text-xs font-bold">הישגים</span>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- SHOP OVERLAY -->
-        <div id="shop-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
+        <div id="shop-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden pointer-events-auto">
+            <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-black text-amber-400">חנות סקינים</h2>
                 <button id="close-shop-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="text-xs text-slate-400 mb-4">בחר ושדרג את מראה הכדור והפדל שלך!</div>
-            <div id="shop-items-list" class="flex-1 overflow-y-auto space-y-3 pr-1">
-                <!-- Dynamic shop items rendered via JS -->
+            <div class="flex-1 overflow-y-auto space-y-3">
+                <div class="bg-slate-800/80 p-4 rounded-2xl flex justify-between items-center border border-slate-700">
+                    <div>
+                        <div class="font-bold text-lg">כדור זהב מלכותי</div>
+                        <div class="text-xs text-amber-400">מחיר: 150 מטבעות</div>
+                    </div>
+                    <button class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs">בחר</button>
+                </div>
             </div>
         </div>
 
-        <!-- STATS / MISSIONS OVERLAY -->
-        <div id="stats-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-black text-emerald-400">משימות והישגים</h2>
+        <!-- STATS OVERLAY -->
+        <div id="stats-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden pointer-events-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black text-emerald-400">הישגים ושיאים</h2>
                 <button id="close-stats-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="flex-1 overflow-y-auto space-y-3 pr-1">
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <div class="flex justify-between font-bold mb-1">
-                        <span>מתחיל להקפיץ</span>
-                        <span class="text-emerald-400" id="m1-prog">0/10</span>
-                    </div>
-                    <div class="text-xs text-slate-400">הגע ל-10 הקפצות במצב סולו</div>
-                </div>
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <div class="flex justify-between font-bold mb-1">
-                        <span>מאסטר השכונה</span>
-                        <span class="text-emerald-400" id="m2-prog">0/50</span>
-                    </div>
-                    <div class="text-xs text-slate-400">הגע ל-50 הקפצות במצב סולו</div>
-                </div>
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <div class="flex justify-between font-bold mb-1">
-                        <span>אסוף מטבעות</span>
-                        <span class="text-amber-400" id="m3-prog">0/100</span>
-                    </div>
-                    <div class="text-xs text-slate-400">הרווח סך הכל 100 מטבעות במשחק</div>
-                </div>
+            <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                <div class="text-sm text-slate-400">שיא הקפצות אישי</div>
+                <div id="stats-best-score" class="text-3xl font-black text-amber-400 mt-1">0</div>
             </div>
         </div>
 
         <!-- GAME OVER -->
-        <div id="gameover-overlay" class="absolute inset-0 z-30 flex items-center justify-center p-6 custom-glass hidden">
+        <div id="gameover-overlay" class="absolute inset-0 z-30 flex items-center justify-center p-6 custom-glass hidden pointer-events-auto">
             <div class="bg-slate-900/90 border border-slate-700/60 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl">
                 <div class="w-20 h-20 mx-auto rounded-full bg-red-500/20 text-red-500 flex items-center justify-center text-4xl mb-4 border border-red-500/40">
                     <i class="fa-solid fa-burst"></i>
@@ -250,32 +236,13 @@
         let state = {
             coins: parseInt(localStorage.getItem('jugg_coins') || '100'),
             bestScore: parseInt(localStorage.getItem('jugg_best') || '0'),
-            difficulty: localStorage.getItem('jugg_diff') || 'medium', // easy, medium, hard
             mode: 'solo',
             tourStage: 0,
             score: 0,
             botScore: 0,
             isPlaying: false,
-            isPaused: false,
-            ballColor: localStorage.getItem('jugg_ball_color') || '#ffffff',
-            paddleColor: localStorage.getItem('jugg_paddle_color') || '#10b981',
-            unlockedItems: JSON.parse(localStorage.getItem('jugg_unlocked') || '["default"]'),
-            equippedBall: localStorage.getItem('jugg_equipped_ball') || 'default'
+            isPaused: false
         };
-
-        const difficulties = [
-            { id: 'easy', label: 'קל', gravity: 0.35, bounce: -7 },
-            { id: 'medium', label: 'בינוני', gravity: 0.45, bounce: -7.5 },
-            { id: 'hard', label: 'קשה', gravity: 0.55, bounce: -8 }
-        ];
-
-        const shopProducts = [
-            { id: 'default', name: 'כדור קלאסי לבן', type: 'ball', color: '#ffffff', price: 0 },
-            { id: 'gold', name: 'כדור זהב מלכותי', type: 'ball', color: '#f59e0b', price: 50 },
-            { id: 'neon', name: 'כדור ניאון ירוק', type: 'ball', color: '#34d399', price: 100 },
-            { id: 'fire', name: 'כדור אש אדום', type: 'ball', color: '#ef4444', price: 150 },
-            { id: 'cyan', name: 'כדור סייבר כחול', type: 'ball', color: '#38bdf8', price: 200 }
-        ];
 
         const stages = ['רבע גמר', 'חצי גמר', 'גמר הגביע!'];
 
@@ -286,21 +253,12 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const ball = { x: 0, y: 0, radius: 24, vx: 0, vy: 0, gravity: 0.45 };
+        const ball = { x: 0, y: 0, radius: 24, vx: 0, vy: 0, gravity: 0.4 };
         const paddle = { x: 0, y: 0, width: 130, height: 22 };
-        const botPaddle = { x: 0, y: 80, width: 110, height: 20 };
-
-        function updateDiffLabel() {
-            let current = difficulties.find(d => d.id === state.difficulty) || difficulties[1];
-            document.getElementById('diff-label').innerText = current.label;
-            ball.gravity = current.gravity;
-        }
+        const botPaddle = { x: 0, y: 80, width: 110, height: 20, speed: 4 };
 
         function resetGame() {
             resizeCanvas();
-            let diffObj = difficulties.find(d => d.id === state.difficulty) || difficulties[1];
-            ball.gravity = diffObj.gravity;
-
             ball.x = canvas.width / 2;
             ball.y = canvas.height * 0.35;
             ball.vx = (Math.random() - 0.5) * 3;
@@ -311,6 +269,7 @@
             paddle.y = canvas.height - 140;
 
             botPaddle.x = canvas.width / 2 - botPaddle.width / 2;
+            botPaddle.speed = 3 + (state.tourStage * 1.5);
 
             state.score = 0;
             state.botScore = 0;
@@ -328,68 +287,8 @@
             document.getElementById('hud-score').innerText = state.score;
             document.getElementById('hud-coins').innerText = state.coins;
             document.getElementById('menu-coins').innerText = state.coins;
-
-            // Update missions progress
-            document.getElementById('m1-prog').innerText = Math.min(state.score, 10) + '/10';
-            document.getElementById('m2-prog').innerText = Math.min(state.score, 50) + '/50';
-            document.getElementById('m3-prog').innerText = Math.min(state.coins, 100) + '/100';
+            document.getElementById('stats-best-score').innerText = state.bestScore;
         }
-
-        function renderShop() {
-            let list = document.getElementById('shop-items-list');
-            list.innerHTML = '';
-            shopProducts.forEach(item => {
-                let isUnlocked = state.unlockedItems.includes(item.id);
-                let isEquipped = state.equippedBall === item.id;
-
-                let btnHtml = '';
-                if (isEquipped) {
-                    btnHtml = `<span class="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-3 py-2 rounded-xl">בשימוש</span>`;
-                } else if (isUnlocked) {
-                    btnHtml = `<button onclick="equipItem('${item.id}', '${item.color}')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-xs btn-bounce">בחר</button>`;
-                } else {
-                    btnHtml = `<button onclick="buyItem('${item.id}', '${item.color}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs btn-bounce">קנה (${item.price})</button>`;
-                }
-
-                list.innerHTML += `
-                    <div class="bg-slate-800/80 p-3 rounded-2xl flex justify-between items-center border border-slate-700">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full border border-white/20" style="background-color: ${item.color}"></div>
-                            <div>
-                                <div class="font-bold text-sm">${item.name}</div>
-                                <div class="text-xs text-amber-400">${item.price === 0 ? 'חינם' : item.price + ' מטבעות'}</div>
-                            </div>
-                        </div>
-                        <div>${btnHtml}</div>
-                    </div>
-                `;
-            });
-        }
-
-        window.buyItem = function(id, color, price) {
-            if (state.coins >= price) {
-                state.coins -= price;
-                state.unlockedItems.push(id);
-                state.equippedBall = id;
-                state.ballColor = color;
-                localStorage.setItem('jugg_coins', state.coins);
-                localStorage.setItem('jugg_unlocked', JSON.stringify(state.unlockedItems));
-                localStorage.setItem('jugg_equipped_ball', id);
-                localStorage.setItem('jugg_ball_color', color);
-                updateHUD();
-                renderShop();
-            } else {
-                alert('אין לך מספיק מטבעות!');
-            }
-        };
-
-        window.equipItem = function(id, color) {
-            state.equippedBall = id;
-            state.ballColor = color;
-            localStorage.setItem('jugg_equipped_ball', id);
-            localStorage.setItem('jugg_ball_color', color);
-            renderShop();
-        };
 
         function setPaddlePos(clientX) {
             paddle.x = clientX - paddle.width / 2;
@@ -404,4 +303,180 @@
 
         window.addEventListener('pointermove', (e) => {
             if (!state.isPlaying || state.isPaused) return;
-            set
+            setPaddlePos(e.clientX);
+        });
+
+        function updatePhysics() {
+            if (!state.isPlaying || state.isPaused) return;
+
+            ball.vy += ball.gravity;
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+
+            if (ball.x - ball.radius < 0) {
+                ball.x = ball.radius;
+                ball.vx *= -0.8;
+            } else if (ball.x + ball.radius > canvas.width) {
+                ball.x = canvas.width - ball.radius;
+                ball.vx *= -0.8;
+            }
+
+            if (ball.vy > 0 && 
+                ball.y + ball.radius >= paddle.y && 
+                ball.y - ball.radius <= paddle.y + paddle.height &&
+                ball.x + ball.radius >= paddle.x && 
+                ball.x - ball.radius <= paddle.x + paddle.width) {
+                
+                ball.y = paddle.y - ball.radius;
+                ball.vy = -Math.abs(ball.vy * 0.95) - 7;
+                let hitOffset = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+                ball.vx += hitOffset * 5;
+
+                state.score++;
+                state.coins += 1;
+                localStorage.setItem('jugg_coins', state.coins.toString());
+                updateHUD();
+
+                if (state.mode === 'tour' && state.score >= 10 + (state.tourStage * 5)) {
+                    winStage();
+                }
+            }
+
+            if (state.mode === '1v1' || state.mode === 'tour') {
+                let targetX = ball.x - botPaddle.width / 2;
+                botPaddle.x += (targetX - botPaddle.x) * (0.06 + state.tourStage * 0.03);
+
+                if (ball.vy < 0 && 
+                    ball.y - ball.radius <= botPaddle.y + botPaddle.height &&
+                    ball.x >= botPaddle.x && ball.x <= botPaddle.x + botPaddle.width) {
+                    ball.vy = Math.abs(ball.vy) + 2;
+                    state.botScore++;
+                }
+            }
+
+            if (ball.y - ball.radius > canvas.height) {
+                endGame();
+            }
+        }
+
+        function render() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+
+            if (state.isPlaying) {
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                ctx.fillStyle = '#10b981';
+                ctx.beginPath();
+                ctx.roundRect(paddle.x, paddle.y, paddle.width, paddle.height, 12);
+                ctx.fill();
+
+                if (state.mode === '1v1' || state.mode === 'tour') {
+                    ctx.fillStyle = '#6366f1';
+                    ctx.beginPath();
+                    ctx.roundRect(botPaddle.x, botPaddle.y, botPaddle.width, botPaddle.height, 10);
+                    ctx.fill();
+                }
+
+                updatePhysics();
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        function startGame(mode) {
+            state.mode = mode;
+            if (mode === 'tour' && state.tourStage > 2) state.tourStage = 0;
+            state.isPlaying = true;
+            state.isPaused = false;
+            
+            document.getElementById('menu-overlay').classList.add('hidden');
+            document.getElementById('gameover-overlay').classList.add('hidden');
+            document.getElementById('shop-overlay').classList.add('hidden');
+            document.getElementById('stats-overlay').classList.add('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+
+            resetGame();
+        }
+
+        function winStage() {
+            state.isPlaying = false;
+            state.tourStage++;
+            if (state.tourStage > 2) {
+                alert('כל הכבוד! זכית בגביע האליפות!');
+                state.tourStage = 0;
+                document.getElementById('gameover-overlay').classList.add('hidden');
+                document.getElementById('menu-overlay').classList.remove('hidden');
+                document.getElementById('hud').classList.add('hidden');
+            } else {
+                alert('עלית שלב בטורניר! עוברים לשלב הבא.');
+                startGame('tour');
+            }
+        }
+
+        function endGame() {
+            state.isPlaying = false;
+            if (state.score > state.bestScore) {
+                state.bestScore = state.score;
+                localStorage.setItem('jugg_best', state.bestScore.toString());
+            }
+
+            document.getElementById('go-score').innerText = state.score;
+            document.getElementById('go-best').innerText = state.bestScore;
+            document.getElementById('gameover-overlay').classList.remove('hidden');
+            document.getElementById('hud').classList.add('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('mode-solo-btn').addEventListener('click', () => startGame('solo'));
+        document.getElementById('mode-1v1-btn').addEventListener('click', () => startGame('1v1'));
+        document.getElementById('mode-tour-btn').addEventListener('click', () => startGame('tour'));
+
+        document.getElementById('shop-btn').addEventListener('click', () => {
+            document.getElementById('shop-overlay').classList.remove('hidden');
+        });
+        document.getElementById('close-shop-btn').addEventListener('click', () => {
+            document.getElementById('shop-overlay').classList.add('hidden');
+        });
+
+        document.getElementById('stats-btn').addEventListener('click', () => {
+            updateHUD();
+            document.getElementById('stats-overlay').classList.remove('hidden');
+        });
+        document.getElementById('close-stats-btn').addEventListener('click', () => {
+            document.getElementById('stats-overlay').classList.add('hidden');
+        });
+
+        document.getElementById('go-home-btn').addEventListener('click', () => {
+            document.getElementById('gameover-overlay').classList.add('hidden');
+            document.getElementById('menu-overlay').classList.remove('hidden');
+            updateHUD();
+        });
+
+        document.getElementById('go-restart-btn').addEventListener('click', () => {
+            startGame(state.mode);
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            state.isPaused = !state.isPaused;
+        });
+
+        updateHUD();
+        requestAnimationFrame(render);
+    </script>
+</body>
+</html>
