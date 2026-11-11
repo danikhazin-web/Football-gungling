@@ -37,7 +37,7 @@
             height: 100%;
         }
         .custom-glass {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
@@ -55,6 +55,7 @@
     <div id="game-container" class="relative w-full h-full flex items-center justify-center overflow-hidden">
         <canvas id="gameCanvas"></canvas>
 
+        <!-- HUD -->
         <div id="hud" class="absolute top-0 left-0 right-0 p-4 z-10 flex justify-between items-start hidden pointer-events-none">
             <div class="flex flex-col gap-2 pointer-events-auto">
                 <div class="custom-glass px-4 py-2 rounded-2xl flex items-center gap-3 border-l-4 border-emerald-500 shadow-lg">
@@ -64,10 +65,13 @@
                         <div id="hud-score" class="text-2xl font-black text-emerald-400">0</div>
                     </div>
                 </div>
+                <div id="hud-tournament-tag" class="hidden custom-glass px-3 py-1 rounded-xl text-xs font-bold text-amber-300">
+                    שלב: <span id="tour-stage-num">רבע גמר</span>
+                </div>
             </div>
 
             <div class="flex items-center gap-2 pointer-events-auto">
-                <div id="hud-coins-box" class="custom-glass px-3 py-2 rounded-2xl flex items-center gap-2 border-r-4 border-amber-400">
+                <div class="custom-glass px-3 py-2 rounded-2xl flex items-center gap-2 border-r-4 border-amber-400">
                     <span id="hud-coins" class="text-lg font-black text-amber-400">0</span>
                     <i class="fa-solid fa-coins text-amber-400"></i>
                 </div>
@@ -77,13 +81,10 @@
             </div>
         </div>
 
+        <!-- MAIN MENU -->
         <div id="menu-overlay" class="absolute inset-0 z-20 flex flex-col justify-between p-6 overflow-y-auto">
-            <div class="flex justify-between items-center w-full max-w-md mx-auto">
+            <div class="flex justify-between items-center w-full max-w-md mx-auto pt-2">
                 <div class="flex gap-2">
-                    <button id="lang-btn" class="custom-glass px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 btn-bounce">
-                        <i class="fa-solid fa-globe text-emerald-400"></i>
-                        <span>עברית</span>
-                    </button>
                     <button id="diff-btn" class="custom-glass px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 btn-bounce">
                         <i class="fa-solid fa-bolt text-amber-400"></i>
                         <span id="diff-label">בינוני</span>
@@ -95,20 +96,20 @@
                 </div>
             </div>
 
-            <div class="text-center my-auto py-4">
+            <div class="text-center my-6">
                 <span class="inline-block bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-black px-4 py-1.5 rounded-full mb-3 tracking-wide">
                     סימולטור הקפצות ריאליסטי
                 </span>
-                <h1 class="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 drop-shadow-md">
+                <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 drop-shadow-md">
                     מלך ההקפצות
                 </h1>
-                <p class="text-slate-400 text-sm mt-2 max-w-xs mx-auto">
+                <p class="text-slate-400 text-xs sm:text-sm mt-2 max-w-xs mx-auto">
                     שליטה בכדור, תחרויות וקירות צדדיים חכמים!
                 </p>
             </div>
 
-            <div class="flex flex-col gap-3 w-full max-w-md mx-auto mb-4">
-                <button id="mode-solo-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-emerald-950/40 border border-emerald-400/30 btn-bounce">
+            <div class="flex flex-col gap-3 w-full max-w-md mx-auto pb-4">
+                <button id="mode-solo-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-emerald-400/30 btn-bounce">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-user"></i>
@@ -121,7 +122,7 @@
                     <i class="fa-solid fa-chevron-left text-slate-300"></i>
                 </button>
 
-                <button id="mode-1v1-btn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-indigo-950/40 border border-indigo-400/30 btn-bounce">
+                <button id="mode-1v1-btn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-indigo-400/30 btn-bounce">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-user-ninja"></i>
@@ -134,29 +135,61 @@
                     <i class="fa-solid fa-chevron-left text-slate-300"></i>
                 </button>
 
-                <button id="mode-tour-btn" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-amber-950/40 border border-amber-400/30 btn-bounce">
+                <button id="mode-tour-btn" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-amber-400/30 btn-bounce">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-trophy text-amber-200"></i>
                         </div>
                         <div class="text-right">
                             <div class="font-extrabold text-lg">טורניר אלופים</div>
-                            <div class="text-xs text-amber-100/70">התחרה בשלבי נוקאאוט עד הגביע</div>
+                            <div class="text-xs text-amber-100/70">שלבי נוקאאוט עד הגביע הגדול</div>
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-left text-slate-300"></i>
                 </button>
+
+                <!-- BOTTOM NAV INSIDE SCROLL -->
+                <div class="flex justify-around items-center w-full pt-4 mt-2 border-t border-slate-800">
+                    <button id="shop-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 btn-bounce">
+                        <i class="fa-solid fa-store text-xl"></i>
+                        <span class="text-xs font-bold">חנות סקינים</span>
+                    </button>
+                    <button id="stats-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 btn-bounce">
+                        <i class="fa-solid fa-award text-xl"></i>
+                        <span class="text-xs font-bold">הישגים</span>
+                    </button>
+                </div>
             </div>
         </div>
 
+        <!-- SHOP OVERLAY -->
+        <div id="shop-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black text-amber-400">חנות סקינים</h2>
+                <button id="close-shop-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto space-y-3">
+                <div class="bg-slate-800/80 p-4 rounded-2xl flex justify-between items-center border border-slate-700">
+                    <div>
+                        <div class="font-bold text-lg">כדור זהב מלכותי</div>
+                        <div class="text-xs text-amber-400">מחיר: 150 מטבעות</div>
+                    </div>
+                    <button class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs">בחר</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME OVER -->
         <div id="gameover-overlay" class="absolute inset-0 z-30 flex items-center justify-center p-6 custom-glass hidden">
             <div class="bg-slate-900/90 border border-slate-700/60 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl">
                 <div class="w-20 h-20 mx-auto rounded-full bg-red-500/20 text-red-500 flex items-center justify-center text-4xl mb-4 border border-red-500/40">
                     <i class="fa-solid fa-burst"></i>
                 </div>
 
-                <h2 class="text-3xl font-black text-white mb-1">הכדור נפל!</h2>
-                <p class="text-slate-400 text-sm mb-6">נסה שוב ושבור את השיא</p>
+                <h2 id="go-title" class="text-3xl font-black text-white mb-1">הכדור נפל!</h2>
+                <p id="go-sub" class="text-slate-400 text-sm mb-6">נסה שוב ושבור את השיא</p>
 
                 <div class="bg-slate-800/80 rounded-2xl p-4 mb-6 flex justify-around items-center border border-slate-700/40">
                     <div>
@@ -174,7 +207,7 @@
                     <button id="go-home-btn" class="w-1/3 bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold btn-bounce border border-slate-600">
                         <i class="fa-solid fa-house"></i>
                     </button>
-                    <button id="go-restart-btn" class="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-500 font-extrabold py-3 rounded-xl text-slate-950 btn-bounce shadow-lg shadow-emerald-950/50">
+                    <button id="go-restart-btn" class="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-500 font-extrabold py-3 rounded-xl text-slate-950 btn-bounce shadow-lg">
                         שחק שוב
                     </button>
                 </div>
@@ -189,11 +222,15 @@
         let state = {
             coins: parseInt(localStorage.getItem('jugg_coins') || '100'),
             bestScore: parseInt(localStorage.getItem('jugg_best') || '0'),
-            mode: 'solo',
+            mode: 'solo', // solo, 1v1, tour
+            tourStage: 0, // 0: Quarter, 1: Semi, 2: Final
             score: 0,
+            botScore: 0,
             isPlaying: false,
             isPaused: false
         };
+
+        const stages = ['רבע גמר', 'חצי גמר', 'גמר הגביע!'];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -202,33 +239,14 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const ball = {
-            x: 0,
-            y: 0,
-            radius: 24,
-            vx: 0,
-            vy: 0,
-            gravity: 0.4
-        };
-
-        const paddle = {
-            x: 0,
-            y: 0,
-            width: 130,
-            height: 22
-        };
-
-        const botPaddle = {
-            x: 0,
-            y: 100,
-            width: 110,
-            height: 20
-        };
+        const ball = { x: 0, y: 0, radius: 24, vx: 0, vy: 0, gravity: 0.4 };
+        const paddle = { x: 0, y: 0, width: 130, height: 22 };
+        const botPaddle = { x: 0, y: 80, width: 110, height: 20, speed: 4 };
 
         function resetGame() {
             resizeCanvas();
             ball.x = canvas.width / 2;
-            ball.y = canvas.height * 0.3;
+            ball.y = canvas.height * 0.35;
             ball.vx = (Math.random() - 0.5) * 3;
             ball.vy = -1;
 
@@ -237,9 +255,18 @@
             paddle.y = canvas.height - 140;
 
             botPaddle.x = canvas.width / 2 - botPaddle.width / 2;
+            botPaddle.speed = 3 + (state.tourStage * 1.5);
 
             state.score = 0;
+            state.botScore = 0;
             updateHUD();
+
+            if (state.mode === 'tour') {
+                document.getElementById('hud-tournament-tag').classList.remove('hidden');
+                document.getElementById('tour-stage-num').innerText = stages[state.tourStage];
+            } else {
+                document.getElementById('hud-tournament-tag').classList.add('hidden');
+            }
         }
 
         function updateHUD() {
@@ -279,6 +306,7 @@
                 ball.vx *= -0.8;
             }
 
+            // Player collision
             if (ball.vy > 0 && 
                 ball.y + ball.radius >= paddle.y && 
                 ball.y - ball.radius <= paddle.y + paddle.height &&
@@ -287,7 +315,6 @@
                 
                 ball.y = paddle.y - ball.radius;
                 ball.vy = -Math.abs(ball.vy * 0.95) - 7;
-                
                 let hitOffset = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
                 ball.vx += hitOffset * 5;
 
@@ -295,19 +322,27 @@
                 state.coins += 1;
                 localStorage.setItem('jugg_coins', state.coins.toString());
                 updateHUD();
+
+                // Tournament win condition per stage (e.g., 10 points)
+                if (state.mode === 'tour' && state.score >= 10 + (state.tourStage * 5)) {
+                    winStage();
+                }
             }
 
-            if (state.mode === '1v1') {
+            // Bot logic for 1v1 and Tournament
+            if (state.mode === '1v1' || state.mode === 'tour') {
                 let targetX = ball.x - botPaddle.width / 2;
-                botPaddle.x += (targetX - botPaddle.x) * 0.08;
+                botPaddle.x += (targetX - botPaddle.x) * (0.06 + state.tourStage * 0.03);
 
                 if (ball.vy < 0 && 
                     ball.y - ball.radius <= botPaddle.y + botPaddle.height &&
                     ball.x >= botPaddle.x && ball.x <= botPaddle.x + botPaddle.width) {
                     ball.vy = Math.abs(ball.vy) + 2;
+                    state.botScore++;
                 }
             }
 
+            // Floor drop
             if (ball.y - ball.radius > canvas.height) {
                 endGame();
             }
@@ -326,6 +361,7 @@
             ctx.stroke();
 
             if (state.isPlaying) {
+                // Ball
                 ctx.beginPath();
                 ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffffff';
@@ -334,12 +370,14 @@
                 ctx.lineWidth = 4;
                 ctx.stroke();
 
+                // Player Paddle
                 ctx.fillStyle = '#10b981';
                 ctx.beginPath();
                 ctx.roundRect(paddle.x, paddle.y, paddle.width, paddle.height, 12);
                 ctx.fill();
 
-                if (state.mode === '1v1') {
+                // Bot Paddle
+                if (state.mode === '1v1' || state.mode === 'tour') {
                     ctx.fillStyle = '#6366f1';
                     ctx.beginPath();
                     ctx.roundRect(botPaddle.x, botPaddle.y, botPaddle.width, botPaddle.height, 10);
@@ -354,19 +392,35 @@
 
         function startGame(mode) {
             state.mode = mode;
+            if (mode === 'tour' && state.tourStage > 2) state.tourStage = 0;
             state.isPlaying = true;
             state.isPaused = false;
             
             document.getElementById('menu-overlay').classList.add('hidden');
             document.getElementById('gameover-overlay').classList.add('hidden');
+            document.getElementById('shop-overlay').classList.add('hidden');
             document.getElementById('hud').classList.remove('hidden');
 
             resetGame();
         }
 
+        function winStage() {
+            state.isPlaying = false;
+            state.tourStage++;
+            if (state.tourStage > 2) {
+                alert('כל הכבוד! זכית בגביע האליפות!');
+                state.tourStage = 0;
+                document.getElementById('gameover-overlay').classList.add('hidden');
+                document.getElementById('menu-overlay').classList.remove('hidden');
+                document.getElementById('hud').classList.add('hidden');
+            } else {
+                alert('עלית שלב בטורניר! עוברים לשלב הבא.');
+                startGame('tour');
+            }
+        }
+
         function endGame() {
             state.isPlaying = false;
-            
             if (state.score > state.bestScore) {
                 state.bestScore = state.score;
                 localStorage.setItem('jugg_best', state.bestScore.toString());
@@ -378,9 +432,17 @@
             document.getElementById('hud').classList.add('hidden');
         }
 
+        // Event Listeners
         document.getElementById('mode-solo-btn').addEventListener('click', () => startGame('solo'));
         document.getElementById('mode-1v1-btn').addEventListener('click', () => startGame('1v1'));
-        document.getElementById('mode-tour-btn').addEventListener('click', () => startGame('solo'));
+        document.getElementById('mode-tour-btn').addEventListener('click', () => startGame('tour'));
+
+        document.getElementById('shop-btn').addEventListener('click', () => {
+            document.getElementById('shop-overlay').classList.remove('hidden');
+        });
+        document.getElementById('close-shop-btn').addEventListener('click', () => {
+            document.getElementById('shop-overlay').classList.add('hidden');
+        });
 
         document.getElementById('go-home-btn').addEventListener('click', () => {
             document.getElementById('gameover-overlay').classList.add('hidden');
@@ -401,4 +463,3 @@
     </script>
 </body>
 </html>
-
