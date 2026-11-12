@@ -165,19 +165,13 @@
         <!-- SHOP OVERLAY -->
         <div id="shop-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden pointer-events-auto">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-black text-amber-400">חנות סקינים</h2>
+                <h2 class="text-2xl font-black text-amber-400">חנות סקינים לכדור</h2>
                 <button id="close-shop-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="flex-1 overflow-y-auto space-y-3">
-                <div class="bg-slate-800/80 p-4 rounded-2xl flex justify-between items-center border border-slate-700">
-                    <div>
-                        <div class="font-bold text-lg">כדור זהב מלכותי</div>
-                        <div class="text-xs text-amber-400">מחיר: 150 מטבעות</div>
-                    </div>
-                    <button class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs">בחר</button>
-                </div>
+            <div id="shop-items-container" class="flex-1 overflow-y-auto space-y-3 pb-4">
+                <!-- Items will be populated dynamically -->
             </div>
         </div>
 
@@ -233,9 +227,21 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // Shop Items Data
+        const shopItems = [
+            { id: 'classic', name: 'כדור קלאסי', price: 0, color: '#ffffff', stroke: '#38bdf8' },
+            { id: 'gold', name: 'כדור זהב מלכותי', price: 50, color: '#fbbf24', stroke: '#d97706' },
+            { id: 'fire', name: 'כדור אש לוהט', price: 100, color: '#ef4444', stroke: '#b91c1c' },
+            { id: 'neon', name: 'כדור ניאון ירוק', price: 150, color: '#10b981', stroke: '#047857' },
+            { id: 'galaxy', name: 'כדור גלקסיה סגול', price: 250, color: '#8b5cf6', stroke: '#5b21b6' }
+        ];
+
         let state = {
             coins: parseInt(localStorage.getItem('jugg_coins') || '100'),
             bestScore: parseInt(localStorage.getItem('jugg_best') || '0'),
+            selectedSkin: localStorage.getItem('jugg_skin') || 'classic',
+            unlockedSkins: JSON.parse(localStorage.getItem('jugg_unlocked') || '["classic"]'),
+            difficulty: 'medium', // easy, medium, hard
             mode: 'solo',
             tourStage: 0,
             score: 0,
@@ -243,6 +249,12 @@
             isPlaying: false,
             isPaused: false
         };
+
+        const difficulties = [
+            { id: 'easy', name: 'קל' },
+            { id: 'medium', name: 'בינוני' },
+            { id: 'hard', name: 'קשה' }
+        ];
 
         const stages = ['רבע גמר', 'חצי גמר', 'גמר הגביע!'];
 
@@ -261,6 +273,12 @@
             resizeCanvas();
             ball.x = canvas.width / 2;
             ball.y = canvas.height * 0.35;
+            
+            // Adjust gravity and speed based on difficulty
+            if (state.difficulty === 'easy') ball.gravity = 0.35;
+            else if (state.difficulty === 'medium') ball.gravity = 0.42;
+            else ball.gravity = 0.52;
+
             ball.vx = (Math.random() - 0.5) * 3;
             ball.vy = -1;
 
@@ -269,7 +287,8 @@
             paddle.y = canvas.height - 140;
 
             botPaddle.x = canvas.width / 2 - botPaddle.width / 2;
-            botPaddle.speed = 3 + (state.tourStage * 1.5);
+            let diffMultiplier = state.difficulty === 'easy' ? 0.7 : state.difficulty === 'medium' ? 1.0 : 1.4;
+            botPaddle.speed = (3 + (state.tourStage * 1.5)) * diffMultiplier;
 
             state.score = 0;
             state.botScore = 0;
@@ -288,6 +307,63 @@
             document.getElementById('hud-coins').innerText = state.coins;
             document.getElementById('menu-coins').innerText = state.coins;
             document.getElementById('stats-best-score').innerText = state.bestScore;
+            
+            let diffObj = difficulties.find(d => d.id === state.difficulty);
+            document.getElementById('diff-label').innerText = diffObj ? diffObj.name : 'בינוני';
+        }
+
+        function renderShop() {
+            const container = document.getElementById('shop-items-container');
+            container.innerHTML = '';
+
+            shopItems.forEach(item => {
+                const isUnlocked = state.unlockedSkins.includes(item.id);
+                const isSelected = state.selectedSkin === item.id;
+
+                let btnHtml = '';
+                if (isSelected) {
+                    btnHtml = `<span class="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-3 py-2 rounded-xl border border-emerald-500/40">בשימוש</span>`;
+                } else if (isUnlocked) {
+                    btnHtml = `<button onclick="selectSkin('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl btn-bounce text-xs">בחר</button>`;
+                } else {
+                    btnHtml = `<button onclick="buySkin('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs flex items-center gap-1"><span>קנה</span><i class="fa-solid fa-coins"></i><span>${item.price}</span></button>`;
+                }
+
+                const div = document.createElement('div');
+                div.className = 'bg-slate-800/80 p-4 rounded-2xl flex justify-between items-center border border-slate-700';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center border-2" style="background-color: ${item.color}; border-color: ${item.stroke};"></div>
+                        <div>
+                            <div class="font-bold text-base">${item.name}</div>
+                            <div class="text-xs text-slate-400">${isUnlocked ? 'בבעלותך' : 'מחיר: ' + item.price + ' מטבעות'}</div>
+                        </div>
+                    </div>
+                    <div>${btnHtml}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        window.selectSkin = function(id) {
+            state.selectedSkin = id;
+            localStorage.setItem('jugg_skin', id);
+            renderShop();
+        }
+
+        window.buySkin = function(id, price) {
+            if (state.coins >= price) {
+                state.coins -= price;
+                state.unlockedSkins.push(id);
+                state.selectedSkin = id;
+                localStorage.setItem('jugg_coins', state.coins.toString());
+                localStorage.setItem('jugg_skin', id);
+                localStorage.setItem('jugg_unlocked', JSON.stringify(state.unlockedSkins));
+                updateHUD();
+                renderShop();
+            } else {
+                alert('אין לך מספיק מטבעות בחשבון!');
+            }
         }
 
         function setPaddlePos(clientX) {
@@ -344,7 +420,8 @@
 
             if (state.mode === '1v1' || state.mode === 'tour') {
                 let targetX = ball.x - botPaddle.width / 2;
-                botPaddle.x += (targetX - botPaddle.x) * (0.06 + state.tourStage * 0.03);
+                let botAggro = state.difficulty === 'easy' ? 0.04 : state.difficulty === 'medium' ? 0.07 : 0.11;
+                botPaddle.x += (targetX - botPaddle.x) * (botAggro + state.tourStage * 0.02);
 
                 if (ball.vy < 0 && 
                     ball.y - ball.radius <= botPaddle.y + botPaddle.height &&
@@ -372,11 +449,14 @@
             ctx.stroke();
 
             if (state.isPlaying) {
+                // Get current skin colors
+                let currentItem = shopItems.find(i => i.id === state.selectedSkin) || shopItems[0];
+
                 ctx.beginPath();
                 ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff';
+                ctx.fillStyle = currentItem.color;
                 ctx.fill();
-                ctx.strokeStyle = '#38bdf8';
+                ctx.strokeStyle = currentItem.stroke;
                 ctx.lineWidth = 4;
                 ctx.stroke();
 
@@ -442,11 +522,19 @@
         }
 
         // Event Listeners
+        document.getElementById('diff-btn').addEventListener('click', () => {
+            if (state.difficulty === 'easy') state.difficulty = 'medium';
+            else if (state.difficulty === 'medium') state.difficulty = 'hard';
+            else state.difficulty = 'easy';
+            updateHUD();
+        });
+
         document.getElementById('mode-solo-btn').addEventListener('click', () => startGame('solo'));
         document.getElementById('mode-1v1-btn').addEventListener('click', () => startGame('1v1'));
         document.getElementById('mode-tour-btn').addEventListener('click', () => startGame('tour'));
 
         document.getElementById('shop-btn').addEventListener('click', () => {
+            renderShop();
             document.getElementById('shop-overlay').classList.remove('hidden');
         });
         document.getElementById('close-shop-btn').addEventListener('click', () => {
