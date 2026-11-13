@@ -414,7 +414,7 @@
             ball.x = canvas.width / 2;
             ball.y = canvas.height / 2;
             ball.vx = (Math.random() - 0.5) * 4;
-            ball.vy = -4;
+            ball.vy = -6;
             ball.rot = 0;
 
             player.x = canvas.width / 2 - player.width / 2;
@@ -447,20 +447,20 @@
             playSound('kick');
             if (navigator.vibrate) try { navigator.vibrate(40); } catch(e) {}
 
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 10; i++) {
                 particles.push({
                     x: ball.x, y: ball.y,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: (Math.random() - 0.5) * 8,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
                     life: 1.0,
                     color: activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff'
                 });
             }
 
-            let angle = (Math.random() - 0.5) * 0.8;
-            let speed = difficulty === 'hard' ? -14 : difficulty === 'medium' ? -12 : -10;
-            ball.vy = speed;
-            ball.vx += angle * 6;
+            let angle = (Math.random() - 0.5) * 1.2;
+            // High upward velocity so the ball flies high up towards the top!
+            ball.vy = -17; 
+            ball.vx += angle * 7;
             score++;
             document.getElementById('game-score-board').innerText = score;
 
@@ -490,41 +490,41 @@
             if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.8; }
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.8; }
 
-            // Collision with Player Paddle (Bottom)
+            // Collision with Player Paddle (Bottom) - flies high up!
             if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
                 ball.x >= player.x - 15 && ball.x <= player.x + player.width + 15 && ball.vy > 0) {
                 kickBall();
             }
 
-            // AI Bot logic for pvp/tournament (Guaranteed active interaction & return)
+            // AI Bot logic for pvp/tournament - flies high down!
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 bot.y = 35;
                 let trackSpeed = difficulty === 'hard' ? 0.3 : difficulty === 'medium' ? 0.2 : 0.12;
                 bot.x += (ball.x - (bot.x + bot.width / 2)) * trackSpeed;
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
 
-                // Bot returns the ball back down when it reaches the top
+                // Bot returns the ball back down high and fast
                 if (ball.y - ball.radius <= bot.y + bot.height + 15 && ball.vy < 0) {
                     playSound('kick');
                     if (navigator.vibrate) try { navigator.vibrate(40); } catch(e) {}
                     
-                    for (let i = 0; i < 8; i++) {
+                    for (let i = 0; i < 10; i++) {
                         particles.push({
                             x: ball.x, y: ball.y,
-                            vx: (Math.random() - 0.5) * 8,
-                            vy: (Math.random() - 0.5) * 8,
+                            vx: (Math.random() - 0.5) * 10,
+                            vy: (Math.random() - 0.5) * 10,
                             life: 1.0,
                             color: '#6366f1'
                         });
                     }
 
                     let botAngle = (Math.random() - 0.5) * 1.2;
-                    ball.vy = difficulty === 'hard' ? 14 : 12;
-                    ball.vx += botAngle * 6;
+                    ball.vy = 17; // Flies high down towards player!
+                    ball.vx += botAngle * 7;
                 }
             }
 
-            // Game over / point checks
+            // Game over checks
             if (gameMode === 'solo') {
                 if (ball.y > canvas.height + 40) {
                     playSound('fail');
@@ -534,7 +534,6 @@
                     return;
                 }
             } else {
-                // If ball falls past player (bottom) -> Game Over
                 if (ball.y > canvas.height + 40) {
                     playSound('fail');
                     gameRunning = false;
