@@ -23,7 +23,7 @@
         canvas { touch-action: none; }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-between overflow-x-hidden p-3 md:p-6">
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-between overflow-x-hidden p-2 md:p-4">
 
     <!-- Top Bar -->
     <header class="w-full max-w-md flex justify-between items-center bg-slate-800/80 backdrop-blur-md p-3 rounded-2xl border border-slate-700/50 shadow-lg z-20">
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <!-- Game Arena (Canvas) -->
+    <!-- Game Arena (Canvas) - Expanded View -->
     <div id="game-container" class="hidden w-full max-w-md flex flex-col items-center relative z-20 my-auto">
         <div class="w-full flex justify-between items-center mb-2 px-1">
             <button onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer">
@@ -100,9 +100,9 @@
             </button>
         </div>
 
-        <div class="relative w-full aspect-[3/4] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
+        <div class="relative w-full aspect-[9/15] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
-            <div id="tap-instruction" class="absolute bottom-6 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/80 px-4 py-2 rounded-full border border-slate-700/80 pointer-events-none">
+            <div id="tap-instruction" class="absolute bottom-4 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/80 px-4 py-1.5 rounded-full border border-slate-700/80 pointer-events-none">
                 גרור את השחקן כדי לפגוע בכדור!
             </div>
         </div>
@@ -243,7 +243,7 @@
         const songsData = [
             {id: 'none', name: {he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique'}, price: 0},
             {id: 'beat1', name: {he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade'}, price: 40},
-            {id: 'synth', name: {he: 'סינת׳ווייף', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave'}, price: 80},
+            {id: 'synth', name: {he: 'סינת׳ווייف', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave'}, price: 80},
             {id: 'rock', name: {he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade'}, price: 120},
             {id: 'electro', name: {he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse'}, price: 180}
         ];
@@ -381,8 +381,8 @@
         let particles = [];
 
         let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 18, rot: 0 };
-        let player = { x: 0, y: 0, width: 70, height: 25 };
-        let bot = { x: 0, y: 0, width: 70, height: 25 };
+        let player = { x: 0, y: 0, width: 75, height: 25 };
+        let bot = { x: 0, y: 0, width: 75, height: 25 };
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -412,17 +412,17 @@
 
         function resetPositions() {
             ball.x = canvas.width / 2;
-            ball.y = canvas.height / 3;
+            ball.y = canvas.height / 2;
             ball.vx = (Math.random() - 0.5) * 4;
-            ball.vy = -2;
+            ball.vy = -3;
             ball.rot = 0;
 
             player.x = canvas.width / 2 - player.width / 2;
-            player.y = canvas.height - 80;
+            player.y = canvas.height - 70;
 
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 bot.x = canvas.width / 2 - bot.width / 2;
-                bot.y = 80;
+                bot.y = 50;
             }
         }
 
@@ -486,38 +486,69 @@
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
 
+            // Wall collisions
             if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.8; }
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.8; }
 
-            // Collision with Player Paddle (Must touch with paddle!)
+            // Collision with Player Paddle
             if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
                 ball.x >= player.x - 10 && ball.x <= player.x + player.width + 10 && ball.vy > 0) {
                 kickBall();
             }
 
+            // AI Bot logic for pvp/tournament (Active & Smart tracking)
             if (gameMode === 'pvp' || gameMode === 'tournament') {
-                bot.y = 60;
-                let botSpeed = difficulty === 'hard' ? 0.1 : difficulty === 'medium' ? 0.07 : 0.04;
+                bot.y = 50;
+                let botSpeed = difficulty === 'hard' ? 0.12 : difficulty === 'medium' ? 0.08 : 0.05;
                 bot.x += (ball.x - (bot.x + bot.width / 2)) * botSpeed;
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
 
+                // Bot hit ball back down
                 if (ball.y - ball.radius <= bot.y + bot.height && ball.y + ball.radius >= bot.y &&
-                    ball.x >= bot.x && ball.x <= bot.x + bot.width && ball.vy < 0) {
+                    ball.x >= bot.x - 10 && ball.x <= bot.x + bot.width + 10 && ball.vy < 0) {
                     playSound('kick');
-                    ball.vy = 10;
-                    ball.vx += (Math.random() - 0.5) * 4;
+                    let botAngle = (Math.random() - 0.5) * 1.0;
+                    ball.vy = difficulty === 'hard' ? 12 : 10;
+                    ball.vx += botAngle * 6;
                 }
             }
 
-            if (ball.y > canvas.height + 40 || ( (gameMode === 'pvp' || gameMode === 'tournament') && ball.y < -40 )) {
-                playSound('fail');
-                gameRunning = false;
-                if (bgmInterval) clearInterval(bgmInterval);
-                showGameOverScreen();
-                return;
+            // Game over check (Solo mode or passing past players)
+            if (gameMode === 'solo') {
+                if (ball.y > canvas.height + 40) {
+                    playSound('fail');
+                    gameRunning = false;
+                    if (bgmInterval) clearInterval(bgmInterval);
+                    showGameOverScreen();
+                    return;
+                }
+            } else {
+                // PvP / Tournament: if ball goes past bot (top) -> Player scores / wins point. If past player (bottom) -> Bot wins.
+                if (ball.y > canvas.height + 40) {
+                    playSound('fail');
+                    gameRunning = false;
+                    if (bgmInterval) clearInterval(bgmInterval);
+                    showGameOverScreen();
+                    return;
+                } else if (ball.y < -40) {
+                    // Bot missed! Reset ball towards player
+                    score++;
+                    document.getElementById('game-score-board').innerText = score;
+                    ball.y = canvas.height / 2;
+                    ball.vy = 8;
+                    ball.vx = (Math.random() - 0.5) * 4;
+                }
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Center pitch line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
 
             // Particles
             for (let i = particles.length - 1; i >= 0; i--) {
@@ -718,7 +749,7 @@
             renderAchievements();
             document.getElementById('achievements-modal').classList.remove('hidden');
         }
-        function closeAchievementsModal()  {
+        function closeAchievementsModal() {
             document.getElementById('achievements-modal').classList.add('hidden');
         }
 
