@@ -75,6 +75,9 @@
                     <span id="hud-coins" class="text-lg font-black text-amber-400">0</span>
                     <i class="fa-solid fa-coins text-amber-400"></i>
                 </div>
+                <button id="music-toggle-btn" class="custom-glass w-10 h-10 rounded-2xl flex items-center justify-center text-amber-400 hover:text-white btn-bounce">
+                    <i id="music-icon" class="fa-solid fa-music"></i>
+                </button>
                 <button id="pause-btn" class="custom-glass w-10 h-10 rounded-2xl flex items-center justify-center text-slate-300 hover:text-white btn-bounce">
                     <i class="fa-solid fa-pause"></i>
                 </button>
@@ -156,7 +159,7 @@
                 <div class="flex justify-around items-center w-full pt-3 mt-1 border-t border-slate-800">
                     <button id="shop-btn" class="flex flex-col items-center gap-1 text-slate-300 hover:text-amber-400 btn-bounce p-2">
                         <i class="fa-solid fa-store text-xl text-amber-400"></i>
-                        <span id="txt-shop-btn" class="text-xs font-bold">חנות סקינים</span>
+                        <span id="txt-shop-btn" class="text-xs font-bold">חנות סקינים ושירים</span>
                     </button>
                     <button id="stats-btn" class="flex flex-col items-center gap-1 text-slate-300 hover:text-emerald-400 btn-bounce p-2">
                         <i class="fa-solid fa-award text-xl text-emerald-400"></i>
@@ -169,7 +172,7 @@
         <!-- SHOP OVERLAY -->
         <div id="shop-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden pointer-events-auto">
             <div class="flex justify-between items-center mb-4">
-                <h2 id="txt-shop-header" class="text-2xl font-black text-amber-400">חנות סקינים לכדור</h2>
+                <h2 id="txt-shop-header" class="text-2xl font-black text-amber-400">חנות סקינים ושירים</h2>
                 <button id="close-shop-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
@@ -177,6 +180,10 @@
             <div class="mb-4 flex items-center gap-2 text-sm text-amber-300 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
                 <i class="fa-solid fa-coins"></i>
                 <span id="txt-shop-balance">יתרה:</span> <span id="shop-coins-display" class="font-black">100</span>
+            </div>
+            <div class="flex gap-2 mb-4">
+                <button id="shop-tab-skins" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs btn-bounce">כדורים</button>
+                <button id="shop-tab-songs" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs btn-bounce">שירים ברקע</button>
             </div>
             <div id="shop-items-container" class="flex-1 overflow-y-auto space-y-3 pb-4">
                 <!-- Populated dynamically -->
@@ -235,6 +242,86 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // Audio System using Web Audio API
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicInterval = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                let now = audioCtx.currentTime;
+                if (type === 'bounce') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'drop') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.exponentialRampToValueAtTime(60, now + 0.3);
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            } catch(e) {}
+        }
+
+        // Background Music Player based on Selected Song
+        function startBackgroundMusic() {
+            if (isMusicPlaying) return;
+            initAudio();
+            if (!audioCtx) return;
+            isMusicPlaying = true;
+            document.getElementById('music-icon').className = 'fa-solid fa-music text-emerald-400';
+
+            let notes = [261.63, 329.63, 392.00, 523.25]; // Default upbeat notes
+            if (state.selectedSong === 'stadium') notes = [220, 247, 293.66, 329.63, 440];
+            else if (state.selectedSong === 'latin') notes = [293.66, 370, 440, 554.37, 587.33];
+            else if (state.selectedSong === 'synth') notes = [196, 246.94, 293.66, 392, 493.88];
+
+            let step = 0;
+            musicInterval = setInterval(() => {
+                if (!isMusicPlaying || !state.isPlaying) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    let now = audioCtx.currentTime;
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(notes[step % notes.length], now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                    step++;
+                } catch(e) {}
+            }, 300);
+        }
+
+        function stopBackgroundMusic() {
+            isMusicPlaying = false;
+            if (musicInterval) clearInterval(musicInterval);
+            document.getElementById('music-icon').className = 'fa-solid fa-music text-amber-400';
+        }
+
         // Translations Dictionary
         const translations = {
             he: {
@@ -242,16 +329,16 @@
                 langName: 'עברית',
                 badge: 'סימולטור הקפצות ריאליסטי',
                 title: 'מלך ההקפצות',
-                subtitle: 'שליטה בכדור, תחרויות וקירות צדדיים חכמים!',
+                subtitle: 'שליטה בכדור, תחרויות ומוזיקה ברקע!',
                 soloTitle: 'שבירת שיא (סולו)',
                 soloDesc: 'הקפץ כמה שיותר בלי להפיל',
                 v1Title: 'תחרות 1 נגד 1',
                 v1Desc: 'דו-קרב מול בוט חכם',
                 tourTitle: 'טורניר אלופים',
                 tourDesc: 'שלבי נוקאאוט עד הגביע הגדול',
-                shopBtn: 'חנות סקינים',
+                shopBtn: 'חנות סקינים ושירים',
                 statsBtn: 'הישגים',
-                shopHeader: 'חנות סקינים לכדור',
+                shopHeader: 'חנות סקינים ושירים',
                 shopBalance: 'יתרת מטבעות:',
                 statsHeader: 'הישגים ושיאים',
                 bestLabel: 'שיא הקפצות אישי',
@@ -278,6 +365,12 @@
                     fire: 'כדור אש לוהט',
                     neon: 'כדור ניאון ירוק',
                     galaxy: 'כדור גלקסיה סגול'
+                },
+                songs: {
+                    default: 'מנגינה קלאסית (חינם)',
+                    stadium: 'המנון אצטדיונים',
+                    latin: 'קצב לטיני קצבי',
+                    synth: 'סינת\'ווייב אלקטרוני'
                 }
             },
             en: {
@@ -285,16 +378,16 @@
                 langName: 'English',
                 badge: 'REALISTIC JUGGLING SIMULATOR',
                 title: 'Juggle King',
-                subtitle: 'Ball control, tournaments & smart side walls!',
+                subtitle: 'Ball control, tournaments & background music!',
                 soloTitle: 'High Score (Solo)',
                 soloDesc: 'Juggle as much as you can without dropping',
                 v1Title: '1v1 Duel',
                 v1Desc: 'Battle against a smart AI bot',
                 tourTitle: 'Champions Tournament',
                 tourDesc: 'Knockout stages to the grand trophy',
-                shopBtn: 'Skin Shop',
+                shopBtn: 'Shop (Skins & Songs)',
                 statsBtn: 'Achievements',
-                shopHeader: 'Ball Skin Shop',
+                shopHeader: 'Skin & Song Shop',
                 shopBalance: 'Balance:',
                 statsHeader: 'Records & Stats',
                 bestLabel: 'Personal Best Score',
@@ -321,6 +414,12 @@
                     fire: 'Blazing Fire Ball',
                     neon: 'Neon Green Ball',
                     galaxy: 'Purple Galaxy Ball'
+                },
+                songs: {
+                    default: 'Classic Tune (Free)',
+                    stadium: 'Stadium Anthem',
+                    latin: 'Latin Rhythm',
+                    synth: 'Electronic Synthwave'
                 }
             },
             ru: {
@@ -328,16 +427,16 @@
                 langName: 'Русский',
                 badge: 'РЕАЛИСТИЧНЫЙ СИМУЛЯТОР ЧЕКАНКИ',
                 title: 'Король Чеканки',
-                subtitle: 'Контроль мяча, турниры и умные стенки!',
+                subtitle: 'Контроль мяча, турниры и фоновая музыка!',
                 soloTitle: 'Рекорд (Соло)',
                 soloDesc: 'Чекань мяч как можно дольше',
                 v1Title: 'Дуэль 1 на 1',
                 v1Desc: 'Сразись против умного бота',
                 tourTitle: 'Турнир Чемпионов',
                 tourDesc: 'Этапы на выбывание до финала',
-                shopBtn: 'Магазин скинов',
+                shopBtn: 'Магазин (Мячи и Музыка)',
                 statsBtn: 'Достижения',
-                shopHeader: 'Магазин мячей',
+                shopHeader: 'Магазин скинов и музыки',
                 shopBalance: 'Баланс:',
                 statsHeader: 'Рекорды',
                 bestLabel: 'Личный рекорд',
@@ -364,6 +463,12 @@
                     fire: 'Огненный мяч',
                     neon: 'Неоновый зелёный',
                     galaxy: 'Галактический мяч'
+                },
+                songs: {
+                    default: 'Классическая (Бесплатно)',
+                    stadium: 'Гимн стадиона',
+                    latin: 'Латинский ритм',
+                    synth: 'Синтвейв'
                 }
             },
             fr: {
@@ -371,16 +476,16 @@
                 langName: 'Français',
                 badge: 'SIMULATEUR DE JONGLAGE RÉALISTE',
                 title: 'Roi du Jongle',
-                subtitle: 'Contrôle du ballon, tournois et murs intelligents !',
+                subtitle: 'Contrôle du ballon, tournois et musique de fond !',
                 soloTitle: 'Record (Solo)',
                 soloDesc: 'Jonglez le plus longtemps possible',
                 v1Title: 'Duel 1 contre 1',
                 v1Desc: 'Affrontez un bot intelligent',
                 tourTitle: 'Tournoi des Champions',
                 tourDesc: 'Phases éliminatoires jusqu’à la coupe',
-                shopBtn: 'Boutique',
+                shopBtn: 'Boutique (Skins & Chansons)',
                 statsBtn: 'Succès',
-                shopHeader: 'Boutique de Ballons',
+                shopHeader: 'Boutique Skins & Musique',
                 shopBalance: 'Solde :',
                 statsHeader: 'Records',
                 bestLabel: 'Meilleur Score Personnel',
@@ -407,6 +512,12 @@
                     fire: 'Ballon de Feu',
                     neon: 'Ballon Néon Vert',
                     galaxy: 'Ballon Galaxie'
+                },
+                songs: {
+                    default: 'Mélodie Classique (Gratuit)',
+                    stadium: 'Hymne du Stade',
+                    latin: 'Rythme Latin',
+                    synth: 'Synthwave Électronique'
                 }
             }
         };
@@ -414,11 +525,15 @@
         const langOrder = ['he', 'en', 'ru', 'fr'];
 
         const shopItems = [
-            { id: 'classic', price: 0, color: '#ffffff', stroke: '#38bdf8' },
-            { id: 'gold', price: 50, color: '#fbbf24', stroke: '#d97706' },
-            { id: 'fire', price: 100, color: '#ef4444', stroke: '#b91c1c' },
-            { id: 'neon', price: 150, color: '#10b981', stroke: '#047857' },
-            { id: 'galaxy', price: 250, color: '#8b5cf6', stroke: '#5b21b6' }
+            { id: 'classic', type: 'skin', price: 0, color: '#ffffff', stroke: '#38bdf8' },
+            { id: 'gold', type: 'skin', price: 50, color: '#fbbf24', stroke: '#d97706' },
+            { id: 'fire', type: 'skin', price: 100, color: '#ef4444', stroke: '#b91c1c' },
+            { id: 'neon', type: 'skin', price: 150, color: '#10b981', stroke: '#047857' },
+            { id: 'galaxy', type: 'skin', price: 250, color: '#8b5cf6', stroke: '#5b21b6' },
+            { id: 'default', type: 'song', price: 0 },
+            { id: 'stadium', type: 'song', price: 75 },
+            { id: 'latin', type: 'song', price: 120 },
+            { id: 'synth', type: 'song', price: 200 }
         ];
 
         let state = {
@@ -426,14 +541,16 @@
             coins: parseInt(localStorage.getItem('jugg_coins') || '100'),
             bestScore: parseInt(localStorage.getItem('jugg_best') || '0'),
             selectedSkin: localStorage.getItem('jugg_skin') || 'classic',
-            unlockedSkins: JSON.parse(localStorage.getItem('jugg_unlocked') || '["classic"]'),
+            selectedSong: localStorage.getItem('jugg_song') || 'default',
+            unlockedSkins: JSON.parse(localStorage.getItem('jugg_unlocked') || '["classic", "default"]'),
             difficulty: localStorage.getItem('jugg_diff') || 'medium',
             mode: 'solo',
             tourStage: 0,
             score: 0,
             botScore: 0,
             isPlaying: false,
-            isPaused: false
+            isPaused: false,
+            activeTab: 'skins'
         };
 
         function applyLanguage() {
@@ -526,25 +643,35 @@
             const container = document.getElementById('shop-items-container');
             container.innerHTML = '';
 
-            shopItems.forEach(item => {
+            const filteredItems = shopItems.filter(item => state.activeTab === 'skins' ? item.type === 'skin' : item.type === 'song');
+
+            filteredItems.forEach(item => {
                 const isUnlocked = state.unlockedSkins.includes(item.id);
-                const isSelected = state.selectedSkin === item.id;
-                const itemName = t.skins[item.id] || item.id;
+                const isSelected = (item.type === 'skin' && state.selectedSkin === item.id) || (item.type === 'song' && state.selectedSong === item.id);
+                const itemName = item.type === 'skin' ? t.skins[item.id] : t.songs[item.id];
 
                 let btnHtml = '';
                 if (isSelected) {
                     btnHtml = `<span class="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-3 py-2 rounded-xl border border-emerald-500/40">${t.equipped}</span>`;
                 } else if (isUnlocked) {
-                    btnHtml = `<button onclick="selectSkin('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl btn-bounce text-xs">${t.select}</button>`;
+                    btnHtml = `<button onclick="selectItem('${item.id}', '${item.type}')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl btn-bounce text-xs">${t.select}</button>`;
                 } else {
-                    btnHtml = `<button onclick="buySkin('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs flex items-center gap-1"><span>${t.buy}</span><i class="fa-solid fa-coins"></i><span>${item.price}</span></button>`;
+                    btnHtml = `<button onclick="buyItem('${item.id}', ${item.price}, '${item.type}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs flex items-center gap-1"><span>${t.buy}</span><i class="fa-solid fa-coins"></i><span>${item.price}</span></button>`;
                 }
 
                 const div = document.createElement('div');
                 div.className = 'bg-slate-800/80 p-4 rounded-2xl flex justify-between items-center border border-slate-700';
+                
+                let iconHtml = '';
+                if (item.type === 'skin') {
+                    iconHtml = `<div class="w-10 h-10 rounded-full flex items-center justify-center border-2" style="background-color: ${item.color}; border-color: ${item.stroke};"></div>`;
+                } else {
+                    iconHtml = `<div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400 text-lg"><i class="fa-solid fa-music"></i></div>`;
+                }
+
                 div.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center border-2" style="background-color: ${item.color}; border-color: ${item.stroke};"></div>
+                        ${iconHtml}
                         <div>
                             <div class="font-bold text-base">${itemName}</div>
                             <div class="text-xs text-slate-400">${isUnlocked ? t.owned : t.priceTag + ' ' + item.price}</div>
@@ -556,20 +683,28 @@
             });
         }
 
-        window.selectSkin = function(id) {
-            state.selectedSkin = id;
-            localStorage.setItem('jugg_skin', id);
+        window.selectItem = function(id, type) {
+            if (type === 'skin') {
+                state.selectedSkin = id;
+                localStorage.setItem('jugg_skin', id);
+            } else {
+                state.selectedSong = id;
+                localStorage.setItem('jugg_song', id);
+            }
             renderShop();
         }
 
-        window.buySkin = function(id, price) {
+        window.buyItem = function(id, price, type) {
             const t = translations[state.lang] || translations.he;
             if (state.coins >= price) {
                 state.coins -= price;
                 state.unlockedSkins.push(id);
-                state.selectedSkin = id;
+                if (type === 'skin') state.selectedSkin = id;
+                else state.selectedSong = id;
+
                 localStorage.setItem('jugg_coins', state.coins.toString());
-                localStorage.setItem('jugg_skin', id);
+                localStorage.setItem('jugg_skin', state.selectedSkin);
+                localStorage.setItem('jugg_song', state.selectedSong);
                 localStorage.setItem('jugg_unlocked', JSON.stringify(state.unlockedSkins));
                 updateHUD();
                 renderShop();
@@ -577,6 +712,20 @@
                 alert(t.noCoins);
             }
         }
+
+        document.getElementById('shop-tab-skins').addEventListener('click', () => {
+            state.activeTab = 'skins';
+            document.getElementById('shop-tab-skins').className = 'flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs btn-bounce';
+            document.getElementById('shop-tab-songs').className = 'flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs btn-bounce';
+            renderShop();
+        });
+
+        document.getElementById('shop-tab-songs').addEventListener('click', () => {
+            state.activeTab = 'songs';
+            document.getElementById('shop-tab-songs').className = 'flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs btn-bounce';
+            document.getElementById('shop-tab-skins').className = 'flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs btn-bounce';
+            renderShop();
+        });
 
         function setPaddlePos(clientX) {
             paddle.x = clientX - paddle.width / 2;
@@ -620,6 +769,8 @@
                 let hitOffset = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
                 ball.vx += hitOffset * 5;
 
+                playSound('bounce');
+
                 state.score++;
                 state.coins += 1;
                 localStorage.setItem('jugg_coins', state.coins.toString());
@@ -644,6 +795,7 @@
             }
 
             if (ball.y - ball.radius > canvas.height) {
+                playSound('drop');
                 endGame();
             }
         }
@@ -702,11 +854,13 @@
             document.getElementById('hud').classList.remove('hidden');
 
             resetGame();
+            startBackgroundMusic();
         }
 
         function winStage() {
             const t = translations[state.lang] || translations.he;
             state.isPlaying = false;
+            stopBackgroundMusic();
             state.tourStage++;
             if (state.tourStage > 2) {
                 alert(t.winTour);
@@ -722,6 +876,7 @@
 
         function endGame() {
             state.isPlaying = false;
+            stopBackgroundMusic();
             if (state.score > state.bestScore) {
                 state.bestScore = state.score;
                 localStorage.setItem('jugg_best', state.bestScore.toString());
@@ -733,7 +888,6 @@
             document.getElementById('hud').classList.add('hidden');
         }
 
-        // Language Button Listener
         document.getElementById('lang-btn').addEventListener('click', () => {
             let idx = langOrder.indexOf(state.lang);
             state.lang = langOrder[(idx + 1) % langOrder.length];
@@ -742,13 +896,20 @@
             renderShop();
         });
 
-        // Difficulty Button Listener
         document.getElementById('diff-btn').addEventListener('click', () => {
             if (state.difficulty === 'easy') state.difficulty = 'medium';
             else if (state.difficulty === 'medium') state.difficulty = 'hard';
             else state.difficulty = 'easy';
             localStorage.setItem('jugg_diff', state.difficulty);
             updateHUD();
+        });
+
+        document.getElementById('music-toggle-btn').addEventListener('click', () => {
+            if (isMusicPlaying) {
+                stopBackgroundMusic();
+            } else {
+                startBackgroundMusic();
+            }
         });
 
         document.getElementById('mode-solo-btn').addEventListener('click', () => startGame('solo'));
@@ -784,9 +945,10 @@
 
         document.getElementById('pause-btn').addEventListener('click', () => {
             state.isPaused = !state.isPaused;
+            if (state.isPaused) stopBackgroundMusic();
+            else startBackgroundMusic();
         });
 
-        // Initialize
         applyLanguage();
         updateHUD();
         requestAnimationFrame(render);
