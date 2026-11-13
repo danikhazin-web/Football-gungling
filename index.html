@@ -3,956 +3,632 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מלך ההקפצות - משחק כדורגל</title>
+    <title id="page-title">מלך ההקפצות - משחק כדורגל</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="הקפצות">
     <meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
         * {
             font-family: 'Rubik', sans-serif;
             user-select: none;
             -webkit-user-select: none;
-            box-sizing: border-box;
+            touch-action: manipulation;
         }
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+        body {
             background-color: #0f172a;
-        }
-        canvas {
-            display: block;
-            touch-action: none;
+            color: #f8fafc;
+            overflow: hidden;
+            position: fixed;
             width: 100%;
             height: 100%;
         }
-        .custom-glass {
-            background: rgba(15, 23, 42, 0.94);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .canvas-container {
+            touch-action: none;
         }
-        .btn-bounce {
-            transition: transform 0.1s ease, background-color 0.2s ease;
-            cursor: pointer;
+        @keyframes popUp {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .btn-bounce:active {
-            transform: scale(0.95);
+        .modal-animate {
+            animation: popUp 0.25s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen w-screen flex flex-col justify-between overflow-hidden">
+<body class="flex flex-col h-full justify-between">
 
-    <div id="game-container" class="relative w-full h-full flex items-center justify-center overflow-hidden">
-        <canvas id="gameCanvas"></canvas>
+    <!-- Header / Top Bar -->
+    <header class="flex justify-between items-center p-4 bg-slate-900/80 backdrop-blur border-b border-slate-800 z-10">
+        <div class="flex items-center gap-2 bg-slate-800/90 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner">
+            <i class="fa-solid fa-coins text-yellow-400 text-lg"></i>
+            <span id="coins-display" class="font-extrabold text-yellow-400 text-lg">75</span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <!-- Difficulty Selector -->
+            <button id="difficulty-btn" onclick="toggleDifficulty()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-full border border-slate-700 text-xs font-semibold text-amber-400 transition">
+                <i class="fa-solid fa-bolt"></i>
+                <span id="diff-text">בינוני</span>
+            </button>
+            
+            <!-- Language Selector -->
+            <button onclick="toggleLanguage()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-full border border-slate-700 text-xs font-semibold text-slate-300 transition">
+                <i class="fa-solid fa-globe text-cyan-400"></i>
+                <span id="lang-text">עברית</span>
+            </button>
+        </div>
+    </header>
 
-        <!-- HUD -->
-        <div id="hud" class="absolute top-0 left-0 right-0 p-4 z-10 flex justify-between items-start hidden pointer-events-none">
-            <div class="flex flex-col gap-2 pointer-events-auto">
-                <div class="custom-glass px-4 py-2 rounded-2xl flex items-center gap-3 border-l-4 border-emerald-500 shadow-lg">
-                    <i class="fa-solid fa-trophy text-amber-400 text-xl"></i>
-                    <div>
-                        <div id="hud-score-label" class="text-xs text-slate-400 font-bold">הקפצות</div>
-                        <div id="hud-score" class="text-2xl font-black text-emerald-400">0</div>
-                    </div>
-                </div>
-                <div id="hud-tournament-tag" class="hidden custom-glass px-3 py-1 rounded-xl text-xs font-bold text-amber-300">
-                    <span id="stage-prefix">שלב:</span> <span id="tour-stage-num">רבע גמר</span>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 pointer-events-auto">
-                <div class="custom-glass px-3 py-2 rounded-2xl flex items-center gap-2 border-r-4 border-amber-400">
-                    <span id="hud-coins" class="text-lg font-black text-amber-400">0</span>
-                    <i class="fa-solid fa-coins text-amber-400"></i>
-                </div>
-                <button id="music-toggle-btn" class="custom-glass w-10 h-10 rounded-2xl flex items-center justify-center text-amber-400 hover:text-white btn-bounce">
-                    <i id="music-icon" class="fa-solid fa-music"></i>
-                </button>
-                <button id="pause-btn" class="custom-glass w-10 h-10 rounded-2xl flex items-center justify-center text-slate-300 hover:text-white btn-bounce">
-                    <i class="fa-solid fa-pause"></i>
-                </button>
-            </div>
+    <!-- Main Screen / Menu -->
+    <main id="main-menu" class="flex-1 flex flex-col justify-center items-center p-6 text-center max-w-md mx-auto w-full z-10">
+        <div class="mb-6">
+            <span id="badge-subtitle" class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                סימולטור הקפצות ריאליסטי
+            </span>
+            <h1 id="main-title" class="text-4xl font-black mt-3 bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">
+                מלך ההקפצות
+            </h1>
+            <p id="main-desc" class="text-slate-400 text-sm mt-1">שליטה בכדור, תחרויות ומוזיקה ברקע!</p>
         </div>
 
-        <!-- MAIN MENU -->
-        <div id="menu-overlay" class="absolute inset-0 z-20 flex flex-col justify-between p-5 overflow-y-auto pointer-events-auto">
-            <div class="flex justify-between items-center w-full max-w-md mx-auto pt-1 gap-2">
-                <div class="flex gap-2">
-                    <button id="lang-btn" class="custom-glass px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 btn-bounce">
-                        <i class="fa-solid fa-globe text-sky-400"></i>
-                        <span id="lang-label">עברית</span>
-                    </button>
-                    <button id="diff-btn" class="custom-glass px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 btn-bounce">
-                        <i class="fa-solid fa-bolt text-amber-400"></i>
-                        <span id="diff-label">בינוני</span>
-                    </button>
-                </div>
-                <div class="custom-glass px-3.5 py-2 rounded-2xl flex items-center gap-2 border-amber-400/30 border">
-                    <span id="menu-coins" class="text-lg font-black text-amber-400">0</span>
-                    <i class="fa-solid fa-coins text-amber-400"></i>
-                </div>
-            </div>
-
-            <div class="text-center my-4">
-                <span id="txt-badge" class="inline-block bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-black px-4 py-1.5 rounded-full mb-2 tracking-wide">
-                    סימולטור הקפצות ריאליסטי
-                </span>
-                <h1 id="txt-title" class="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 drop-shadow-md">
-                    מלך ההקפצות
-                </h1>
-                <p id="txt-subtitle" class="text-slate-400 text-xs sm:text-sm mt-1.5 max-w-xs mx-auto">
-                    שליטה בכדור, תחרויות וקירות צדדיים חכמים!
-                </p>
-            </div>
-
-            <div class="flex flex-col gap-3 w-full max-w-md mx-auto pb-4">
-                <button id="mode-solo-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-emerald-400/30 btn-bounce">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div class="text-start">
-                            <div id="txt-solo-title" class="font-extrabold text-base sm:text-lg">שבירת שיא (סולו)</div>
-                            <div id="txt-solo-desc" class="text-xs text-emerald-100/75">הקפץ כמה שיותר בלי להפיל</div>
-                        </div>
+        <div class="w-full space-y-3">
+            <button onclick="startGame('solo')" class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-2xl shadow-lg shadow-teal-900/30 transition transform active:scale-95 border border-teal-400/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl text-white">
+                        <i class="fa-solid fa-user"></i>
                     </div>
-                    <i class="fa-solid fa-chevron-left text-slate-200 rtl:rotate-0 ltr:rotate-180"></i>
-                </button>
-
-                <button id="mode-1v1-btn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-indigo-400/30 btn-bounce">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-user-ninja"></i>
-                        </div>
-                        <div class="text-start">
-                            <div id="txt-1v1-title" class="font-extrabold text-base sm:text-lg">תחרות 1 נגד 1</div>
-                            <div id="txt-1v1-desc" class="text-xs text-indigo-100/75">דו-קרב מול בוט חכם</div>
-                        </div>
+                    <div class="text-right">
+                        <h3 id="btn-solo-title" class="font-bold text-white text-base">שבירת שיא (סולו)</h3>
+                        <p id="btn-solo-desc" class="text-xs text-teal-100">הקפץ כמה שיותר בלי להפיל</p>
                     </div>
-                    <i class="fa-solid fa-chevron-left text-slate-200 rtl:rotate-0 ltr:rotate-180"></i>
-                </button>
-
-                <button id="mode-tour-btn" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 p-4 rounded-2xl flex items-center justify-between shadow-lg border border-amber-400/30 btn-bounce">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-trophy text-amber-200"></i>
-                        </div>
-                        <div class="text-start">
-                            <div id="txt-tour-title" class="font-extrabold text-base sm:text-lg">טורניר אלופים</div>
-                            <div id="txt-tour-desc" class="text-xs text-amber-100/75">שלבי נוקאאוט עד הגביע הגדול</div>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-left text-slate-200 rtl:rotate-0 ltr:rotate-180"></i>
-                </button>
-
-                <!-- BOTTOM NAV -->
-                <div class="flex justify-around items-center w-full pt-3 mt-1 border-t border-slate-800">
-                    <button id="shop-btn" class="flex flex-col items-center gap-1 text-slate-300 hover:text-amber-400 btn-bounce p-2">
-                        <i class="fa-solid fa-store text-xl text-amber-400"></i>
-                        <span id="txt-shop-btn" class="text-xs font-bold">חנות סקינים ושירים</span>
-                    </button>
-                    <button id="stats-btn" class="flex flex-col items-center gap-1 text-slate-300 hover:text-emerald-400 btn-bounce p-2">
-                        <i class="fa-solid fa-award text-xl text-emerald-400"></i>
-                        <span id="txt-stats-btn" class="text-xs font-bold">הישגים</span>
-                    </button>
                 </div>
+                <i class="fa-solid fa-chevron-left text-white/70"></i>
+            </button>
+
+            <button onclick="startGame('pvp')" class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl shadow-lg shadow-indigo-900/30 transition transform active:scale-95 border border-indigo-400/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl text-white">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="text-right">
+                        <h3 id="btn-pvp-title" class="font-bold text-white text-base">תחרות 1 נגד 1</h3>
+                        <p id="btn-pvp-desc" class="text-xs text-blue-100">דו-קרב מול בוט חכם</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-left text-white/70"></i>
+            </button>
+
+            <button onclick="startGame('tournament')" class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 rounded-2xl shadow-lg shadow-orange-900/30 transition transform active:scale-95 border border-orange-400/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl text-white">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="text-right">
+                        <h3 id="btn-tourn-title" class="font-bold text-white text-base">טורניר אלופים</h3>
+                        <p id="btn-tourn-desc" class="text-xs text-amber-100">שלבי נוקאאוט עד הגביע הגדול</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-left text-white/70"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- Game Arena (Canvas Screen) -->
+    <div id="game-screen" class="hidden flex-1 relative canvas-container flex flex-col items-center justify-center overflow-hidden">
+        <!-- HUD Over Canvas -->
+        <div class="absolute top-4 inset-x-4 flex justify-between items-center z-10 px-2 pointer-events-none">
+            <button onclick="returnToMenu()" class="pointer-events-auto bg-slate-800/80 hover:bg-slate-700 text-white w-10 h-10 rounded-full flex items-center justify-center border border-slate-700 shadow transition">
+                <i class="fa-solid fa-house"></i>
+            </button>
+            <div class="bg-slate-900/80 backdrop-blur px-5 py-2 rounded-2xl border border-slate-800 text-center shadow-lg">
+                <span id="score-label" class="text-xs text-slate-400 block">הקפצות</span>
+                <span id="current-score" class="text-2xl font-black text-cyan-400">0</span>
             </div>
+            <div class="w-10"></div>
         </div>
 
-        <!-- SHOP OVERLAY -->
-        <div id="shop-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden pointer-events-auto">
+        <canvas id="gameCanvas" class="w-full h-full block bg-slate-950"></canvas>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="flex justify-around items-center p-3 bg-slate-900/90 backdrop-blur border-t border-slate-800 z-10 max-w-md mx-auto w-full">
+        <button onclick="openModal('achievements-modal')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition">
+            <i class="fa-solid fa-medal text-lg"></i>
+            <span id="nav-achievements" class="text-[10px] font-medium">הישגים</span>
+        </button>
+        <button onclick="openModal('shop-modal')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-yellow-400 transition">
+            <i class="fa-solid fa-store text-lg"></i>
+            <span id="nav-shop" class="text-[10px] font-medium">חנות</span>
+        </button>
+    </nav>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 modal-animate shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4">
-                <h2 id="txt-shop-header" class="text-2xl font-black text-amber-400">חנות סקינים ושירים</h2>
-                <button id="close-shop-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
+                <h2 id="shop-title" class="text-xl font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-store text-yellow-400"></i> חנות פריטים
+                </h2>
+                <button onclick="closeModal('shop-modal')" class="text-slate-400 hover:text-white p-2">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="mb-4 flex items-center gap-2 text-sm text-amber-300 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-                <i class="fa-solid fa-coins"></i>
-                <span id="txt-shop-balance">יתרה:</span> <span id="shop-coins-display" class="font-black">100</span>
+            <!-- Tabs -->
+            <div class="flex gap-2 mb-4 bg-slate-950 p-1 rounded-xl">
+                <button onclick="switchShopTab('skins')" id="tab-skins-btn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-cyan-500 text-white transition">סקינים</button>
+                <button onclick="switchShopTab('songs')" id="tab-songs-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 transition">מוזיקה</button>
             </div>
-            <div class="flex gap-2 mb-4">
-                <button id="shop-tab-skins" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs btn-bounce">כדורים</button>
-                <button id="shop-tab-songs" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs btn-bounce">שירים ברקע</button>
-            </div>
-            <div id="shop-items-container" class="flex-1 overflow-y-auto space-y-3 pb-4">
-                <!-- Populated dynamically -->
+            <!-- Tab Content -->
+            <div id="shop-content-area" class="overflow-y-auto flex-1 space-y-3 pr-1">
+                <!-- Dynamically populated via JS -->
             </div>
         </div>
+    </div>
 
-        <!-- STATS OVERLAY -->
-        <div id="stats-overlay" class="absolute inset-0 z-30 custom-glass flex flex-col p-6 hidden pointer-events-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="txt-stats-header" class="text-2xl font-black text-emerald-400">הישגים ושיאים</h2>
-                <button id="close-stats-btn" class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center btn-bounce">
+    <!-- Achievements Modal -->
+    <div id="achievements-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 modal-animate shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="ach-title" class="text-xl font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-medal text-cyan-400"></i> הישגים ואתגרים
+                </h2>
+                <button onclick="closeModal('achievements-modal')" class="text-slate-400 hover:text-white p-2">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
-                <div id="txt-best-label" class="text-sm text-slate-400">שיא הקפצות אישי</div>
-                <div id="stats-best-score" class="text-4xl font-black text-amber-400 mt-1">0</div>
-            </div>
-        </div>
-
-        <!-- GAME OVER -->
-        <div id="gameover-overlay" class="absolute inset-0 z-30 flex items-center justify-center p-6 custom-glass hidden pointer-events-auto">
-            <div class="bg-slate-900/95 border border-slate-700/60 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl">
-                <div class="w-20 h-20 mx-auto rounded-full bg-red-500/20 text-red-500 flex items-center justify-center text-4xl mb-4 border border-red-500/40">
-                    <i class="fa-solid fa-burst"></i>
-                </div>
-
-                <h2 id="txt-go-title" class="text-3xl font-black text-white mb-1">הכדור נפל!</h2>
-                <p id="txt-go-sub" class="text-slate-400 text-sm mb-6">נסה שוב ושבור את השיא</p>
-
-                <div class="bg-slate-800/80 rounded-2xl p-4 mb-6 flex justify-around items-center border border-slate-700/40">
-                    <div>
-                        <div id="txt-go-score" class="text-xs text-slate-400 font-bold mb-1">תוצאה</div>
-                        <div id="go-score" class="text-3xl font-black text-emerald-400">0</div>
-                    </div>
-                    <div class="w-px h-10 bg-slate-700"></div>
-                    <div>
-                        <div id="txt-go-best" class="text-xs text-slate-400 font-bold mb-1">שיא אישי</div>
-                        <div id="go-best" class="text-3xl font-black text-amber-400">0</div>
-                    </div>
-                </div>
-
-                <div class="flex gap-3">
-                    <button id="go-home-btn" class="w-1/3 bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold btn-bounce border border-slate-600">
-                        <i class="fa-solid fa-house"></i>
-                    </button>
-                    <button id="go-restart-btn" class="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-500 font-extrabold py-3 rounded-xl text-slate-950 btn-bounce shadow-lg">
-                        <span id="txt-restart-btn">שחק שוב</span>
-                    </button>
-                </div>
+            <div id="achievements-list" class="overflow-y-auto flex-1 space-y-3 pr-1">
+                <!-- Dynamically populated via JS -->
             </div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Audio System using Web Audio API
-        let audioCtx = null;
-        let isMusicPlaying = false;
-        let musicInterval = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playSound(type) {
-            try {
-                initAudio();
-                if (!audioCtx) return;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                let now = audioCtx.currentTime;
-                if (type === 'bounce') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-                    osc.start(now);
-                    osc.stop(now + 0.1);
-                } else if (type === 'drop') {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(200, now);
-                    osc.frequency.exponentialRampToValueAtTime(60, now + 0.3);
-                    gain.gain.setValueAtTime(0.4, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                }
-            } catch(e) {}
-        }
-
-        // Background Music Player based on Selected Song
-        function startBackgroundMusic() {
-            if (isMusicPlaying) return;
-            initAudio();
-            if (!audioCtx) return;
-            isMusicPlaying = true;
-            document.getElementById('music-icon').className = 'fa-solid fa-music text-emerald-400';
-
-            let notes = [261.63, 329.63, 392.00, 523.25]; // Default upbeat notes
-            if (state.selectedSong === 'stadium') notes = [220, 247, 293.66, 329.63, 440];
-            else if (state.selectedSong === 'latin') notes = [293.66, 370, 440, 554.37, 587.33];
-            else if (state.selectedSong === 'synth') notes = [196, 246.94, 293.66, 392, 493.88];
-
-            let step = 0;
-            musicInterval = setInterval(() => {
-                if (!isMusicPlaying || !state.isPlaying) return;
-                try {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    let now = audioCtx.currentTime;
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(notes[step % notes.length], now);
-                    gain.gain.setValueAtTime(0.08, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
-                    step++;
-                } catch(e) {}
-            }, 300);
-        }
-
-        function stopBackgroundMusic() {
-            isMusicPlaying = false;
-            if (musicInterval) clearInterval(musicInterval);
-            document.getElementById('music-icon').className = 'fa-solid fa-music text-amber-400';
-        }
-
-        // Translations Dictionary
+        // --- TRANSLATIONS ---
         const translations = {
             he: {
-                dir: 'rtl',
-                langName: 'עברית',
-                badge: 'סימולטור הקפצות ריאליסטי',
-                title: 'מלך ההקפצות',
-                subtitle: 'שליטה בכדור, תחרויות ומוזיקה ברקע!',
-                soloTitle: 'שבירת שיא (סולו)',
-                soloDesc: 'הקפץ כמה שיותר בלי להפיל',
-                v1Title: 'תחרות 1 נגד 1',
-                v1Desc: 'דו-קרב מול בוט חכם',
-                tourTitle: 'טורניר אלופים',
-                tourDesc: 'שלבי נוקאאוט עד הגביע הגדול',
-                shopBtn: 'חנות סקינים ושירים',
-                statsBtn: 'הישגים',
-                shopHeader: 'חנות סקינים ושירים',
-                shopBalance: 'יתרת מטבעות:',
-                statsHeader: 'הישגים ושיאים',
-                bestLabel: 'שיא הקפצות אישי',
-                goTitle: 'הכדור נפל!',
-                goSub: 'נסה שוב ושבור את השיא',
-                goScore: 'תוצאה',
-                goBest: 'שיא אישי',
-                restartBtn: 'שחק שוב',
-                hudScore: 'הקפצות',
-                stagePrefix: 'שלב:',
-                stages: ['רבע גמר', 'חצי גמר', 'גמר הגביע!'],
-                diffs: { easy: 'קל', medium: 'בינוני', hard: 'קשה' },
-                equipped: 'בשימוש',
-                select: 'בחר',
-                buy: 'קנה',
-                owned: 'בבעלותך',
-                priceTag: 'מחיר:',
-                noCoins: 'אין לך מספיק מטבעות!',
-                winTour: 'כל הכבוד! זכית בגביע האליפות!',
-                nextStage: 'עלית שלב בטורניר! עוברים לשלב הבא.',
-                skins: {
-                    classic: 'כדור קלאסי',
-                    gold: 'כדור זהב מלכותי',
-                    fire: 'כדור אש לוהט',
-                    neon: 'כדור ניאון ירוק',
-                    galaxy: 'כדור גלקסיה סגול'
-                },
-                songs: {
-                    default: 'מנגינה קלאסית (חינם)',
-                    stadium: 'המנון אצטדיונים',
-                    latin: 'קצב לטיני קצבי',
-                    synth: 'סינת\'ווייב אלקטרוני'
-                }
+                title: "מלך ההקפצות - משחק כדורגל",
+                subtitle: "סימולטור הקפצות ריאליסטי",
+                mainTitle: "מלך ההקפצות",
+                mainDesc: "שליטה בכדור, תחרויות ומוזיקה ברקע!",
+                soloTitle: "שבירת שיא (סולו)",
+                soloDesc: "הקפץ כמה שיותר בלי להפיל",
+                pvpTitle: "תחרות 1 נגד 1",
+                pvpDesc: "דו-קרב מול בוט חכם",
+                tournTitle: "טורניר אלופים",
+                tournDesc: "שלבי נוקאאוט עד הגביע הגדול",
+                achievements: "הישגים",
+                shop: "חנות",
+                score: "הקפצות",
+                diffs: ["קל", "בינוני", "קשה"],
+                skinsTab: "סקינים",
+                songsTab: "מוזיקה"
             },
             en: {
-                dir: 'ltr',
-                langName: 'English',
-                badge: 'REALISTIC JUGGLING SIMULATOR',
-                title: 'Juggle King',
-                subtitle: 'Ball control, tournaments & background music!',
-                soloTitle: 'High Score (Solo)',
-                soloDesc: 'Juggle as much as you can without dropping',
-                v1Title: '1v1 Duel',
-                v1Desc: 'Battle against a smart AI bot',
-                tourTitle: 'Champions Tournament',
-                tourDesc: 'Knockout stages to the grand trophy',
-                shopBtn: 'Shop (Skins & Songs)',
-                statsBtn: 'Achievements',
-                shopHeader: 'Skin & Song Shop',
-                shopBalance: 'Balance:',
-                statsHeader: 'Records & Stats',
-                bestLabel: 'Personal Best Score',
-                goTitle: 'Ball Dropped!',
-                goSub: 'Try again and beat your record',
-                goScore: 'Score',
-                goBest: 'Best',
-                restartBtn: 'Play Again',
-                hudScore: 'Juggles',
-                stagePrefix: 'Stage:',
-                stages: ['Quarter Final', 'Semi Final', 'Grand Final!'],
-                diffs: { easy: 'Easy', medium: 'Medium', hard: 'Hard' },
-                equipped: 'Equipped',
-                select: 'Select',
-                buy: 'Buy',
-                owned: 'Owned',
-                priceTag: 'Price:',
-                noCoins: 'Not enough coins!',
-                winTour: 'Congratulations! You won the Championship Trophy!',
-                nextStage: 'Stage cleared! Advancing to the next round.',
-                skins: {
-                    classic: 'Classic Ball',
-                    gold: 'Royal Gold Ball',
-                    fire: 'Blazing Fire Ball',
-                    neon: 'Neon Green Ball',
-                    galaxy: 'Purple Galaxy Ball'
-                },
-                songs: {
-                    default: 'Classic Tune (Free)',
-                    stadium: 'Stadium Anthem',
-                    latin: 'Latin Rhythm',
-                    synth: 'Electronic Synthwave'
-                }
+                title: "Juggling King - Soccer Game",
+                subtitle: "Realistic Juggling Simulator",
+                mainTitle: "Juggling King",
+                mainDesc: "Ball control, tournaments & background music!",
+                soloTitle: "Solo Record",
+                soloDesc: "Keep the ball up as long as you can",
+                pvpTitle: "1v1 Match",
+                pvpDesc: "Duel against a smart bot",
+                tournTitle: "Champions Tournament",
+                tournDesc: "Knockout stages to the big cup",
+                achievements: "Achievements",
+                shop: "Shop",
+                score: "Juggles",
+                diffs: ["Easy", "Medium", "Hard"],
+                skinsTab: "Skins",
+                songsTab: "Music"
             },
             ru: {
-                dir: 'ltr',
-                langName: 'Русский',
-                badge: 'РЕАЛИСТИЧНЫЙ СИМУЛЯТОР ЧЕКАНКИ',
-                title: 'Король Чеканки',
-                subtitle: 'Контроль мяча, турниры и фоновая музыка!',
-                soloTitle: 'Рекорд (Соло)',
-                soloDesc: 'Чекань мяч как можно дольше',
-                v1Title: 'Дуэль 1 на 1',
-                v1Desc: 'Сразись против умного бота',
-                tourTitle: 'Турнир Чемпионов',
-                tourDesc: 'Этапы на выбывание до финала',
-                shopBtn: 'Магазин (Мячи и Музыка)',
-                statsBtn: 'Достижения',
-                shopHeader: 'Магазин скинов и музыки',
-                shopBalance: 'Баланс:',
-                statsHeader: 'Рекорды',
-                bestLabel: 'Личный рекорд',
-                goTitle: 'Мяч упал!',
-                goSub: 'Попробуй снова побить рекорд',
-                goScore: 'Счёт',
-                goBest: 'Рекорд',
-                restartBtn: 'Играть снова',
-                hudScore: 'Удары',
-                stagePrefix: 'Этап:',
-                stages: ['Четвертьфинал', 'Полуфинал', 'Финал!'],
-                diffs: { easy: 'Легко', medium: 'Средне', hard: 'Сложно' },
-                equipped: 'Выбрано',
-                select: 'Выбрать',
-                buy: 'Купить',
-                owned: 'Куплено',
-                priceTag: 'Цена:',
-                noCoins: 'Недостаточно монет!',
-                winTour: 'Поздравляем! Вы выиграли Кубок Чемпионов!',
-                nextStage: 'Этап пройден! Переходим дальше.',
-                skins: {
-                    classic: 'Классический мяч',
-                    gold: 'Королевский золотой',
-                    fire: 'Огненный мяч',
-                    neon: 'Неоновый зелёный',
-                    galaxy: 'Галактический мяч'
-                },
-                songs: {
-                    default: 'Классическая (Бесплатно)',
-                    stadium: 'Гимн стадиона',
-                    latin: 'Латинский ритм',
-                    synth: 'Синтвейв'
-                }
+                title: "Король Жонглирования - Футбол",
+                subtitle: "Реалистичный симулятор",
+                mainTitle: "Жонглер",
+                mainDesc: "Контроль мяча, турниры и музыка!",
+                soloTitle: "Соло рекорд",
+                soloDesc: "Жонглируйте как можно дольше",
+                pvpTitle: "Матч 1 на 1",
+                pvpDesc: "Дуэль против умного бота",
+                tournTitle: "Турнир чемпионов",
+                tournDesc: "Плей-офф до главного кубка",
+                achievements: "Достижения",
+                shop: "Магазин",
+                score: "Удары",
+                diffs: ["Легко", "Средне", "Сложно"],
+                skinsTab: "Скины",
+                songsTab: "Музыка"
             },
             fr: {
-                dir: 'ltr',
-                langName: 'Français',
-                badge: 'SIMULATEUR DE JONGLAGE RÉALISTE',
-                title: 'Roi du Jongle',
-                subtitle: 'Contrôle du ballon, tournois et musique de fond !',
-                soloTitle: 'Record (Solo)',
-                soloDesc: 'Jonglez le plus longtemps possible',
-                v1Title: 'Duel 1 contre 1',
-                v1Desc: 'Affrontez un bot intelligent',
-                tourTitle: 'Tournoi des Champions',
-                tourDesc: 'Phases éliminatoires jusqu’à la coupe',
-                shopBtn: 'Boutique (Skins & Chansons)',
-                statsBtn: 'Succès',
-                shopHeader: 'Boutique Skins & Musique',
-                shopBalance: 'Solde :',
-                statsHeader: 'Records',
-                bestLabel: 'Meilleur Score Personnel',
-                goTitle: 'Ballon Tombé !',
-                goSub: 'Réessayez pour battre votre record',
-                goScore: 'Score',
-                goBest: 'Record',
-                restartBtn: 'Rejouer',
-                hudScore: 'Jongles',
-                stagePrefix: 'Étape :',
-                stages: ['Quart de finale', 'Demi-finale', 'Grande Finale !'],
-                diffs: { easy: 'Facile', medium: 'Moyen', hard: 'Difficile' },
-                equipped: 'Équipé',
-                select: 'Choisir',
-                buy: 'Acheter',
-                owned: 'Possédé',
-                priceTag: 'Prix :',
-                noCoins: 'Pas assez de pièces !',
-                winTour: 'Félicitations ! Vous avez gagné le Trophée !',
-                nextStage: 'Étape validée ! Passage au tour suivant.',
-                skins: {
-                    classic: 'Ballon Classique',
-                    gold: 'Ballon Or Royal',
-                    fire: 'Ballon de Feu',
-                    neon: 'Ballon Néon Vert',
-                    galaxy: 'Ballon Galaxie'
-                },
-                songs: {
-                    default: 'Mélodie Classique (Gratuit)',
-                    stadium: 'Hymne du Stade',
-                    latin: 'Rythme Latin',
-                    synth: 'Synthwave Électronique'
-                }
+                title: "Roi du JG - Jeu de Foot",
+                subtitle: "Simulateur de JEL",
+                mainTitle: "Roi du Juggling",
+                mainDesc: "Contrôle du ballon, tournois et musique !",
+                soloTitle: "Record Solo",
+                soloDesc: "Gardez le ballon en l'air",
+                pvpTitle: "Match 1v1",
+                pvpDesc: "Duel contre un bot intelligent",
+                tournTitle: "Tournoi des Champions",
+                tournDesc: "Phase éliminatoire pour la coupe",
+                achievements: "Succès",
+                shop: "Boutique",
+                score: "Jongles",
+                diffs: ["Facile", "Moyen", "Difficile"],
+                skinsTab: "Skins",
+                songsTab: "Musique"
             }
         };
 
-        const langOrder = ['he', 'en', 'ru', 'fr'];
+        let currentLangIdx = 0;
+        const langs = ['he', 'en', 'ru', 'fr'];
+        let currentDiff = 1; // 0: Easy, 1: Med, 2: Hard
 
-        const shopItems = [
-            { id: 'classic', type: 'skin', price: 0, color: '#ffffff', stroke: '#38bdf8' },
-            { id: 'gold', type: 'skin', price: 50, color: '#fbbf24', stroke: '#d97706' },
-            { id: 'fire', type: 'skin', price: 100, color: '#ef4444', stroke: '#b91c1c' },
-            { id: 'neon', type: 'skin', price: 150, color: '#10b981', stroke: '#047857' },
-            { id: 'galaxy', type: 'skin', price: 250, color: '#8b5cf6', stroke: '#5b21b6' },
-            { id: 'default', type: 'song', price: 0 },
-            { id: 'stadium', type: 'song', price: 75 },
-            { id: 'latin', type: 'song', price: 120 },
-            { id: 'synth', type: 'song', price: 200 }
+        function toggleLanguage() {
+            currentLangIdx = (currentLangIdx + 1) % langs.length;
+            const l = langs[currentLangIdx];
+            document.getElementById('html-root').setAttribute('lang', l);
+            document.getElementById('html-root').setAttribute('dir', l === 'he' ? 'rtl' : 'ltr');
+            
+            const t = translations[l];
+            document.getElementById('page-title').innerText = t.title;
+            document.getElementById('badge-subtitle').innerText = t.subtitle;
+            document.getElementById('main-title').innerText = t.mainTitle;
+            document.getElementById('main-desc').innerText = t.mainDesc;
+            document.getElementById('btn-solo-title').innerText = t.soloTitle;
+            document.getElementById('btn-solo-desc').innerText = t.soloDesc;
+            document.getElementById('btn-pvp-title').innerText = t.pvpTitle;
+            document.getElementById('btn-pvp-desc').innerText = t.pvpDesc;
+            document.getElementById('btn-tourn-title').innerText = t.tournTitle;
+            document.getElementById('btn-tourn-desc').innerText = t.tournDesc;
+            document.getElementById('nav-achievements').innerText = t.achievements;
+            document.getElementById('nav-shop').innerText = t.shop;
+            document.getElementById('score-label').innerText = t.score;
+            document.getElementById('lang-text').innerText = l.toUpperCase();
+            document.getElementById('diff-text').innerText = t.diffs[currentDiff];
+        }
+
+        function toggleDifficulty() {
+            currentDiff = (currentDiff + 1) % 3;
+            const l = langs[currentLangIdx];
+            document.getElementById('diff-text').innerText = translations[l].diffs[currentDiff];
+        }
+
+        // --- GAME STATE & STORAGE ---
+        let gameState = {
+            coins: parseInt(localStorage.getItem('jj_coins') || '75'),
+            unlockedSkins: JSON.parse(localStorage.getItem('jj_skins') || '["classic"]'),
+            currentSkin: localStorage.getItem('jj_curr_skin') || 'classic',
+            unlockedSongs: JSON.parse(localStorage.getItem('jj_songs') || '["none"]'),
+            currentSong: localStorage.getItem('jj_curr_song') || 'none',
+            achievements: JSON.parse(localStorage.getItem('jj_achs') || '{"score50":false, "score100":false, "rich":false}')
+        };
+
+        function saveGame() {
+            localStorage.setItem('jj_coins', gameState.coins);
+            localStorage.setItem('jj_skins', JSON.stringify(gameState.unlockedSkins));
+            localStorage.setItem('jj_curr_skin', gameState.currentSkin);
+            localStorage.setItem('jj_songs', JSON.stringify(gameState.unlockedSongs));
+            localStorage.setItem('jj_curr_song', gameState.currentSong);
+            localStorage.setItem('jj_achs', JSON.stringify(gameState.achievements));
+            document.getElementById('coins-display').innerText = gameState.coins;
+        }
+
+        // --- SHOP & ACHIEVEMENTS DATA ---
+        const skinsList = [
+            id: 'classic', name: 'کלאסיק לבן-שחור', price: 0, color: '#ffffff', pattern: '#000000' },
+            { id: 'gold', name: 'כדור זהב יוקרתי', price: 100, color: '#f59e0b', pattern: '#d97706' },
+            { id: 'neon', name: 'ניאון סייבר', price: 200, color: '#06b6d4', pattern: '#3b82f6' },
+            { id: 'fire', name: 'להבת האש', price: 350, color: '#ef4444', pattern: '#b91c1c' }
         ];
 
-        let state = {
-            lang: localStorage.getItem('jugg_lang') || 'he',
-            coins: parseInt(localStorage.getItem('jugg_coins') || '100'),
-            bestScore: parseInt(localStorage.getItem('jugg_best') || '0'),
-            selectedSkin: localStorage.getItem('jugg_skin') || 'classic',
-            selectedSong: localStorage.getItem('jugg_song') || 'default',
-            unlockedSkins: JSON.parse(localStorage.getItem('jugg_unlocked') || '["classic", "default"]'),
-            difficulty: localStorage.getItem('jugg_diff') || 'medium',
-            mode: 'solo',
-            tourStage: 0,
-            score: 0,
-            botScore: 0,
-            isPlaying: false,
-            isPaused: false,
-            activeTab: 'skins'
-        };
+        const songsList = [
+            { id: 'none', name: 'ללא מוזיקה', price: 0 },
+            { id: 'beat1', name: 'קצב רחוב (Beat)', price: 50 },
+            { id: 'synth', name: 'אלקטרו סינת\'', price: 120 }
+        ];
 
-        function applyLanguage() {
-            const t = translations[state.lang] || translations.he;
-            const root = document.getElementById('html-root');
-            root.setAttribute('lang', state.lang);
-            root.setAttribute('dir', t.dir);
+        const achievementsList = [
+            { id: 'score50', title: 'שולט בכדור', desc: 'הגע ל-50 הקפצות ברצף', reward: 30, check: (s) => s.maxScore >= 50 },
+            { id: 'score100', title: 'אמן ההקפצות', desc: 'הגע ל-100 הקפצות ברצף', reward: 70, check: (s) => s.maxScore >= 100 },
+            { id: 'rich', title: 'אספן עשיר', desc: 'פתח לפחות סקין אחד בחנות', reward: 40, check: () => gameState.unlockedSkins.length > 1 }
+        ];
 
-            document.getElementById('lang-label').innerText = t.langName;
-            document.getElementById('diff-label').innerText = t.diffs[state.difficulty];
-            document.getElementById('txt-badge').innerText = t.badge;
-            document.getElementById('txt-title').innerText = t.title;
-            document.getElementById('txt-subtitle').innerText = t.subtitle;
-            document.getElementById('txt-solo-title').innerText = t.soloTitle;
-            document.getElementById('txt-solo-desc').innerText = t.soloDesc;
-            document.getElementById('txt-1v1-title').innerText = t.v1Title;
-            document.getElementById('txt-1v1-desc').innerText = t.v1Desc;
-            document.getElementById('txt-tour-title').innerText = t.tourTitle;
-            document.getElementById('txt-tour-desc').innerText = t.tourDesc;
-            document.getElementById('txt-shop-btn').innerText = t.shopBtn;
-            document.getElementById('txt-stats-btn').innerText = t.statsBtn;
-            document.getElementById('txt-shop-header').innerText = t.shopHeader;
-            document.getElementById('txt-shop-balance').innerText = t.shopBalance;
-            document.getElementById('txt-stats-header').innerText = t.statsHeader;
-            document.getElementById('txt-best-label').innerText = t.bestLabel;
-            document.getElementById('txt-go-title').innerText = t.goTitle;
-            document.getElementById('txt-go-sub').innerText = t.goSub;
-            document.getElementById('txt-go-score').innerText = t.goScore;
-            document.getElementById('txt-go-best').innerText = t.goBest;
-            document.getElementById('txt-restart-btn').innerText = t.restartBtn;
-            document.getElementById('hud-score-label').innerText = t.hudScore;
-            document.getElementById('stage-prefix').innerText = t.stagePrefix;
-            document.getElementById('tour-stage-num').innerText = t.stages[state.tourStage];
+        let maxScore = parseInt(localStorage.getItem('jj_max_score') || '0');
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'shop-modal') renderShop('skins');
+            if (id === 'achievements-modal') renderAchievements();
         }
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        const ball = { x: 0, y: 0, radius: 24, vx: 0, vy: 0, gravity: 0.4 };
-        const paddle = { x: 0, y: 0, width: 130, height: 22 };
-        const botPaddle = { x: 0, y: 80, width: 110, height: 20, speed: 4 };
-
-        function resetGame() {
-            resizeCanvas();
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height * 0.35;
-            
-            if (state.difficulty === 'easy') ball.gravity = 0.34;
-            else if (state.difficulty === 'medium') ball.gravity = 0.43;
-            else ball.gravity = 0.54;
-
-            ball.vx = (Math.random() - 0.5) * 3;
-            ball.vy = -1;
-
-            paddle.width = Math.min(canvas.width * 0.35, 140);
-            paddle.x = canvas.width / 2 - paddle.width / 2;
-            paddle.y = canvas.height - 140;
-
-            botPaddle.x = canvas.width / 2 - botPaddle.width / 2;
-
-            state.score = 0;
-            state.botScore = 0;
-            updateHUD();
-
-            const t = translations[state.lang] || translations.he;
-            if (state.mode === 'tour') {
-                document.getElementById('hud-tournament-tag').classList.remove('hidden');
-                document.getElementById('tour-stage-num').innerText = t.stages[state.tourStage];
+        function switchShopTab(tab) {
+            const skinsBtn = document.getElementById('tab-skins-btn');
+            const songsBtn = document.getElementById('tab-songs-btn');
+            if(tab === 'skins') {
+                skinsBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-cyan-500 text-white transition";
+                songsBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 transition";
+                renderShop('skins');
             } else {
-                document.getElementById('hud-tournament-tag').classList.add('hidden');
+                songsBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-cyan-500 text-white transition";
+                skinsBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 transition";
+                renderShop('songs');
             }
         }
 
-        function updateHUD() {
-            const t = translations[state.lang] || translations.he;
-            document.getElementById('hud-score').innerText = state.score;
-            document.getElementById('hud-coins').innerText = state.coins;
-            document.getElementById('menu-coins').innerText = state.coins;
-            document.getElementById('shop-coins-display').innerText = state.coins;
-            document.getElementById('stats-best-score').innerText = state.bestScore;
-            document.getElementById('diff-label').innerText = t.diffs[state.difficulty];
-        }
-
-        function renderShop() {
-            const t = translations[state.lang] || translations.he;
-            const container = document.getElementById('shop-items-container');
+        function renderShop(type) {
+            const container = document.getElementById('shop-content-area');
             container.innerHTML = '';
+            const items = type === 'skins' ? skinsList : songsList;
 
-            const filteredItems = shopItems.filter(item => state.activeTab === 'skins' ? item.type === 'skin' : item.type === 'song');
-
-            filteredItems.forEach(item => {
-                const isUnlocked = state.unlockedSkins.includes(item.id);
-                const isSelected = (item.type === 'skin' && state.selectedSkin === item.id) || (item.type === 'song' && state.selectedSong === item.id);
-                const itemName = item.type === 'skin' ? t.skins[item.id] : t.songs[item.id];
+            items.forEach(item => {
+                const unlocked = type === 'skins' ? gameState.unlockedSkins.includes(item.id) : gameState.unlockedSongs.includes(item.id);
+                const selected = type === 'skins' ? gameState.currentSkin === item.id : gameState.currentSong === item.id;
 
                 let btnHtml = '';
-                if (isSelected) {
-                    btnHtml = `<span class="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-3 py-2 rounded-xl border border-emerald-500/40">${t.equipped}</span>`;
-                } else if (isUnlocked) {
-                    btnHtml = `<button onclick="selectItem('${item.id}', '${item.type}')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl btn-bounce text-xs">${t.select}</button>`;
+                if (selected) {
+                    btnHtml = `<span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1.5 rounded-xl border border-cyan-500/30">בשימוש</span>`;
+                } else if (unlocked) {
+                    btnHtml = `<button onclick="selectItem('${type}', '${item.id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-700 transition">בחר</button>`;
                 } else {
-                    btnHtml = `<button onclick="buyItem('${item.id}', ${item.price}, '${item.type}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl btn-bounce text-xs flex items-center gap-1"><span>${t.buy}</span><i class="fa-solid fa-coins"></i><span>${item.price}</span></button>`;
+                    btnHtml = `<button onclick="buyItem('${type}', '${item.id}', ${item.price})" class="bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 text-xs font-bold px-3 py-1.5 rounded-xl border border-yellow-500/30 flex items-center gap-1 transition"><i class="fa-solid fa-coins"></i> ${item.price}</button>`;
                 }
 
-                const div = document.createElement('div');
-                div.className = 'bg-slate-800/80 p-4 rounded-2xl flex justify-between items-center border border-slate-700';
-                
-                let iconHtml = '';
-                if (item.type === 'skin') {
-                    iconHtml = `<div class="w-10 h-10 rounded-full flex items-center justify-center border-2" style="background-color: ${item.color}; border-color: ${item.stroke};"></div>`;
-                } else {
-                    iconHtml = `<div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400 text-lg"><i class="fa-solid fa-music"></i></div>`;
-                }
-
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        ${iconHtml}
-                        <div>
-                            <div class="font-bold text-base">${itemName}</div>
-                            <div class="text-xs text-slate-400">${isUnlocked ? t.owned : t.priceTag + ' ' + item.price}</div>
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-cyan-400">
+                                <i class="fa-solid ${type === 'skins' ? 'fa-futbol' : 'fa-music'}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">${item.name}</h4>
+                            </div>
                         </div>
+                        ${btnHtml}
                     </div>
-                    <div>${btnHtml}</div>
                 `;
-                container.appendChild(div);
             });
         }
 
-        window.selectItem = function(id, type) {
-            if (type === 'skin') {
-                state.selectedSkin = id;
-                localStorage.setItem('jugg_skin', id);
+        function buyItem(type, id, price) {
+            if (gameState.coins >= price) {
+                gameState.coins -= price;
+                if (type === 'skins') gameState.unlockedSkins.push(id);
+                else gameState.unlockedSongs.push(id);
+                saveGame();
+                renderShop(type);
+                checkAchievements();
             } else {
-                state.selectedSong = id;
-                localStorage.setItem('jugg_song', id);
-            }
-            renderShop();
-        }
-
-        window.buyItem = function(id, price, type) {
-            const t = translations[state.lang] || translations.he;
-            if (state.coins >= price) {
-                state.coins -= price;
-                state.unlockedSkins.push(id);
-                if (type === 'skin') state.selectedSkin = id;
-                else state.selectedSong = id;
-
-                localStorage.setItem('jugg_coins', state.coins.toString());
-                localStorage.setItem('jugg_skin', state.selectedSkin);
-                localStorage.setItem('jugg_song', state.selectedSong);
-                localStorage.setItem('jugg_unlocked', JSON.stringify(state.unlockedSkins));
-                updateHUD();
-                renderShop();
-            } else {
-                alert(t.noCoins);
+                alert("אין מספיק מטבעות!");
             }
         }
 
-        document.getElementById('shop-tab-skins').addEventListener('click', () => {
-            state.activeTab = 'skins';
-            document.getElementById('shop-tab-skins').className = 'flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs btn-bounce';
-            document.getElementById('shop-tab-songs').className = 'flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs btn-bounce';
-            renderShop();
-        });
-
-        document.getElementById('shop-tab-songs').addEventListener('click', () => {
-            state.activeTab = 'songs';
-            document.getElementById('shop-tab-songs').className = 'flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs btn-bounce';
-            document.getElementById('shop-tab-skins').className = 'flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs btn-bounce';
-            renderShop();
-        });
-
-        function setPaddlePos(clientX) {
-            paddle.x = clientX - paddle.width / 2;
-            if (paddle.x < 5) paddle.x = 5;
-            if (paddle.x + paddle.width > canvas.width - 5) paddle.x = canvas.width - paddle.width - 5;
+        function selectItem(type, id) {
+            if (type === 'skins') gameState.currentSkin = id;
+            else gameState.currentSong = id;
+            saveGame();
+            renderShop(type);
         }
 
+        function renderAchievements() {
+            const container = document.getElementById('achievements-list');
+            container.innerHTML = '';
+
+            achievementsList.forEach(ach => {
+                const isCompleted = gameState.achievements[ach.id];
+                const canClaim = !isCompleted && ach.check({ maxScore });
+
+                let actionBtn = '';
+                if (isCompleted) {
+                    actionBtn = `<span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">הושלם ✓</span>`;
+                } else if (canClaim) {
+                    actionBtn = `<button onclick="claimAchievement('${ach.id}', ${ach.reward})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow transition">אסוף פרס (${ach.reward})</button>`;
+                } else {
+                    actionBtn = `<span class="text-xs text-slate-500">+${ach.reward} מטבעות</span>`;
+                }
+
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
+                        <div>
+                            <h4 class="font-bold text-sm text-white">${ach.title}</h4>
+                            <p class="text-xs text-slate-400">${ach.desc}</p>
+                        </div>
+                        <div>${actionBtn}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkAchievements() {
+            achievementsList.forEach(ach => {
+                if (!gameState.achievements[ach.id] && ach.check({ maxScore })) {
+                    // Ready to claim
+                }
+            });
+            saveGame();
+        }
+
+        function claimAchievement(id, reward) {
+            gameState.achievements[id] = true;
+            gameState.coins += reward;
+            saveGame();
+            renderAchievements();
+        }
+
+        // --- CANVAS GAME ENGINE ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentMode = 'solo';
+        let score = 0;
+        let gameRunning = false;
+
+        // Ball physics
+        let ball = {
+            x: 0, y: 0, vx: 0, vy: 0, radius: 22, gravity: 0.4, bounce: -10.5
+        };
+
+        // Particles for spark effects
+        let particles = [];
+
+        function startGame(mode) {
+            currentMode = mode;
+            score = 0;
+            document.getElementById('current-score').innerText = score;
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            resizeCanvas();
+            resetBall();
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        function returnToMenu() {
+            gameRunning = false;
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('hidden');
+            if (score > maxScore) {
+                maxScore = score;
+                localStorage.setItem('jj_max_score', maxScore);
+                checkAchievements();
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 3;
+            ball.vx = (Math.random() - 0.5) * 4;
+            ball.vy = -2;
+        }
+
+        // Tap/Click interaction to juggle
         window.addEventListener('pointerdown', (e) => {
-            if (!state.isPlaying || state.isPaused) return;
-            setPaddlePos(e.clientX);
+            if (!gameRunning) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Check distance to ball
+            const dist = Math.hypot(ball.x - x, ball.y - y);
+            if (dist < ball.radius + 40) {
+                // Kick / Jiggle upward
+                ball.vy = ball.bounce;
+                ball.vx += (ball.x - x) * 0.15;
+                score++;
+                document.getElementById('current-score').innerText = score;
+
+                // Vibration feedback if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate(40);
+                }
+
+                // Create spark particles
+                for (let i = 0; i < 8; i++) {
+                    particles.push({
+                        x: ball.x,
+                        y: ball.y,
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: (Math.random() - 0.5) * 6,
+                        color: currentSkinColor(),
+                        life: 20
+                    });
+                }
+            }
         });
 
-        window.addEventListener('pointermove', (e) => {
-            if (!state.isPlaying || state.isPaused) return;
-            setPaddlePos(e.clientX);
-        });
+        function currentSkinColor() {
+            if (gameState.currentSkin === 'gold') return '#f59e0b';
+            if (gameState.currentSkin === 'neon') return '#06b6d4';
+            if (gameState.currentSkin === 'fire') return '#ef4444';
+            return '#ffffff';
+        }
 
-        function updatePhysics() {
-            if (!state.isPlaying || state.isPaused) return;
+        function gameLoop() {
+            if (!gameRunning) return;
 
+            // Update Physics
             ball.vy += ball.gravity;
             ball.x += ball.vx;
             ball.y += ball.vy;
 
-            if (ball.x - ball.radius < 0) {
-                ball.x = ball.radius;
-                ball.vx *= -0.8;
-            } else if (ball.x + ball.radius > canvas.width) {
-                ball.x = canvas.width - ball.radius;
-                ball.vx *= -0.8;
-            }
+            // Wall collisions
+            if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.8; }
+            if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.8; }
 
-            if (ball.vy > 0 && 
-                ball.y + ball.radius >= paddle.y && 
-                ball.y - ball.radius <= paddle.y + paddle.height &&
-                ball.x + ball.radius >= paddle.x && 
-                ball.x - ball.radius <= paddle.x + paddle.width) {
-                
-                ball.y = paddle.y - ball.radius;
-                ball.vy = -Math.abs(ball.vy * 0.95) - 7;
-                let hitOffset = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
-                ball.vx += hitOffset * 5;
-
-                playSound('bounce');
-
-                state.score++;
-                state.coins += 1;
-                localStorage.setItem('jugg_coins', state.coins.toString());
-                updateHUD();
-
-                if (state.mode === 'tour' && state.score >= 10 + (state.tourStage * 5)) {
-                    winStage();
+            // Floor / Game over condition
+            if (ball.y + ball.radius > canvas.height - 40) {
+                gameRunning = false;
+                if (score > maxScore) {
+                    maxScore = score;
+                    localStorage.setItem('jj_max_score', maxScore);
+                    checkAchievements();
                 }
+                setTimeout(() => {
+                    alert(`המשחק נגמר! השיגו: ${score} הקפצות.`);
+                    returnToMenu();
+                }, 100);
+                return;
             }
 
-            if (state.mode === '1v1' || state.mode === 'tour') {
-                let targetX = ball.x - botPaddle.width / 2;
-                let botAggro = state.difficulty === 'easy' ? 0.04 : state.difficulty === 'medium' ? 0.07 : 0.11;
-                botPaddle.x += (targetX - botPaddle.x) * (botAggro + state.tourStage * 0.02);
-
-                if (ball.vy < 0 && 
-                    ball.y - ball.radius <= botPaddle.y + botPaddle.height &&
-                    ball.x >= botPaddle.x && ball.x <= botPaddle.x + botPaddle.width) {
-                    ball.vy = Math.abs(ball.vy) + 2;
-                    state.botScore++;
-                }
+            // Update Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                if (p.life <= 0) particles.splice(i, 1);
             }
 
-            if (ball.y - ball.radius > canvas.height) {
-                playSound('drop');
-                endGame();
-            }
-        }
+            // Render
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        function render() {
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Draw Particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.lineWidth = 2;
+            // Draw Ball
+            ctx.save();
+            ctx.translate(ball.x, ball.y);
+            ctx.fillStyle = currentSkinColor();
             ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#0f172a';
             ctx.stroke();
 
-            if (state.isPlaying) {
-                let currentItem = shopItems.find(i => i.id === state.selectedSkin) || shopItems[0];
+            // Ball pattern details
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(0, 0, ball.radius * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
 
-                ctx.beginPath();
-                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-                ctx.fillStyle = currentItem.color;
-                ctx.fill();
-                ctx.strokeStyle = currentItem.stroke;
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                ctx.fillStyle = '#10b981';
-                ctx.beginPath();
-                ctx.roundRect(paddle.x, paddle.y, paddle.width, paddle.height, 12);
-                ctx.fill();
-
-                if (state.mode === '1v1' || state.mode === 'tour') {
-                    ctx.fillStyle = '#6366f1';
-                    ctx.beginPath();
-                    ctx.roundRect(botPaddle.x, botPaddle.y, botPaddle.width, botPaddle.height, 10);
-                    ctx.fill();
-                }
-
-                updatePhysics();
-            }
-
-            requestAnimationFrame(render);
+            requestAnimationFrame(gameLoop);
         }
 
-        function startGame(mode) {
-            state.mode = mode;
-            if (mode === 'tour' && state.tourStage > 2) state.tourStage = 0;
-            state.isPlaying = true;
-            state.isPaused = false;
-            
-            document.getElementById('menu-overlay').classList.add('hidden');
-            document.getElementById('gameover-overlay').classList.add('hidden');
-            document.getElementById('shop-overlay').classList.add('hidden');
-            document.getElementById('stats-overlay').classList.add('hidden');
-            document.getElementById('hud').classList.remove('hidden');
-
-            resetGame();
-            startBackgroundMusic();
-        }
-
-        function winStage() {
-            const t = translations[state.lang] || translations.he;
-            state.isPlaying = false;
-            stopBackgroundMusic();
-            state.tourStage++;
-            if (state.tourStage > 2) {
-                alert(t.winTour);
-                state.tourStage = 0;
-                document.getElementById('gameover-overlay').classList.add('hidden');
-                document.getElementById('menu-overlay').classList.remove('hidden');
-                document.getElementById('hud').classList.add('hidden');
-            } else {
-                alert(t.nextStage);
-                startGame('tour');
-            }
-        }
-
-        function endGame() {
-            state.isPlaying = false;
-            stopBackgroundMusic();
-            if (state.score > state.bestScore) {
-                state.bestScore = state.score;
-                localStorage.setItem('jugg_best', state.bestScore.toString());
-            }
-
-            document.getElementById('go-score').innerText = state.score;
-            document.getElementById('go-best').innerText = state.bestScore;
-            document.getElementById('gameover-overlay').classList.remove('hidden');
-            document.getElementById('hud').classList.add('hidden');
-        }
-
-        document.getElementById('lang-btn').addEventListener('click', () => {
-            let idx = langOrder.indexOf(state.lang);
-            state.lang = langOrder[(idx + 1) % langOrder.length];
-            localStorage.setItem('jugg_lang', state.lang);
-            applyLanguage();
-            renderShop();
-        });
-
-        document.getElementById('diff-btn').addEventListener('click', () => {
-            if (state.difficulty === 'easy') state.difficulty = 'medium';
-            else if (state.difficulty === 'medium') state.difficulty = 'hard';
-            else state.difficulty = 'easy';
-            localStorage.setItem('jugg_diff', state.difficulty);
-            updateHUD();
-        });
-
-        document.getElementById('music-toggle-btn').addEventListener('click', () => {
-            if (isMusicPlaying) {
-                stopBackgroundMusic();
-            } else {
-                startBackgroundMusic();
-            }
-        });
-
-        document.getElementById('mode-solo-btn').addEventListener('click', () => startGame('solo'));
-        document.getElementById('mode-1v1-btn').addEventListener('click', () => startGame('1v1'));
-        document.getElementById('mode-tour-btn').addEventListener('click', () => startGame('tour'));
-
-        document.getElementById('shop-btn').addEventListener('click', () => {
-            updateHUD();
-            renderShop();
-            document.getElementById('shop-overlay').classList.remove('hidden');
-        });
-        document.getElementById('close-shop-btn').addEventListener('click', () => {
-            document.getElementById('shop-overlay').classList.add('hidden');
-        });
-
-        document.getElementById('stats-btn').addEventListener('click', () => {
-            updateHUD();
-            document.getElementById('stats-overlay').classList.remove('hidden');
-        });
-        document.getElementById('close-stats-btn').addEventListener('click', () => {
-            document.getElementById('stats-overlay').classList.add('hidden');
-        });
-
-        document.getElementById('go-home-btn').addEventListener('click', () => {
-            document.getElementById('gameover-overlay').classList.add('hidden');
-            document.getElementById('menu-overlay').classList.remove('hidden');
-            updateHUD();
-        });
-
-        document.getElementById('go-restart-btn').addEventListener('click', () => {
-            startGame(state.mode);
-        });
-
-        document.getElementById('pause-btn').addEventListener('click', () => {
-            state.isPaused = !state.isPaused;
-            if (state.isPaused) stopBackgroundMusic();
-            else startBackgroundMusic();
-        });
-
-        applyLanguage();
-        updateHUD();
-        requestAnimationFrame(render);
+        // Initialize display coins on load
+        document.getElementById('coins-display').innerText = gameState.coins;
     </script>
 </body>
 </html>
