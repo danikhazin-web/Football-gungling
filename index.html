@@ -33,10 +33,10 @@
         </div>
         
         <div class="flex gap-2">
-            <button onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1.5 bg-slate-700/80 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
+            <button onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1.5 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
                 <i class="fa-solid fa-bolt text-amber-400"></i> <span id="diff-text">בינוני</span>
             </button>
-            <button onclick="toggleLang()" class="px-3 py-1.5 bg-slate-700/80 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
+            <button onclick="toggleLang()" class="px-3 py-1.5 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
                 <i class="fa-solid fa-globe text-cyan-400"></i> <span id="lang-text">עברית</span>
             </button>
         </div>
@@ -103,7 +103,7 @@
         <div class="relative w-full aspect-[3/4] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
             <div id="tap-instruction" class="absolute bottom-6 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/80 px-4 py-2 rounded-full border border-slate-700/80 pointer-events-none">
-                הקש על המסך כדי לבעוט בכדור!
+                גרור את השחקן כדי לפגוע בכדור!
             </div>
         </div>
     </div>
@@ -173,7 +173,7 @@
                 soloTitle: "שבירת שיא (סולו)", soloDesc: "הקפץ כמה שיותר בלי להפיל",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
-                menu: "תפריט", tap: "הקש על המסך כדי לבעוט בכדור!",
+                menu: "תפריט", tap: "גרור את השחקן כדי לפגוע בכדור!",
                 navAchieve: "הישגים", navShop: "חנות",
                 shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע",
                 achieveTitle: "מערכת הישגים",
@@ -188,7 +188,7 @@
                 soloTitle: "Solo High Score", soloDesc: "Juggle as much as you can",
                 pvpTitle: "1v1 Match", pvpDesc: "Duel against smart AI",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
-                menu: "Menu", tap: "Tap screen to kick the ball!",
+                menu: "Menu", tap: "Drag player to hit the ball!",
                 navAchieve: "Achievements", navShop: "Shop",
                 shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks",
                 achieveTitle: "Achievements System",
@@ -203,7 +203,7 @@
                 soloTitle: "Рекорд (Соло)", soloDesc: "Чекань мяч как можно дольше",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
-                menu: "Меню", tap: "Нажмите на экран чтобы ударить!",
+                menu: "Меню", tap: "Ведите игрока, чтобы ударить мяч!",
                 navAchieve: "Достижения", navShop: "Магазин",
                 shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка",
                 achieveTitle: "Система достижений",
@@ -218,7 +218,7 @@
                 soloTitle: "Record Solo", soloDesc: "Faites des jongles sans tomber",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
-                menu: "Menu", tap: "Touchez l'écran pour frapper !",
+                menu: "Menu", tap: "Glissez pour frapper le ballon !",
                 navAchieve: "Succès", navShop: "Boutique",
                 shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique",
                 achieveTitle: "Système de Succès",
@@ -234,13 +234,18 @@
             {id: 'classic', name: {he: 'כדור קלאסי', en: 'Classic Ball', ru: 'Классический', fr: 'Classique'}, price: 0, color: '#ffffff', pattern: '#000000'},
             {id: 'gold', name: {he: 'כדור זהב', en: 'Golden Ball', ru: 'Золотой', fr: 'Or'}, price: 50, color: '#fbbf24', pattern: '#d97706'},
             {id: 'neon', name: {he: 'ניאון סגור', en: 'Neon Ball', ru: 'Неоновый', fr: 'Néon'}, price: 100, color: '#38bdf8', pattern: '#818cf8'},
-            {id: 'fire', name: {he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu'}, price: 150, color: '#f97316', pattern: '#dc2626'}
+            {id: 'fire', name: {he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu'}, price: 150, color: '#f97316', pattern: '#dc2626'},
+            {id: 'rainbow', name: {he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel'}, price: 200, color: '#ec4899', pattern: '#8b5cf6'},
+            {id: 'steel', name: {he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier'}, price: 250, color: '#64748b', pattern: '#334155'},
+            {id: 'galaxy', name: {he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie'}, price: 300, color: '#4f46e5', pattern: '#9333ea'}
         ];
 
         const songsData = [
             {id: 'none', name: {he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique'}, price: 0},
             {id: 'beat1', name: {he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade'}, price: 40},
-            {id: 'synth', name: {he: 'סינת׳ווייف', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave'}, price: 80}
+            {id: 'synth', name: {he: 'סינת׳ווייף', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave'}, price: 80},
+            {id: 'rock', name: {he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade'}, price: 120},
+            {id: 'electro', name: {he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse'}, price: 180}
         ];
 
         function updateUIStrings() {
@@ -376,8 +381,8 @@
         let particles = [];
 
         let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 18, rot: 0 };
-        let player = { x: 0, y: 0, width: 60, height: 25 };
-        let bot = { x: 0, y: 0, width: 60, height: 25 };
+        let player = { x: 0, y: 0, width: 70, height: 25 };
+        let bot = { x: 0, y: 0, width: 70, height: 25 };
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -421,9 +426,21 @@
             }
         }
 
+        // Touch movement to control paddle
+        canvas.addEventListener('pointermove', (e) => {
+            if (!gameRunning) return;
+            const rect = canvas.getBoundingClientRect();
+            const touchX = e.clientX - rect.left;
+            player.x = touchX - player.width / 2;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+        });
+
         canvas.addEventListener('pointerdown', (e) => {
             if (!gameRunning) return;
-            kickBall();
+            const rect = canvas.getBoundingClientRect();
+            const touchX = e.clientX - rect.left;
+            player.x = touchX - player.width / 2;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
         });
 
         function kickBall() {
@@ -472,6 +489,7 @@
             if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.8; }
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.8; }
 
+            // Collision with Player Paddle (Must touch with paddle!)
             if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
                 ball.x >= player.x - 10 && ball.x <= player.x + player.width + 10 && ball.vy > 0) {
                 kickBall();
@@ -700,7 +718,7 @@
             renderAchievements();
             document.getElementById('achievements-modal').classList.remove('hidden');
         }
-        function closeAchievementsModal() {
+        function closeAchievementsModal()  {
             document.getElementById('achievements-modal').classList.add('hidden');
         }
 
@@ -752,4 +770,3 @@
     </script>
 </body>
 </html>
-
