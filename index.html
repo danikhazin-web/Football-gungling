@@ -45,9 +45,9 @@
     <!-- Main Menu -->
     <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-4 z-20 px-2">
         <div class="text-center mb-6">
-            <span class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20 uppercase tracking-widest">סימולטור הקפצות ריאליסטי</span>
+            <span class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20 uppercase tracking-widest">פיזיקת כדור משודרגת</span>
             <h1 class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text">מלך ההקפצות</h1>
-            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">שליטה בכדור, תחרויות ומוזיקה ברקע!</p>
+            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">שליטה מושלמת בכדור, תעופה גבוהה ושליטה נוחה!</p>
         </div>
 
         <div class="w-full space-y-3">
@@ -103,7 +103,7 @@
         <div class="relative w-full flex-1 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
             <div id="tap-instruction" class="absolute bottom-3 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/85 px-4 py-1 rounded-full border border-slate-700/80 pointer-events-none">
-                גרור את השחקן כדי לפגוע בכדור!
+                גרור את השחקן כדי לתפוס ולבעוט בכדור!
             </div>
         </div>
     </div>
@@ -169,11 +169,11 @@
 
         const translations = {
             he: {
-                subtitle: "שליטה בכדור, תחרויות ומוזיקה ברקע!",
+                subtitle: "שליטה מושלמת בכדור, תעופה גבוהה ושליטה נוחה!",
                 soloTitle: "שבירת שיא (סולו)", soloDesc: "הקפץ כמה שיותר בלי להפיל",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
-                menu: "תפריט", tap: "גרור את השחקן כדי לפגוע בכדור!",
+                menu: "תפריט", tap: "גרור את השחקן כדי לתפוס ולבעוט בכדור!",
                 navAchieve: "הישגים", navShop: "חנות",
                 shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע",
                 achieveTitle: "מערכת הישגים",
@@ -184,11 +184,11 @@
                 retry: "שחק שוב"
             },
             en: {
-                subtitle: "Ball control, tournaments & background music!",
+                subtitle: "Perfect ball control, high flight & easy catch!",
                 soloTitle: "Solo High Score", soloDesc: "Juggle as much as you can",
                 pvpTitle: "1v1 Match", pvpDesc: "Duel against smart AI",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
-                menu: "Menu", tap: "Drag player to hit the ball!",
+                menu: "Menu", tap: "Drag player to catch & kick the ball!",
                 navAchieve: "Achievements", navShop: "Shop",
                 shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks",
                 achieveTitle: "Achievements System",
@@ -199,11 +199,11 @@
                 retry: "Play Again"
             },
             ru: {
-                subtitle: "Контроль мяча, турниры и фоновая музыка!",
+                subtitle: "Идеальный контроль мяча, высокая летучесть!",
                 soloTitle: "Рекорд (Соло)", soloDesc: "Чекань мяч как можно дольше",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
-                menu: "Меню", tap: "Ведите игрока, чтобы ударить мяч!",
+                menu: "Меню", tap: "Ведите игрока, чтобы поймать мяч!",
                 navAchieve: "Достижения", navShop: "Магазин",
                 shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка",
                 achieveTitle: "Система достижений",
@@ -214,11 +214,11 @@
                 retry: "Ещё раз"
             },
             fr: {
-                subtitle: "Contrôle du ballon, tournois et musique !",
+                subtitle: "Contrôle parfait, vol haut et prise en main facile !",
                 soloTitle: "Record Solo", soloDesc: "Faites des jongles sans tomber",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
-                menu: "Menu", tap: "Glissez pour frapper le ballon !",
+                menu: "Menu", tap: "Glissez pour attraper le ballon !",
                 navAchieve: "Succès", navShop: "Boutique",
                 shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique",
                 achieveTitle: "Système de Succès",
@@ -318,12 +318,12 @@
 
                 if (type === 'kick') {
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(180, now);
-                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
-                    gain.gain.setValueAtTime(0.5, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.12);
+                    gain.gain.setValueAtTime(0.6, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
                     osc.start(now);
-                    osc.stop(now + 0.1);
+                    osc.stop(now + 0.12);
                 } else if (type === 'fail') {
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(150, now);
@@ -380,9 +380,9 @@
         let score = 0;
         let particles = [];
 
-        let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 18, rot: 0 };
-        let player = { x: 0, y: 0, width: 85, height: 25 };
-        let bot = { x: 0, y: 0, width: 85, height: 25 };
+        let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
+        let player = { x: 0, y: 0, width: 90, height: 26 };
+        let bot = { x: 0, y: 0, width: 90, height: 26 };
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -413,12 +413,12 @@
         function resetPositions() {
             ball.x = canvas.width / 2;
             ball.y = canvas.height / 2;
-            ball.vx = (Math.random() - 0.5) * 4;
+            ball.vx = (Math.random() - 0.5) * 3;
             ball.vy = -6;
             ball.rot = 0;
 
             player.x = canvas.width / 2 - player.width / 2;
-            player.y = canvas.height - 60;
+            player.y = canvas.height - 65;
 
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 bot.x = canvas.width / 2 - bot.width / 2;
@@ -426,7 +426,7 @@
             }
         }
 
-        // Touch movement to control paddle
+        // Touch movement to control paddle smoothly
         canvas.addEventListener('pointermove', (e) => {
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
@@ -445,21 +445,22 @@
 
         function kickBall() {
             playSound('kick');
-            if (navigator.vibrate) try { navigator.vibrate(40); } catch(e) {}
+            if (navigator.vibrate) try { navigator.vibrate(50); } catch(e) {}
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 15; i++) {
                 particles.push({
                     x: ball.x, y: ball.y,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 0.5) * 12,
                     life: 1.0,
                     color: activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff'
                 });
             }
 
-            let angle = (Math.random() - 0.5) * 1.2;
-            // High upward velocity so the ball flies high up towards the top!
-            ball.vy = -17; 
+            let angle = (Math.random() - 0.5) * 1.4;
+            
+            // פיזיקת כדור משודרגת: עף חזק וגבוה מאוד, אך נשאר בשליטה קלה לתפיסה
+            ball.vy = -22; 
             ball.vx += angle * 7;
             score++;
             document.getElementById('game-score-board').innerText = score;
@@ -480,46 +481,47 @@
         function gameLoop() {
             if (!gameRunning) return;
 
-            ball.vy += 0.35;
+            // כוח כובד (Gravity) מושלם שיוצר קשת גבוהה, נוחה וניתנת לתפיסה בקלות
+            ball.vy += 0.42;
             ball.x += ball.vx;
             ball.y += ball.vy;
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
 
-            // Wall collisions
-            if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.8; }
-            if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.8; }
+            // Wall collisions (bounce smoothly off walls)
+            if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.85; }
+            if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
 
-            // Collision with Player Paddle (Bottom) - flies high up!
+            // Collision with Player Paddle (Bottom)
             if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
-                ball.x >= player.x - 15 && ball.x <= player.x + player.width + 15 && ball.vy > 0) {
+                ball.x >= player.x - 20 && ball.x <= player.x + player.width + 20 && ball.vy > 0) {
                 kickBall();
             }
 
-            // AI Bot logic for pvp/tournament - flies high down!
+            // AI Bot logic for pvp/tournament
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 bot.y = 35;
-                let trackSpeed = difficulty === 'hard' ? 0.3 : difficulty === 'medium' ? 0.2 : 0.12;
+                let trackSpeed = difficulty === 'hard' ? 0.32 : difficulty === 'medium' ? 0.22 : 0.14;
                 bot.x += (ball.x - (bot.x + bot.width / 2)) * trackSpeed;
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
 
-                // Bot returns the ball back down high and fast
-                if (ball.y - ball.radius <= bot.y + bot.height + 15 && ball.vy < 0) {
+                // Bot returns the ball back down high and fast towards player
+                if (ball.y - ball.radius <= bot.y + bot.height + 20 && ball.vy < 0) {
                     playSound('kick');
-                    if (navigator.vibrate) try { navigator.vibrate(40); } catch(e) {}
+                    if (navigator.vibrate) try { navigator.vibrate(50); } catch(e) {}
                     
-                    for (let i = 0; i < 10; i++) {
+                    for (let i = 0; i < 15; i++) {
                         particles.push({
                             x: ball.x, y: ball.y,
-                            vx: (Math.random() - 0.5) * 10,
-                            vy: (Math.random() - 0.5) * 10,
+                            vx: (Math.random() - 0.5) * 12,
+                            vy: (Math.random() - 0.5) * 12,
                             life: 1.0,
                             color: '#6366f1'
                         });
                     }
 
-                    let botAngle = (Math.random() - 0.5) * 1.2;
-                    ball.vy = 17; // Flies high down towards player!
+                    let botAngle = (Math.random() - 0.5) * 1.4;
+                    ball.vy = 22; // יורד חזרה למטה בעוצמה גבוהה ונוחה לתפיסה
                     ball.vx += botAngle * 7;
                 }
             }
@@ -574,7 +576,7 @@
             // Player paddle
             ctx.fillStyle = '#10b981';
             ctx.shadowColor = '#10b981';
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 12;
             ctx.beginPath();
             ctx.roundRect(player.x, player.y, player.width, player.height, 12);
             ctx.fill();
@@ -584,7 +586,7 @@
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 ctx.fillStyle = '#6366f1';
                 ctx.shadowColor = '#6366f1';
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 12;
                 ctx.beginPath();
                 ctx.roundRect(bot.x, bot.y, bot.width, bot.height, 12);
                 ctx.fill();
@@ -598,7 +600,7 @@
             let skinObj = skinsData.find(s => s.id === activeSkin) || skinsData[0];
             ctx.fillStyle = skinObj.color;
             ctx.shadowColor = skinObj.color;
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = 18;
             ctx.beginPath();
             ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
             ctx.fill();
