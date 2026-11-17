@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מלך ההקפצות - משחק כדורגל</title>
     
+    <!-- הגנות אבטחה מתקדמות -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;">
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -45,9 +49,9 @@
     <!-- Main Menu -->
     <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-4 z-20 px-2">
         <div class="text-center mb-6">
-            <span class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20 uppercase tracking-widest">פיזיקת כדור משודרגת</span>
+            <span class="bg-orange-500/15 text-orange-400 text-xs font-bold px-3 py-1 rounded-full border border-orange-500/30 uppercase tracking-widest">חדש: בעיטות אש ובונוסים! 🔥</span>
             <h1 class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text">מלך ההקפצות</h1>
-            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">שליטה מושלמת בכדור, תעופה גבוהה ושליטה נוחה!</p>
+            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">פגע במרכז המחבט כדי להדליק את הכדור באש!</p>
         </div>
 
         <div class="w-full space-y-3">
@@ -92,9 +96,16 @@
             <button onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer">
                 <i class="fa-solid fa-arrow-right"></i> <span id="lbl-menu">תפריט</span>
             </button>
-            <div id="game-score-board" class="text-lg font-black text-emerald-400 bg-slate-800/90 px-4 py-1 rounded-xl border border-slate-700 shadow">
-                0
+            
+            <div class="flex items-center gap-2">
+                <div id="combo-badge" class="hidden text-xs font-black text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-xl border border-orange-500/40 animate-bounce">
+                    🔥 x2
+                </div>
+                <div id="game-score-board" class="text-lg font-black text-emerald-400 bg-slate-800/90 px-4 py-1 rounded-xl border border-slate-700 shadow">
+                    0
+                </div>
             </div>
+
             <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer">
                 <i class="fa-solid fa-volume-high"></i>
             </button>
@@ -169,7 +180,7 @@
 
         const translations = {
             he: {
-                subtitle: "שליטה מושלמת בכדור, תעופה גבוהה ושליטה נוחה!",
+                subtitle: "פגע במרכז המחבט כדי להדליק את הכדור באש!",
                 soloTitle: "שבירת שיא (סולו)", soloDesc: "הקפץ כמה שיותר בלי להפיל",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
@@ -184,7 +195,7 @@
                 retry: "שחק שוב"
             },
             en: {
-                subtitle: "Perfect ball control, high flight & easy catch!",
+                subtitle: "Hit the center of the paddle to ignite Fire Mode!",
                 soloTitle: "Solo High Score", soloDesc: "Juggle as much as you can",
                 pvpTitle: "1v1 Match", pvpDesc: "Duel against smart AI",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
@@ -199,7 +210,7 @@
                 retry: "Play Again"
             },
             ru: {
-                subtitle: "Идеальный контроль мяча, высокая летучесть!",
+                subtitle: "Бей центром, чтобы зажечь Огненный режим!",
                 soloTitle: "Рекорд (Соло)", soloDesc: "Чекань мяч как можно дольше",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
@@ -214,7 +225,7 @@
                 retry: "Ещё раз"
             },
             fr: {
-                subtitle: "Contrôle parfait, vol haut et prise en main facile !",
+                subtitle: "Frappez au centre pour activer le Mode Feu !",
                 soloTitle: "Record Solo", soloDesc: "Faites des jongles sans tomber",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
@@ -324,6 +335,22 @@
                     gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
                     osc.start(now);
                     osc.stop(now + 0.12);
+                } else if (type === 'firekick') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(90, now + 0.18);
+                    gain.gain.setValueAtTime(0.7, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+                    osc.start(now);
+                    osc.stop(now + 0.18);
+                } else if (type === 'powerup') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+                    gain.gain.setValueAtTime(0.5, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
                 } else if (type === 'fail') {
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(150, now);
@@ -379,9 +406,20 @@
         let gameRunning = false;
         let score = 0;
         let particles = [];
+        let floatingTexts = [];
+
+        // Combo & Fire Mode Variables
+        let combo = 0;
+        let isFireMode = false;
+
+        // Power-up Variables
+        let powerups = [];
+        let powerupTimer = 0;
+        let widePaddleEnd = 0;
+        let slowMoEnd = 0;
 
         let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
-        let player = { x: 0, y: 0, width: 90, height: 26 };
+        let player = { x: 0, y: 0, baseWidth: 90, width: 90, height: 26 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
         function resizeCanvas() {
@@ -397,6 +435,14 @@
             resetPositions();
             gameRunning = true;
             score = 0;
+            combo = 0;
+            isFireMode = false;
+            powerups = [];
+            floatingTexts = [];
+            widePaddleEnd = 0;
+            slowMoEnd = 0;
+            player.width = player.baseWidth;
+            document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             startBGM();
             requestAnimationFrame(gameLoop);
@@ -426,7 +472,6 @@
             }
         }
 
-        // Touch movement to control paddle smoothly
         canvas.addEventListener('pointermove', (e) => {
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
@@ -443,26 +488,71 @@
             player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
         });
 
-        function kickBall() {
-            playSound('kick');
-            if (navigator.vibrate) try { navigator.vibrate(50); } catch(e) {}
+        function addFloatingText(text, x, y, color) {
+            floatingTexts.push({ text, x, y, life: 1.0, color });
+        }
 
-            for (let i = 0; i < 15; i++) {
+        function spawnPowerup() {
+            const types = [
+                { type: 'wide', color: '#10b981', icon: '↔️' },
+                { type: 'coin', color: '#fbbf24', icon: '🪙' },
+                { type: 'slow', color: '#38bdf8', icon: '❄️' }
+            ];
+            const chosen = types[Math.floor(Math.random() * types.length)];
+            powerups.push({
+                x: Math.random() * (canvas.width - 60) + 30,
+                y: Math.random() * (canvas.height * 0.45) + 100,
+                radius: 18,
+                type: chosen.type,
+                color: chosen.color,
+                icon: chosen.icon,
+                pulse: 0
+            });
+        }
+
+        function kickBall() {
+            // Check precision (center hit)
+            const paddleCenter = player.x + player.width / 2;
+            const distFromCenter = Math.abs(ball.x - paddleCenter);
+            const isSweetSpot = distFromCenter <= player.width * 0.28;
+
+            if (isSweetSpot) {
+                combo++;
+                if (combo >= 5 && !isFireMode) {
+                    isFireMode = true;
+                    document.getElementById('combo-badge').classList.remove('hidden');
+                    addFloatingText('🔥 FIRE MODE x2!', ball.x, ball.y - 35, '#f97316');
+                } else if (combo > 1) {
+                    addFloatingText(`COMBO x${combo}`, ball.x, ball.y - 25, '#fbbf24');
+                }
+            } else {
+                combo = 0;
+                isFireMode = false;
+                document.getElementById('combo-badge').classList.add('hidden');
+            }
+
+            playSound(isFireMode ? 'firekick' : 'kick');
+            if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 80 : 45); } catch(e) {}
+
+            // Particles burst
+            const pCount = isFireMode ? 24 : 15;
+            for (let i = 0; i < pCount; i++) {
                 particles.push({
                     x: ball.x, y: ball.y,
-                    vx: (Math.random() - 0.5) * 12,
-                    vy: (Math.random() - 0.5) * 12,
+                    vx: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
+                    vy: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
                     life: 1.0,
-                    color: activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff'
+                    color: isFireMode ? (Math.random() > 0.5 ? '#f97316' : '#ef4444') :
+                           (activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff')
                 });
             }
 
             let angle = (Math.random() - 0.5) * 1.4;
-            
-            // פיזיקת כדור משודרגת: עף חזק וגבוה מאוד, אך נשאר בשליטה קלה לתפיסה
-            ball.vy = -22; 
+            ball.vy = isFireMode ? -24 : -22; 
             ball.vx += angle * 7;
-            score++;
+
+            const pointsEarned = isFireMode ? 2 : 1;
+            score += pointsEarned;
             document.getElementById('game-score-board').innerText = score;
 
             checkAchievements();
@@ -480,17 +570,64 @@
 
         function gameLoop() {
             if (!gameRunning) return;
+            const now = Date.now();
 
-            // כוח כובד (Gravity) מושלם שיוצר קשת גבוהה, נוחה וניתנת לתפיסה בקלות
-            ball.vy += 0.42;
-            ball.x += ball.vx;
-            ball.y += ball.vy;
+            // Check active powerups duration
+            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.5 : player.baseWidth;
+            const timeScale = (now < slowMoEnd) ? 0.65 : 1.0;
+
+            // Spawn powerups periodically
+            powerupTimer++;
+            if (powerupTimer > 420 && powerups.length < 2) {
+                spawnPowerup();
+                powerupTimer = 0;
+            }
+
+            // Ball physics
+            ball.vy += 0.42 * timeScale;
+            ball.x += ball.vx * timeScale;
+            ball.y += ball.vy * timeScale;
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
 
-            // Wall collisions (bounce smoothly off walls)
+            // Fire trail effect
+            if (isFireMode) {
+                particles.push({
+                    x: ball.x + (Math.random() - 0.5) * 12,
+                    y: ball.y + (Math.random() - 0.5) * 12,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    life: 0.7,
+                    color: Math.random() > 0.4 ? '#f97316' : '#fbbf24'
+                });
+            }
+
+            // Wall collisions
             if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.85; }
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
+
+            // Check Power-up collection by ball
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                const pw = powerups[i];
+                pw.pulse += 0.08;
+                const dx = ball.x - pw.x;
+                const dy = ball.y - pw.y;
+                if (Math.hypot(dx, dy) < ball.radius + pw.radius) {
+                    playSound('powerup');
+                    if (pw.type === 'wide') {
+                        widePaddleEnd = now + 8000;
+                        addFloatingText('↔️ מחבט ענק!', pw.x, pw.y, '#10b981');
+                    } else if (pw.type === 'coin') {
+                        coins += 5;
+                        saveGameData();
+                        addFloatingText('+5 🪙', pw.x, pw.y, '#fbbf24');
+                    } else if (pw.type === 'slow') {
+                        slowMoEnd = now + 6000;
+                        addFloatingText('❄️ הילוך איטי!', pw.x, pw.y, '#38bdf8');
+                    }
+                    powerups.splice(i, 1);
+                }
+            }
 
             // Collision with Player Paddle (Bottom)
             if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
@@ -505,7 +642,6 @@
                 bot.x += (ball.x - (bot.x + bot.width / 2)) * trackSpeed;
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
 
-                // Bot returns the ball back down high and fast towards player
                 if (ball.y - ball.radius <= bot.y + bot.height + 20 && ball.vy < 0) {
                     playSound('kick');
                     if (navigator.vibrate) try { navigator.vibrate(50); } catch(e) {}
@@ -521,28 +657,18 @@
                     }
 
                     let botAngle = (Math.random() - 0.5) * 1.4;
-                    ball.vy = 22; // יורד חזרה למטה בעוצמה גבוהה ונוחה לתפיסה
+                    ball.vy = 22; 
                     ball.vx += botAngle * 7;
                 }
             }
 
-            // Game over checks
-            if (gameMode === 'solo') {
-                if (ball.y > canvas.height + 40) {
-                    playSound('fail');
-                    gameRunning = false;
-                    if (bgmInterval) clearInterval(bgmInterval);
-                    showGameOverScreen();
-                    return;
-                }
-            } else {
-                if (ball.y > canvas.height + 40) {
-                    playSound('fail');
-                    gameRunning = false;
-                    if (bgmInterval) clearInterval(bgmInterval);
-                    showGameOverScreen();
-                    return;
-                }
+            // Game over check
+            if (ball.y > canvas.height + 40) {
+                playSound('fail');
+                gameRunning = false;
+                if (bgmInterval) clearInterval(bgmInterval);
+                showGameOverScreen();
+                return;
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -555,32 +681,56 @@
             ctx.lineTo(canvas.width, canvas.height / 2);
             ctx.stroke();
 
+            // Draw Powerups
+            powerups.forEach(pw => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(pw.x, pw.y, pw.radius + Math.sin(pw.pulse) * 3, 0, Math.PI * 2);
+                ctx.fillStyle = pw.color + '33';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = pw.color;
+                ctx.stroke();
+
+                ctx.font = '18px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pw.icon, pw.x, pw.y);
+                ctx.restore();
+            });
+
             // Particles
             for (let i = particles.length - 1; i >= 0; i--) {
                 let p = particles[i];
                 p.x += p.vx;
                 p.y += p.vy;
-                p.life -= 0.03;
+                p.life -= 0.035;
                 if (p.life <= 0) {
                     particles.splice(i, 1);
                 } else {
                     ctx.fillStyle = p.color;
                     ctx.globalAlpha = p.life;
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.arc(p.x, p.y, isFireMode ? 5 : 4, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.globalAlpha = 1.0;
                 }
             }
 
-            // Player paddle
-            ctx.fillStyle = '#10b981';
+            // Player paddle + Sweet Spot center indicator
+            ctx.fillStyle = (now < widePaddleEnd) ? '#34d399' : '#10b981';
             ctx.shadowColor = '#10b981';
             ctx.shadowBlur = 12;
             ctx.beginPath();
             ctx.roundRect(player.x, player.y, player.width, player.height, 12);
             ctx.fill();
             ctx.shadowBlur = 0;
+
+            // Center sweet-spot glow strip
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.roundRect(player.x + player.width * 0.35, player.y + 3, player.width * 0.3, 4, 2);
+            ctx.fill();
 
             // Bot paddle
             if (gameMode === 'pvp' || gameMode === 'tournament') {
@@ -598,14 +748,32 @@
             ctx.translate(ball.x, ball.y);
             ctx.rotate(ball.rot);
             let skinObj = skinsData.find(s => s.id === activeSkin) || skinsData[0];
-            ctx.fillStyle = skinObj.color;
-            ctx.shadowColor = skinObj.color;
-            ctx.shadowBlur = 18;
+            ctx.fillStyle = isFireMode ? '#f97316' : skinObj.color;
+            ctx.shadowColor = isFireMode ? '#ef4444' : skinObj.color;
+            ctx.shadowBlur = isFireMode ? 26 : 18;
             ctx.beginPath();
             ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
             ctx.restore();
+
+            // Floating Texts
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                let ft = floatingTexts[i];
+                ft.y -= 1.2;
+                ft.life -= 0.02;
+                if (ft.life <= 0) {
+                    floatingTexts.splice(i, 1);
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = ft.life;
+                    ctx.fillStyle = ft.color;
+                    ctx.font = 'bold 16px Rubik, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(ft.text, ft.x, ft.y);
+                    ctx.restore();
+                }
+            }
 
             requestAnimationFrame(gameLoop);
         }
@@ -624,7 +792,7 @@
             ctx.font = 'bold 22px Rubik, sans-serif';
             ctx.fillText(`${t.scoreTxt}: ${score}`, canvas.width / 2, canvas.height / 2);
 
-            let earnedCoins = Math.floor(score / 5);
+            let earnedCoins = Math.floor(score / 4);
             if (earnedCoins > 0) {
                 coins += earnedCoins;
                 saveGameData();
