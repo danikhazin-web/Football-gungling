@@ -28,10 +28,10 @@
         canvas { touch-action: none; display: block; }
     </style>
 </head>
-<body class="bg-slate-900 text-white h-screen flex flex-col items-center justify-between overflow-hidden p-2">
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-between overflow-y-auto p-2">
 
     <!-- Top Bar -->
-    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20">
+    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 my-1">
         <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-emerald-500/30">
             <i class="fa-solid fa-coins text-amber-400 text-base"></i>
             <span id="header-coins" class="font-bold text-amber-400 text-base">75</span>
@@ -112,7 +112,7 @@
             </button>
         </div>
 
-        <div class="relative w-full flex-1 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
+        <div class="relative w-full h-[450px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
             <div id="tap-instruction" class="absolute bottom-3 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/85 px-4 py-1 rounded-full border border-slate-700/80 pointer-events-none">
                 גרור את השחקן כדי לתפוס ולבעוט בכדור!
@@ -121,7 +121,7 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 mt-1">
+    <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 my-2">
         <button onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer">
             <i class="fa-solid fa-medal text-base"></i>
             <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
@@ -192,7 +192,6 @@
     </div>
 
     <script>
-        // --- Firebase Configuration ---
         const FIREBASE_DB_URL = "https://football-juggling-default-rtdb.firebaseio.com";
         let playerId = localStorage.getItem('juggle_player_id');
         if (!playerId) {
@@ -202,7 +201,6 @@
         let playerName = localStorage.getItem('juggle_player_name') || '';
         let personalBest = parseInt(localStorage.getItem('juggle_personal_best')) || 0;
 
-        // --- Translations & State ---
         let lang = 'he';
         let difficulty = 'medium';
         let coins = parseInt(localStorage.getItem('juggle_coins')) || 75;
@@ -355,7 +353,6 @@
             document.getElementById('header-coins').innerText = coins;
         }
 
-        // --- Firebase Realtime Leaderboard Functions ---
         async function syncScoreToFirebase(newBestScore) {
             if (newBestScore <= 0) return;
             const displayName = playerName.trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
@@ -449,7 +446,6 @@
             document.getElementById('leaderboard-modal').classList.add('hidden');
         }
 
-        // --- Audio Engine ---
         let audioCtx = null;
         let isAudioEnabled = true;
         let bgmInterval = null;
@@ -541,7 +537,6 @@
             }, 500);
         }
 
-        // --- Canvas & Game Engine ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let gameMode = 'solo';
@@ -960,7 +955,6 @@
             };
         }
 
-        // --- Shop & Achievements Modals ---
         function openShopModal() {
             renderShop('skins');
             document.getElementById('shop-modal').classList.remove('hidden');
