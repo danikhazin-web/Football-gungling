@@ -129,9 +129,10 @@
             <i class="fa-solid fa-medal text-base"></i>
             <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
         </button>
-        <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer">
+        <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer relative">
             <i class="fa-solid fa-ranking-star text-base"></i>
             <span id="nav-leaderboard" class="text-[10px] font-bold">טבלת שיאים</span>
+            <span id="sync-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         </button>
         <button type="button" onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer">
             <i class="fa-solid fa-store text-base"></i>
@@ -141,23 +142,33 @@
 
     <!-- Leaderboard Modal -->
     <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="flex justify-between items-center mb-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col max-h-[88vh]">
+            <div class="flex justify-between items-center mb-3">
                 <h2 id="lb-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> טבלת מובילים עולמית</h2>
-                <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="loadLeaderboard(true)" title="רענן טבלה" class="text-slate-300 hover:text-emerald-400 text-sm w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer transition">
+                        <i id="lb-refresh-icon" class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 mb-4 flex flex-col gap-2">
-                <div class="flex justify-between items-center text-xs text-slate-400">
-                    <span id="lb-your-name-lbl">השם שלך בטבלה:</span>
+            <!-- Personal Stats & Name Card -->
+            <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 mb-3 flex flex-col gap-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span id="lb-your-rank" class="text-cyan-400 font-bold">--</span>
                     <span class="text-emerald-400 font-bold"><span id="lb-best-lbl">השיא שלך:</span> <span id="lb-personal-best">0</span></span>
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="player-name-input" maxlength="16" placeholder="הכנס את שמך..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="player-name-input" maxlength="16" placeholder="הכנס את שמך לטבלה..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
                     <button type="button" onclick="savePlayerName()" id="lb-save-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-xl transition cursor-pointer">שמור</button>
                 </div>
+                <div id="lb-sync-status" class="text-[11px] text-slate-400 text-center hidden"></div>
             </div>
 
+            <!-- Scores List -->
             <div id="leaderboard-list" class="overflow-y-auto space-y-2 pr-1 flex-1">
                 <div class="text-center text-slate-400 py-8 text-sm">טוען נתונים מהשרת...</div>
             </div>
@@ -258,11 +269,12 @@
         const FIREBASE_DB_URL = "https://football-juggling-default-rtdb.firebaseio.com";
         let playerId = localStorage.getItem('juggle_player_id');
         if (!playerId) {
-            playerId = 'player_' + Math.random().toString(36).substring(2, 11);
+            playerId = 'player_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
             localStorage.setItem('juggle_player_id', playerId);
         }
         let playerName = localStorage.getItem('juggle_player_name') || '';
         let personalBest = parseInt(localStorage.getItem('juggle_personal_best')) || 0;
+        let bestDifficulty = localStorage.getItem('juggle_best_diff') || 'medium';
 
         let lang = 'he';
         let difficulty = 'medium';
@@ -285,7 +297,9 @@
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
                 menu: "תפריט", tap: "גרור את השחקן ופגע במטרות הבונוס 🎯!",
                 navAchieve: "הישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
-                lbTitle: "טבלת מובילים עולמית", lbYourName: "השם שלך בטבלה:", lbBest: "השיא שלך:", lbSave: "שמור",
+                lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
+                lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
+                lbSynced: "✓ השיא מסונכרן לענן",
                 shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע",
                 achieveTitle: "מערכת הישגים",
                 buy: "קנה", equip: "השתמש", equipped: "בשימוש", owned: "בבעלותך",
@@ -301,7 +315,9 @@
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
                 menu: "Menu", tap: "Drag player & hit bonus targets 🎯!",
                 navAchieve: "Achievements", navLeaderboard: "Leaderboard", navShop: "Shop",
-                lbTitle: "Global Leaderboard", lbYourName: "Your Name:", lbBest: "Your Best:", lbSave: "Save",
+                lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
+                lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
+                lbSynced: "✓ Score synced to cloud",
                 shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks",
                 achieveTitle: "Achievements System",
                 buy: "Buy", equip: "Equip", equipped: "Equipped", owned: "Owned",
@@ -317,7 +333,9 @@
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
                 menu: "Меню", tap: "Ведите игрока и бейте по целям 🎯!",
                 navAchieve: "Достижения", navLeaderboard: "Рейтинг", navShop: "Магазин",
-                lbTitle: "Мировой рейтинг", lbYourName: "Ваше имя:", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
+                lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
+                lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
+                lbSynced: "✓ Рекорд сохранён",
                 shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка",
                 achieveTitle: "Система достижений",
                 buy: "Купить", equip: "Выбрать", equipped: "Активно", owned: "Куплено",
@@ -333,7 +351,9 @@
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
                 menu: "Menu", tap: "Glissez et visez les cibles 🎯 !",
                 navAchieve: "Succès", navLeaderboard: "Classement", navShop: "Boutique",
-                lbTitle: "Classement Mondial", lbYourName: "Votre nom :", lbBest: "Meilleur :", lbSave: "Sauver",
+                lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
+                lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
+                lbSynced: "✓ Score synchronisé",
                 shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique",
                 achieveTitle: "Système de Succès",
                 buy: "Acheter", equip: "Équiper", equipped: "Équipé", owned: "Possédé",
@@ -379,9 +399,9 @@
             document.getElementById('nav-leaderboard').innerText = t.navLeaderboard;
             document.getElementById('nav-shop').innerText = t.navShop;
             document.getElementById('lb-title').innerHTML = `<i class="fa-solid fa-trophy"></i> ${t.lbTitle}`;
-            document.getElementById('lb-your-name-lbl').innerText = t.lbYourName;
             document.getElementById('lb-best-lbl').innerText = t.lbBest;
             document.getElementById('lb-save-btn').innerText = t.lbSave;
+            document.getElementById('player-name-input').placeholder = t.lbNamePlaceholder;
             document.getElementById('shop-title').innerHTML = `<i class="fa-solid fa-store"></i> ${t.shopTitle}`;
             document.getElementById('tab-skins-btn').innerText = t.tabSkins;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
@@ -414,24 +434,44 @@
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
             localStorage.setItem('juggle_personal_best', personalBest);
+            localStorage.setItem('juggle_best_diff', bestDifficulty);
             document.getElementById('header-coins').innerText = coins;
         }
 
-        // --- Firebase Realtime Leaderboard ---
-        async function syncScoreToFirebase(newBestScore) {
-            if (newBestScore <= 0) return;
+        // --- Robust Firebase Realtime Leaderboard with Auto-Reconciliation ---
+        async function syncScoreToFirebase(scoreToSync, retries = 3) {
+            const validScore = Math.max(Number(scoreToSync) || 0, personalBest);
+            if (validScore <= 0) return false;
+
             const displayName = playerName.trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
-            try {
-                await fetch(`${FIREBASE_DB_URL}/leaderboard/${playerId}.json`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: displayName,
-                        score: newBestScore,
-                        updatedAt: Date.now()
-                    })
-                });
-            } catch (e) {}
+            const payload = {
+                name: displayName,
+                score: validScore,
+                difficulty: bestDifficulty || difficulty,
+                updatedAt: Date.now()
+            };
+
+            for (let attempt = 0; attempt < retries; attempt++) {
+                try {
+                    const res = await fetch(`${FIREBASE_DB_URL}/leaderboard/${encodeURIComponent(playerId)}.json`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        keepalive: true
+                    });
+                    if (res.ok) {
+                        localStorage.setItem('juggle_last_synced_score', String(validScore));
+                        const dot = document.getElementById('sync-dot');
+                        if (dot) dot.classList.add('hidden');
+                        return true;
+                    }
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, 400 * (attempt + 1)));
+                }
+            }
+            const dot = document.getElementById('sync-dot');
+            if (dot) dot.classList.remove('hidden');
+            return false;
         }
 
         async function savePlayerName() {
@@ -440,56 +480,109 @@
             if (!cleanName) return;
             playerName = cleanName;
             localStorage.setItem('juggle_player_name', playerName);
+            const btn = document.getElementById('lb-save-btn');
+            btn.disabled = true;
+            btn.opacity = '0.6';
             await syncScoreToFirebase(personalBest);
-            loadLeaderboard();
+            btn.disabled = false;
+            btn.opacity = '1';
+            loadLeaderboard(true);
         }
 
-        async function loadLeaderboard() {
+        async function loadLeaderboard(forceSync = false) {
+            const t = translations[lang];
             const listEl = document.getElementById('leaderboard-list');
+            const statusEl = document.getElementById('lb-sync-status');
+            const refreshIcon = document.getElementById('lb-refresh-icon');
+
             document.getElementById('player-name-input').value = playerName;
             document.getElementById('lb-personal-best').innerText = personalBest;
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
             listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm animate-pulse">${lang === 'he' ? 'טוען שיאים מהענן...' : 'Loading scores...'}</div>`;
 
             try {
-                const res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json`);
-                const data = await res.json();
+                // תמיד שולף ללא cache
+                let res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
+                let data = await res.json();
+
+                // בדיקה אוטומטית: אם השיא המקומי (למשל 127) גבוה מהשיא הרשום בשרת - דוחפים מיד את 127!
+                const cloudScore = (data && data[playerId]) ? Number(data[playerId].score) || 0 : 0;
+                if (personalBest > cloudScore || (forceSync && personalBest > 0)) {
+                    const synced = await syncScoreToFirebase(personalBest);
+                    if (synced) {
+                        res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
+                        data = await res.json();
+                    }
+                } else if (cloudScore > personalBest) {
+                    personalBest = cloudScore;
+                    saveGameData();
+                    document.getElementById('lb-personal-best').innerText = personalBest;
+                }
+
+                if (statusEl && personalBest > 0) {
+                    statusEl.innerText = t.lbSynced;
+                    statusEl.classList.remove('hidden');
+                }
+
                 if (!data) {
                     listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm">${lang === 'he' ? 'עדיין אין שיאים. היה הראשון!' : 'No scores yet. Be the first!'}</div>`;
+                    document.getElementById('lb-your-rank').innerText = `${t.lbRankPrefix} -`;
                     return;
                 }
 
                 const players = Object.keys(data).map(key => ({
                     id: key,
                     name: data[key].name || 'Player',
-                    score: Number(data[key].score) || 0
+                    score: Number(data[key].score) || 0,
+                    diff: data[key].difficulty || ''
                 }));
 
                 players.sort((a, b) => b.score - a.score);
-                const top20 = players.slice(0, 20);
+
+                const myIndex = players.findIndex(p => p.id === playerId);
+                document.getElementById('lb-your-rank').innerText = myIndex >= 0
+                    ? `${t.lbRankPrefix} #${myIndex + 1} / ${players.length}`
+                    : `${t.lbRankPrefix} -`;
+
+                const top30 = players.slice(0, 30);
+                const diffLabels = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
 
                 listEl.innerHTML = '';
-                top20.forEach((p, idx) => {
+                top30.forEach((p, idx) => {
                     const rank = idx + 1;
                     const isMe = p.id === playerId;
-                    let badge = `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center">${rank}</span>`;
-                    if (rank === 1) badge = `<span class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/50 font-black text-sm flex items-center justify-center">👑</span>`;
-                    else if (rank === 2) badge = `<span class="w-7 h-7 rounded-full bg-slate-300/20 text-slate-200 border border-slate-300/50 font-bold text-xs flex items-center justify-center">🥈</span>`;
-                    else if (rank === 3) badge = `<span class="w-7 h-7 rounded-full bg-orange-600/20 text-orange-400 border border-orange-500/50 font-bold text-xs flex items-center justify-center">🥉</span>`;
+                    let badge = `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
+                    if (rank === 1) badge = `<span class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/50 font-black text-sm flex items-center justify-center shrink-0">👑</span>`;
+                    else if (rank === 2) badge = `<span class="w-7 h-7 rounded-full bg-slate-300/20 text-slate-200 border border-slate-300/50 font-bold text-xs flex items-center justify-center shrink-0">🥈</span>`;
+                    else if (rank === 3) badge = `<span class="w-7 h-7 rounded-full bg-orange-600/20 text-orange-400 border border-orange-500/50 font-bold text-xs flex items-center justify-center shrink-0">🥉</span>`;
 
                     const rowDiv = document.createElement('div');
-                    rowDiv.className = `p-3 rounded-2xl flex items-center justify-between border ${isMe ? 'bg-emerald-950/50 border-emerald-500/60' : 'bg-slate-800/70 border-slate-700/60'}`;
+                    rowDiv.className = `p-3 rounded-2xl flex items-center justify-between border ${isMe ? 'bg-emerald-950/60 border-emerald-500/70' : 'bg-slate-800/70 border-slate-700/60'}`;
 
                     const leftDiv = document.createElement('div');
-                    leftDiv.className = 'flex items-center gap-3';
+                    leftDiv.className = 'flex items-center gap-2.5 min-w-0';
                     leftDiv.innerHTML = badge;
 
+                    const infoCol = document.createElement('div');
+                    infoCol.className = 'flex flex-col min-w-0';
+
                     const nameSpan = document.createElement('span');
-                    nameSpan.className = `font-bold text-sm ${isMe ? 'text-emerald-300' : 'text-white'}`;
+                    nameSpan.className = `font-bold text-sm truncate ${isMe ? 'text-emerald-300' : 'text-white'}`;
                     nameSpan.textContent = p.name + (isMe ? (lang === 'he' ? ' (אתה)' : ' (You)') : '');
-                    leftDiv.appendChild(nameSpan);
+                    infoCol.appendChild(nameSpan);
+
+                    if (p.diff && diffLabels[p.diff]) {
+                        const diffTag = document.createElement('span');
+                        diffTag.className = 'text-[10px] text-slate-400';
+                        diffTag.textContent = diffLabels[p.diff];
+                        infoCol.appendChild(diffTag);
+                    }
+
+                    leftDiv.appendChild(infoCol);
 
                     const scoreSpan = document.createElement('span');
-                    scoreSpan.className = 'font-black text-base text-amber-400';
+                    scoreSpan.className = 'font-black text-base text-amber-400 shrink-0';
                     scoreSpan.textContent = p.score;
 
                     rowDiv.appendChild(leftDiv);
@@ -498,15 +591,22 @@
                 });
             } catch (e) {
                 listEl.innerHTML = `<div class="text-center text-red-400 py-8 text-sm">${lang === 'he' ? 'שגיאה בטעינת הנתונים' : 'Failed to load leaderboard'}</div>`;
+            } finally {
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
             }
         }
 
         function openLeaderboardModal() {
             document.getElementById('leaderboard-modal').classList.remove('hidden');
-            loadLeaderboard();
+            loadLeaderboard(false);
         }
         function closeLeaderboardModal() {
             document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        // סנכרון אוטומטי ברקע אם יש שיא מקומי שעדיין לא סונכרן
+        if (personalBest > 0) {
+            syncScoreToFirebase(personalBest);
         }
 
         // --- Audio Engine ---
@@ -623,7 +723,6 @@
         let combo = 0;
         let isFireMode = false;
 
-        // #1: Air Bonus Target & #2: Gradual Difficulty Obstacle
         let bonusTarget = null;
         let targetCooldown = 0;
         let movingObstacle = null;
@@ -644,7 +743,6 @@
         }
 
         function getEscalationFactor() {
-            // עולה בהדרגה עם הניקוד, עם תקרה מאוזנת כדי לא לשבור את השליטה
             return Math.min(1.42, 1 + Math.floor(score / 10) * 0.045);
         }
 
@@ -814,7 +912,6 @@
             }
 
             const escalation = getEscalationFactor() * getDifficultyBaseScale();
-            // כיוון הבעיטה מושפע ממיקום הפגיעה במחבט כדי לאפשר כיוון למטרות בונוס
             const offsetRatio = Math.max(-1, Math.min(1, (ball.x - paddleCenter) / (player.width / 2)));
             ball.vy = (isFireMode ? -23 : -21) * Math.min(1.22, escalation);
             ball.vx = offsetRatio * 8.5 * Math.min(1.25, escalation);
@@ -1015,7 +1112,6 @@
             ctx.lineTo(canvas.width, canvas.height / 2);
             ctx.stroke();
 
-            // Draw Air Bonus Target
             if (bonusTarget) {
                 ctx.save();
                 const rOuter = bonusTarget.radius + Math.sin(bonusTarget.pulse) * 3;
@@ -1040,7 +1136,6 @@
                 ctx.restore();
             }
 
-            // Draw Moving Obstacle (from score 15+)
             if (movingObstacle) {
                 ctx.save();
                 ctx.fillStyle = '#a855f7';
@@ -1147,20 +1242,11 @@
             let isNewRecord = false;
             if (score > personalBest) {
                 personalBest = score;
+                bestDifficulty = difficulty;
                 isNewRecord = true;
                 saveGameData();
-                if (!playerName) {
-                    setTimeout(() => {
-                        const entered = prompt(lang === 'he' ? 'שברת שיא חדש! הכנס את שמך לטבלת המובילים:' : 'New Record! Enter your name for the Leaderboard:');
-                        if (entered && entered.trim()) {
-                            playerName = entered.trim().replace(/[<>]/g, '');
-                            localStorage.setItem('juggle_player_name', playerName);
-                        }
-                        syncScoreToFirebase(personalBest);
-                    }, 300);
-                } else {
-                    syncScoreToFirebase(personalBest);
-                }
+                // סנכרון מיידי לשרת בלי לחכות ל-prompt שעלול להיחסם
+                syncScoreToFirebase(personalBest);
             }
 
             ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
