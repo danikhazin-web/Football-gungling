@@ -482,10 +482,10 @@
             localStorage.setItem('juggle_player_name', playerName);
             const btn = document.getElementById('lb-save-btn');
             btn.disabled = true;
-            btn.opacity = '0.6';
+            btn.style.opacity = '0.6';
             await syncScoreToFirebase(personalBest);
             btn.disabled = false;
-            btn.opacity = '1';
+            btn.style.opacity = '1';
             loadLeaderboard(true);
         }
 
@@ -502,11 +502,9 @@
             listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm animate-pulse">${lang === 'he' ? 'טוען שיאים מהענן...' : 'Loading scores...'}</div>`;
 
             try {
-                // תמיד שולף ללא cache
                 let res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
                 let data = await res.json();
 
-                // בדיקה אוטומטית: אם השיא המקומי (למשל 127) גבוה מהשיא הרשום בשרת - דוחפים מיד את 127!
                 const cloudScore = (data && data[playerId]) ? Number(data[playerId].score) || 0 : 0;
                 if (personalBest > cloudScore || (forceSync && personalBest > 0)) {
                     const synced = await syncScoreToFirebase(personalBest);
@@ -604,7 +602,6 @@
             document.getElementById('leaderboard-modal').classList.add('hidden');
         }
 
-        // סנכרון אוטומטי ברקע אם יש שיא מקומי שעדיין לא סונכרן
         if (personalBest > 0) {
             syncScoreToFirebase(personalBest);
         }
@@ -723,9 +720,11 @@
         let combo = 0;
         let isFireMode = false;
 
+        // פיצ'רים ייעודיים למצב שבירת שיא (סולו) בלבד
         let bonusTarget = null;
         let targetCooldown = 0;
         let movingObstacle = null;
+        let extraSoloBall = null;
 
         let powerups = [];
         let powerupTimer = 0;
@@ -735,6 +734,10 @@
         let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
         let player = { x: 0, y: 0, baseWidth: 90, width: 90, height: 26 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
+
+        function isSoloMode() {
+            return gameMode === 'solo';
+        }
 
         function getDifficultyBaseScale() {
             if (difficulty === 'easy') return 0.92;
@@ -753,8 +756,9 @@
         }
 
         function spawnBonusTarget() {
+            if (!isSoloMode()) return;
             const margin = 48;
-            const minY = (gameMode === 'solo') ? 75 : 105;
+            const minY = 75;
             const maxY = Math.max(minY + 40, canvas.height * 0.52);
             bonusTarget = {
                 x: Math.random() * Math.max(40, canvas.width - margin * 2) + margin,
@@ -766,6 +770,10 @@
         }
 
         function ensureMovingObstacle() {
+            if (!isSoloMode()) {
+                movingObstacle = null;
+                return;
+            }
             if (score >= 15 && !movingObstacle) {
                 movingObstacle = {
                     x: canvas.width / 2 - 36,
@@ -774,6 +782,25 @@
                     height: 14,
                     vx: 1.8 + Math.min(2.2, (score - 15) * 0.04)
                 };
+            }
+        }
+
+        function ensureExtraSoloBall() {
+            // כדור נוסף קיים אך ורק במצב שבירת שיא (סולו) ולעולם לא ב-1 נגד 1 או טורניר
+            if (!isSoloMode()) {
+                extraSoloBall = null;
+                return;
+            }
+            if (score >= 25 && !extraSoloBall) {
+                extraSoloBall = {
+                    x: canvas.width * 0.35,
+                    y: canvas.height * 0.32,
+                    vx: 2.2,
+                    vy: -8,
+                    radius: 16,
+                    rot: 0
+                };
+                addFloatingText('⚽ כדור בונוס בסולו!', canvas.width / 2, canvas.height * 0.35, '#38bdf8');
             }
         }
 
@@ -808,8 +835,13 @@
             powerupTimer = 0;
             targetCooldown = 0;
             movingObstacle = null;
+            extraSoloBall = null;
             player.width = player.baseWidth;
-            spawnBonusTarget();
+            if (isSoloMode()) {
+                spawnBonusTarget();
+            } else {
+                bonusTarget = null;
+            }
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             updateLevelBadge();
@@ -876,24 +908,26 @@
             });
         }
 
-        function kickBall() {
+        function applyKickToBall(targetBall, isPrimaryBall) {
             const paddleCenter = player.x + player.width / 2;
-            const distFromCenter = Math.abs(ball.x - paddleCenter);
+            const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.28;
 
-            if (isSweetSpot) {
-                combo++;
-                if (combo >= 5 && !isFireMode) {
-                    isFireMode = true;
-                    document.getElementById('combo-badge').classList.remove('hidden');
-                    addFloatingText('🔥 FIRE MODE x2!', ball.x, ball.y - 35, '#f97316');
-                } else if (combo > 1) {
-                    addFloatingText(`COMBO x${combo}`, ball.x, ball.y - 25, '#fbbf24');
+            if (isPrimaryBall) {
+                if (isSweetSpot) {
+                    combo++;
+                    if (combo >= 5 && !isFireMode) {
+                        isFireMode = true;
+                        document.getElementById('combo-badge').classList.remove('hidden');
+                        addFloatingText('🔥 FIRE MODE x2!', targetBall.x, targetBall.y - 35, '#f97316');
+                    } else if (combo > 1) {
+                        addFloatingText(`COMBO x${combo}`, targetBall.x, targetBall.y - 25, '#fbbf24');
+                    }
+                } else {
+                    combo = 0;
+                    isFireMode = false;
+                    document.getElementById('combo-badge').classList.add('hidden');
                 }
-            } else {
-                combo = 0;
-                isFireMode = false;
-                document.getElementById('combo-badge').classList.add('hidden');
             }
 
             playSound(isFireMode ? 'firekick' : 'kick');
@@ -902,7 +936,7 @@
             const pCount = isFireMode ? 24 : 15;
             for (let i = 0; i < pCount; i++) {
                 particles.push({
-                    x: ball.x, y: ball.y,
+                    x: targetBall.x, y: targetBall.y,
                     vx: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
                     vy: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
                     life: 1.0,
@@ -912,16 +946,17 @@
             }
 
             const escalation = getEscalationFactor() * getDifficultyBaseScale();
-            const offsetRatio = Math.max(-1, Math.min(1, (ball.x - paddleCenter) / (player.width / 2)));
-            ball.vy = (isFireMode ? -23 : -21) * Math.min(1.22, escalation);
-            ball.vx = offsetRatio * 8.5 * Math.min(1.25, escalation);
+            const offsetRatio = Math.max(-1, Math.min(1, (targetBall.x - paddleCenter) / (player.width / 2)));
+            targetBall.vy = (isFireMode ? -23 : -21) * Math.min(1.22, escalation);
+            targetBall.vx = offsetRatio * 8.5 * Math.min(1.25, escalation);
 
-            const pointsEarned = isFireMode ? 2 : 1;
+            const pointsEarned = (isPrimaryBall && isFireMode) ? 2 : 1;
             score += pointsEarned;
             document.getElementById('game-score-board').innerText = score;
             currentLevel = Math.max(1, Math.floor(score / 10) + 1);
             updateLevelBadge();
             ensureMovingObstacle();
+            ensureExtraSoloBall();
 
             checkAchievements();
         }
@@ -950,75 +985,79 @@
                 powerupTimer = 0;
             }
 
-            if (!bonusTarget) {
-                targetCooldown++;
-                if (targetCooldown > 150) {
-                    spawnBonusTarget();
-                    targetCooldown = 0;
-                }
-            } else {
-                bonusTarget.pulse += 0.08;
-                bonusTarget.x += bonusTarget.vx * timeScale;
-                if (bonusTarget.x - bonusTarget.radius < 12) {
-                    bonusTarget.x = 12 + bonusTarget.radius;
-                    bonusTarget.vx *= -1;
-                } else if (bonusTarget.x + bonusTarget.radius > canvas.width - 12) {
-                    bonusTarget.x = canvas.width - 12 - bonusTarget.radius;
-                    bonusTarget.vx *= -1;
-                }
-
-                const distTarget = Math.hypot(ball.x - bonusTarget.x, ball.y - bonusTarget.y);
-                if (distTarget < ball.radius + bonusTarget.radius) {
-                    playSound('target');
-                    score += 3;
-                    coins += 2;
-                    saveGameData();
-                    document.getElementById('game-score-board').innerText = score;
-                    currentLevel = Math.max(1, Math.floor(score / 10) + 1);
-                    updateLevelBadge();
-                    ensureMovingObstacle();
-                    checkAchievements();
-                    addFloatingText('🎯 +3 | +2 🪙', bonusTarget.x, bonusTarget.y - 10, '#f43f5e');
-
-                    for (let i = 0; i < 18; i++) {
-                        particles.push({
-                            x: bonusTarget.x, y: bonusTarget.y,
-                            vx: (Math.random() - 0.5) * 12,
-                            vy: (Math.random() - 0.5) * 12,
-                            life: 1.0,
-                            color: i % 2 === 0 ? '#f43f5e' : '#fbbf24'
-                        });
+            // מטרות בונוס ומכשול נע פועלים במצב סולו בלבד
+            if (isSoloMode()) {
+                if (!bonusTarget) {
+                    targetCooldown++;
+                    if (targetCooldown > 150) {
+                        spawnBonusTarget();
+                        targetCooldown = 0;
                     }
-                    bonusTarget = null;
-                    targetCooldown = 0;
-                }
-            }
-
-            if (movingObstacle) {
-                movingObstacle.x += movingObstacle.vx * timeScale;
-                if (movingObstacle.x < 10) {
-                    movingObstacle.x = 10;
-                    movingObstacle.vx = Math.abs(movingObstacle.vx);
-                } else if (movingObstacle.x + movingObstacle.width > canvas.width - 10) {
-                    movingObstacle.x = canvas.width - 10 - movingObstacle.width;
-                    movingObstacle.vx = -Math.abs(movingObstacle.vx);
-                }
-
-                const closestX = Math.max(movingObstacle.x, Math.min(ball.x, movingObstacle.x + movingObstacle.width));
-                const closestY = Math.max(movingObstacle.y, Math.min(ball.y, movingObstacle.y + movingObstacle.height));
-                const dxObs = ball.x - closestX;
-                const dyObs = ball.y - closestY;
-                if (dxObs * dxObs + dyObs * dyObs < ball.radius * ball.radius) {
-                    playSound('kick');
-                    if (ball.y < movingObstacle.y + movingObstacle.height / 2) {
-                        ball.vy = -Math.abs(ball.vy) * 0.9 - 3;
-                        ball.y = movingObstacle.y - ball.radius - 1;
-                    } else {
-                        ball.vy = Math.abs(ball.vy) * 0.9 + 3;
-                        ball.y = movingObstacle.y + movingObstacle.height + ball.radius + 1;
+                } else {
+                    bonusTarget.pulse += 0.08;
+                    bonusTarget.x += bonusTarget.vx * timeScale;
+                    if (bonusTarget.x - bonusTarget.radius < 12) {
+                        bonusTarget.x = 12 + bonusTarget.radius;
+                        bonusTarget.vx *= -1;
+                    } else if (bonusTarget.x + bonusTarget.radius > canvas.width - 12) {
+                        bonusTarget.x = canvas.width - 12 - bonusTarget.radius;
+                        bonusTarget.vx *= -1;
                     }
-                    ball.vx += (ball.x - (movingObstacle.x + movingObstacle.width / 2)) * 0.14;
-                    addFloatingText('⚡ הסטה!', ball.x, ball.y - 18, '#a855f7');
+
+                    const distTarget = Math.hypot(ball.x - bonusTarget.x, ball.y - bonusTarget.y);
+                    if (distTarget < ball.radius + bonusTarget.radius) {
+                        playSound('target');
+                        score += 3;
+                        coins += 2;
+                        saveGameData();
+                        document.getElementById('game-score-board').innerText = score;
+                        currentLevel = Math.max(1, Math.floor(score / 10) + 1);
+                        updateLevelBadge();
+                        ensureMovingObstacle();
+                        ensureExtraSoloBall();
+                        checkAchievements();
+                        addFloatingText('🎯 +3 | +2 🪙', bonusTarget.x, bonusTarget.y - 10, '#f43f5e');
+
+                        for (let i = 0; i < 18; i++) {
+                            particles.push({
+                                x: bonusTarget.x, y: bonusTarget.y,
+                                vx: (Math.random() - 0.5) * 12,
+                                vy: (Math.random() - 0.5) * 12,
+                                life: 1.0,
+                                color: i % 2 === 0 ? '#f43f5e' : '#fbbf24'
+                            });
+                        }
+                        bonusTarget = null;
+                        targetCooldown = 0;
+                    }
+                }
+
+                if (movingObstacle) {
+                    movingObstacle.x += movingObstacle.vx * timeScale;
+                    if (movingObstacle.x < 10) {
+                        movingObstacle.x = 10;
+                        movingObstacle.vx = Math.abs(movingObstacle.vx);
+                    } else if (movingObstacle.x + movingObstacle.width > canvas.width - 10) {
+                        movingObstacle.x = canvas.width - 10 - movingObstacle.width;
+                        movingObstacle.vx = -Math.abs(movingObstacle.vx);
+                    }
+
+                    const closestX = Math.max(movingObstacle.x, Math.min(ball.x, movingObstacle.x + movingObstacle.width));
+                    const closestY = Math.max(movingObstacle.y, Math.min(ball.y, movingObstacle.y + movingObstacle.height));
+                    const dxObs = ball.x - closestX;
+                    const dyObs = ball.y - closestY;
+                    if (dxObs * dxObs + dyObs * dyObs < ball.radius * ball.radius) {
+                        playSound('kick');
+                        if (ball.y < movingObstacle.y + movingObstacle.height / 2) {
+                            ball.vy = -Math.abs(ball.vy) * 0.9 - 3;
+                            ball.y = movingObstacle.y - ball.radius - 1;
+                        } else {
+                            ball.vy = Math.abs(ball.vy) * 0.9 + 3;
+                            ball.y = movingObstacle.y + movingObstacle.height + ball.radius + 1;
+                        }
+                        ball.vx += (ball.x - (movingObstacle.x + movingObstacle.width / 2)) * 0.14;
+                        addFloatingText('⚡ הסטה!', ball.x, ball.y - 18, '#a855f7');
+                    }
                 }
             }
 
@@ -1041,6 +1080,36 @@
 
             if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.85; }
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
+
+            // כדור בונוס נוסף רק במצב שבירת שיא (סולו)
+            if (isSoloMode() && extraSoloBall) {
+                extraSoloBall.vy += 0.38 * timeScale;
+                extraSoloBall.x += extraSoloBall.vx * timeScale;
+                extraSoloBall.y += extraSoloBall.vy * timeScale;
+                extraSoloBall.vx *= 0.99;
+                extraSoloBall.rot += extraSoloBall.vx * 0.05;
+
+                if (extraSoloBall.x - extraSoloBall.radius < 0) {
+                    extraSoloBall.x = extraSoloBall.radius;
+                    extraSoloBall.vx *= -0.85;
+                } else if (extraSoloBall.x + extraSoloBall.radius > canvas.width) {
+                    extraSoloBall.x = canvas.width - extraSoloBall.radius;
+                    extraSoloBall.vx *= -0.85;
+                }
+
+                if (extraSoloBall.y + extraSoloBall.radius >= player.y &&
+                    extraSoloBall.y - extraSoloBall.radius <= player.y + player.height &&
+                    extraSoloBall.x >= player.x - 20 &&
+                    extraSoloBall.x <= player.x + player.width + 20 &&
+                    extraSoloBall.vy > 0) {
+                    applyKickToBall(extraSoloBall, false);
+                }
+
+                if (extraSoloBall.y > canvas.height + 40) {
+                    extraSoloBall = null;
+                    addFloatingText('כדור בונוס יצא', canvas.width / 2, canvas.height - 95, '#94a3b8');
+                }
+            }
 
             for (let i = powerups.length - 1; i >= 0; i--) {
                 const pw = powerups[i];
@@ -1066,7 +1135,7 @@
 
             if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
                 ball.x >= player.x - 20 && ball.x <= player.x + player.width + 20 && ball.vy > 0) {
-                kickBall();
+                applyKickToBall(ball, true);
             }
 
             if (gameMode === 'pvp' || gameMode === 'tournament') {
@@ -1112,7 +1181,7 @@
             ctx.lineTo(canvas.width, canvas.height / 2);
             ctx.stroke();
 
-            if (bonusTarget) {
+            if (isSoloMode() && bonusTarget) {
                 ctx.save();
                 const rOuter = bonusTarget.radius + Math.sin(bonusTarget.pulse) * 3;
                 ctx.beginPath();
@@ -1136,7 +1205,7 @@
                 ctx.restore();
             }
 
-            if (movingObstacle) {
+            if (isSoloMode() && movingObstacle) {
                 ctx.save();
                 ctx.fillStyle = '#a855f7';
                 ctx.shadowColor = '#a855f7';
@@ -1204,6 +1273,21 @@
                 ctx.shadowBlur = 0;
             }
 
+            // ציור כדור הבונוס הנוסף במצב סולו בלבד
+            if (isSoloMode() && extraSoloBall) {
+                ctx.save();
+                ctx.translate(extraSoloBall.x, extraSoloBall.y);
+                ctx.rotate(extraSoloBall.rot);
+                ctx.fillStyle = '#38bdf8';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 16;
+                ctx.beginPath();
+                ctx.arc(0, 0, extraSoloBall.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.restore();
+            }
+
             ctx.save();
             ctx.translate(ball.x, ball.y);
             ctx.rotate(ball.rot);
@@ -1245,7 +1329,6 @@
                 bestDifficulty = difficulty;
                 isNewRecord = true;
                 saveGameData();
-                // סנכרון מיידי לשרת בלי לחכות ל-prompt שעלול להיחסם
                 syncScoreToFirebase(personalBest);
             }
 
