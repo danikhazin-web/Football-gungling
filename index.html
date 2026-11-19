@@ -2,61 +2,61 @@
 <html lang="he" dir="rtl" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>מלך ההקפצות - משחק כדורגל</title>
-    
+
     <!-- הגנות אבטחה כולל אישור חיבור ל-Firebase -->
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; connect-src 'self' https://football-juggling-default-rtdb.firebaseio.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; connect-src 'self' https://football-juggling-default-rtdb.firebaseio.com https://*.firebaseio.com;">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="הקפצות">
+    <meta name="apple-mobile-web-app-title" content="מלך ההקפצות">
     <meta name="theme-color" content="#0f172a">
-    <link rel="manifest" href="manifest.json">
+    <link id="dynamic-manifest" rel="manifest" href="manifest.json">
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
+
     <style>
-        * { font-family: 'Rubik', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { font-family: 'Rubik', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         input { user-select: text; }
         .glow-text { text-shadow: 0 0 15px rgba(52, 211, 153, 0.6); }
         .btn-glow { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); }
         canvas { touch-action: none; display: block; }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-between overflow-y-auto p-2">
+<body class="bg-slate-900 text-white min-h-dvh flex flex-col items-center justify-between p-2">
 
     <!-- Top Bar -->
-    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 my-1">
+    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
         <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-emerald-500/30">
             <i class="fa-solid fa-coins text-amber-400 text-base"></i>
             <span id="header-coins" class="font-bold text-amber-400 text-base">75</span>
         </div>
-        
+
         <div class="flex gap-2">
-            <button onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
+            <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
                 <i class="fa-solid fa-bolt text-amber-400"></i> <span id="diff-text">בינוני</span>
             </button>
-            <button onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
+            <button type="button" onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
                 <i class="fa-solid fa-globe text-cyan-400"></i> <span id="lang-text">עברית</span>
             </button>
         </div>
     </header>
 
     <!-- Main Menu -->
-    <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-4 z-20 px-2">
-        <div class="text-center mb-6">
+    <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-3 z-20 px-2">
+        <div class="text-center mb-5">
             <span class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest">טבלת שיאים עולמית בלייב 🏆</span>
             <h1 class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text">מלך ההקפצות</h1>
             <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">פגע במרכז המחבט כדי להדליק את הכדור באש!</p>
         </div>
 
         <div class="w-full space-y-3">
-            <button onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl flex items-center justify-between btn-glow transition transform active:scale-95 border border-emerald-400/30 cursor-pointer">
+            <button type="button" onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl flex items-center justify-between btn-glow transition transform active:scale-95 border border-emerald-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-futbol text-emerald-300"></i></div>
                     <div class="text-right">
@@ -67,7 +67,7 @@
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
             </button>
 
-            <button onclick="startGame('pvp')" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-indigo-400/30 cursor-pointer">
+            <button type="button" onclick="startGame('pvp')" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-indigo-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-user-robot text-indigo-200"></i></div>
                     <div class="text-right">
@@ -78,7 +78,7 @@
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
             </button>
 
-            <button onclick="startGame('tournament')" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-amber-400/30 cursor-pointer">
+            <button type="button" onclick="startGame('tournament')" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-amber-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-trophy text-amber-200"></i></div>
                     <div class="text-right">
@@ -92,12 +92,12 @@
     </div>
 
     <!-- Game Arena -->
-    <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2">
-        <div class="w-full flex justify-between items-center mb-1 px-1">
-            <button onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer">
+    <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2 min-h-[420px]">
+        <div class="w-full flex justify-between items-center mb-1 px-1 shrink-0">
+            <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer">
                 <i class="fa-solid fa-arrow-right"></i> <span id="lbl-menu">תפריט</span>
             </button>
-            
+
             <div class="flex items-center gap-2">
                 <div id="combo-badge" class="hidden text-xs font-black text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-xl border border-orange-500/40 animate-bounce">
                     🔥 x2
@@ -107,12 +107,12 @@
                 </div>
             </div>
 
-            <button onclick="toggleAudio()" id="audio-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer">
+            <button type="button" onclick="toggleAudio()" id="audio-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer">
                 <i class="fa-solid fa-volume-high"></i>
             </button>
         </div>
 
-        <div class="relative w-full h-[450px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
+        <div class="relative w-full flex-1 min-h-[380px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
             <div id="tap-instruction" class="absolute bottom-3 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/85 px-4 py-1 rounded-full border border-slate-700/80 pointer-events-none">
                 גרור את השחקן כדי לתפוס ולבעוט בכדור!
@@ -121,16 +121,16 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 my-2">
-        <button onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer">
+    <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
+        <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer">
             <i class="fa-solid fa-medal text-base"></i>
             <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
         </button>
-        <button onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer">
+        <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer">
             <i class="fa-solid fa-ranking-star text-base"></i>
             <span id="nav-leaderboard" class="text-[10px] font-bold">טבלת שיאים</span>
         </button>
-        <button onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer">
+        <button type="button" onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer">
             <i class="fa-solid fa-store text-base"></i>
             <span id="nav-shop" class="text-[10px] font-medium">חנות</span>
         </button>
@@ -141,10 +141,9 @@
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="lb-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> טבלת מובילים עולמית</h2>
-                <button onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Player Name Input -->
             <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 mb-4 flex flex-col gap-2">
                 <div class="flex justify-between items-center text-xs text-slate-400">
                     <span id="lb-your-name-lbl">השם שלך בטבלה:</span>
@@ -152,11 +151,10 @@
                 </div>
                 <div class="flex gap-2">
                     <input type="text" id="player-name-input" maxlength="16" placeholder="הכנס את שמך..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
-                    <button onclick="savePlayerName()" id="lb-save-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-xl transition cursor-pointer">שמור</button>
+                    <button type="button" onclick="savePlayerName()" id="lb-save-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-xl transition cursor-pointer">שמור</button>
                 </div>
             </div>
 
-            <!-- Scores List -->
             <div id="leaderboard-list" class="overflow-y-auto space-y-2 pr-1 flex-1">
                 <div class="text-center text-slate-400 py-8 text-sm">טוען נתונים מהשרת...</div>
             </div>
@@ -168,12 +166,12 @@
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="shop-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-store"></i> חנות המשחק</h2>
-                <button onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
+
             <div class="flex gap-2 mb-4 bg-slate-800/60 p-1 rounded-xl">
-                <button onclick="switchShopTab('skins')" id="tab-skins-btn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer">סקינים לכדור</button>
-                <button onclick="switchShopTab('songs')" id="tab-songs-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">מוזיקת רקע</button>
+                <button type="button" onclick="switchShopTab('skins')" id="tab-skins-btn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer">סקינים לכדור</button>
+                <button type="button" onclick="switchShopTab('songs')" id="tab-songs-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">מוזיקת רקע</button>
             </div>
 
             <div id="shop-items-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
@@ -185,13 +183,75 @@
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="achieve-title" class="text-xl font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-medal"></i> מערכת הישגים</h2>
-                <button onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="achievements-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
         </div>
     </div>
 
     <script>
+        // --- Cleanup Old Service Workers & Cache + Setup Standalone PWA Manifest ---
+        (async function initPWAAndCleanCache() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const reg of registrations) {
+                        await reg.unregister();
+                    }
+                } catch (e) {}
+            }
+            if ('caches' in window) {
+                try {
+                    const keys = await caches.keys();
+                    for (const key of keys) {
+                        await caches.delete(key);
+                    }
+                } catch (e) {}
+            }
+
+            try {
+                const iconCanvas = document.createElement('canvas');
+                iconCanvas.width = 512;
+                iconCanvas.height = 512;
+                const ictx = iconCanvas.getContext('2d');
+                ictx.fillStyle = '#0f172a';
+                ictx.fillRect(0, 0, 512, 512);
+                ictx.beginPath();
+                ictx.arc(256, 256, 175, 0, Math.PI * 2);
+                ictx.fillStyle = '#10b981';
+                ictx.fill();
+                ictx.beginPath();
+                ictx.arc(256, 256, 135, 0, Math.PI * 2);
+                ictx.fillStyle = '#ffffff';
+                ictx.fill();
+                ictx.fillStyle = '#0f172a';
+                ictx.beginPath();
+                ictx.arc(256, 256, 42, 0, Math.PI * 2);
+                ictx.fill();
+
+                const iconDataUrl = iconCanvas.toDataURL('image/png');
+                const manifestObj = {
+                    name: 'מלך ההקפצות - משחק כדורגל',
+                    short_name: 'הקפצות',
+                    start_url: './',
+                    scope: './',
+                    display: 'standalone',
+                    background_color: '#0f172a',
+                    theme_color: '#0f172a',
+                    orientation: 'portrait',
+                    icons: [
+                        { src: iconDataUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+                        { src: iconDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+                    ]
+                };
+                const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                const manifestUrl = URL.createObjectURL(blob);
+                const linkEl = document.getElementById('dynamic-manifest');
+                if (linkEl) linkEl.href = manifestUrl;
+            } catch (e) {}
+        })();
+
+        // --- Firebase Configuration ---
         const FIREBASE_DB_URL = "https://football-juggling-default-rtdb.firebaseio.com";
         let playerId = localStorage.getItem('juggle_player_id');
         if (!playerId) {
@@ -209,9 +269,9 @@
         let unlockedSkins = JSON.parse(localStorage.getItem('juggle_unlocked_skins')) || ['classic'];
         let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
         let achievements = JSON.parse(localStorage.getItem('juggle_achievements')) || {
-            juggles_50: {progress: 0, target: 50, reward: 30, claimed: false},
-            shop_2: {progress: unlockedSkins.length + unlockedSongs.length - 1, target: 2, reward: 50, claimed: false},
-            score_100: {progress: 0, target: 100, reward: 100, claimed: false}
+            juggles_50: { progress: 0, target: 50, reward: 30, claimed: false },
+            shop_2: { progress: unlockedSkins.length + unlockedSongs.length - 1, target: 2, reward: 50, claimed: false },
+            score_100: { progress: 0, target: 100, reward: 100, claimed: false }
         };
 
         const translations = {
@@ -282,21 +342,21 @@
         };
 
         const skinsData = [
-            {id: 'classic', name: {he: 'כדור קלאסי', en: 'Classic Ball', ru: 'Классический', fr: 'Classique'}, price: 0, color: '#ffffff'},
-            {id: 'gold', name: {he: 'כדור זהב', en: 'Golden Ball', ru: 'Золотой', fr: 'Or'}, price: 50, color: '#fbbf24'},
-            {id: 'neon', name: {he: 'ניאון סגור', en: 'Neon Ball', ru: 'Неоновый', fr: 'Néon'}, price: 100, color: '#38bdf8'},
-            {id: 'fire', name: {he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu'}, price: 150, color: '#f97316'},
-            {id: 'rainbow', name: {he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel'}, price: 200, color: '#ec4899'},
-            {id: 'steel', name: {he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier'}, price: 250, color: '#64748b'},
-            {id: 'galaxy', name: {he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie'}, price: 300, color: '#4f46e5'}
+            { id: 'classic', name: { he: 'כדור קלאסי', en: 'Classic Ball', ru: 'Классический', fr: 'Classique' }, price: 0, color: '#ffffff' },
+            { id: 'gold', name: { he: 'כדור זהב', en: 'Golden Ball', ru: 'Золотой', fr: 'Or' }, price: 50, color: '#fbbf24' },
+            { id: 'neon', name: { he: 'ניאון כחול', en: 'Neon Ball', ru: 'Неоновый', fr: 'Néon' }, price: 100, color: '#38bdf8' },
+            { id: 'fire', name: { he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu' }, price: 150, color: '#f97316' },
+            { id: 'rainbow', name: { he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel' }, price: 200, color: '#ec4899' },
+            { id: 'steel', name: { he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier' }, price: 250, color: '#64748b' },
+            { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' }
         ];
 
         const songsData = [
-            {id: 'none', name: {he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique'}, price: 0},
-            {id: 'beat1', name: {he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade'}, price: 40},
-            {id: 'synth', name: {he: 'סינת׳ווייف', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave'}, price: 80},
-            {id: 'rock', name: {he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade'}, price: 120},
-            {id: 'electro', name: {he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse'}, price: 180}
+            { id: 'none', name: { he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique' }, price: 0 },
+            { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40 },
+            { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80 },
+            { id: 'rock', name: { he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade' }, price: 120 },
+            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180 }
         ];
 
         function updateUIStrings() {
@@ -323,10 +383,10 @@
             document.getElementById('tab-skins-btn').innerText = t.tabSkins;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
             document.getElementById('achieve-title').innerHTML = `<i class="fa-solid fa-medal"></i> ${t.achieveTitle}`;
-            
-            const diffNames = {easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard};
+
+            const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
             document.getElementById('diff-text').innerText = diffNames[difficulty];
-            document.getElementById('lang-text').innerText = {'he': 'עברית', 'en': 'English', 'ru': 'Русский', 'fr': 'Français'}[lang];
+            document.getElementById('lang-text').innerText = { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang];
             document.getElementById('header-coins').innerText = coins;
         }
 
@@ -353,6 +413,7 @@
             document.getElementById('header-coins').innerText = coins;
         }
 
+        // --- Firebase Realtime Leaderboard ---
         async function syncScoreToFirebase(newBestScore) {
             if (newBestScore <= 0) return;
             const displayName = playerName.trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
@@ -366,9 +427,7 @@
                         updatedAt: Date.now()
                     })
                 });
-            } catch (e) {
-                console.error("Leaderboard sync error:", e);
-            }
+            } catch (e) {}
         }
 
         async function savePlayerName() {
@@ -446,6 +505,7 @@
             document.getElementById('leaderboard-modal').classList.add('hidden');
         }
 
+        // --- Audio Engine ---
         let audioCtx = null;
         let isAudioEnabled = true;
         let bgmInterval = null;
@@ -498,7 +558,7 @@
                     osc.start(now);
                     osc.stop(now + 0.3);
                 }
-            } catch(e) {}
+            } catch (e) {}
         }
 
         function toggleAudio() {
@@ -533,10 +593,11 @@
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.2);
                     step++;
-                } catch(e) {}
+                } catch (e) {}
             }, 500);
         }
 
+        // --- Canvas & Game Engine ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let gameMode = 'solo';
@@ -544,6 +605,7 @@
         let score = 0;
         let particles = [];
         let floatingTexts = [];
+        let animFrameId = null;
 
         let combo = 0;
         let isFireMode = false;
@@ -558,11 +620,18 @@
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
         function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = Math.max(300, Math.floor(rect.width));
+            canvas.height = Math.max(360, Math.floor(rect.height));
         }
 
+        window.addEventListener('resize', () => {
+            if (gameRunning) resizeCanvas();
+        });
+
         function startGame(mode) {
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            canvas.onclick = null;
             gameMode = mode;
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('game-container').classList.remove('hidden');
@@ -573,18 +642,22 @@
             combo = 0;
             isFireMode = false;
             powerups = [];
+            particles = [];
             floatingTexts = [];
             widePaddleEnd = 0;
             slowMoEnd = 0;
+            powerupTimer = 0;
             player.width = player.baseWidth;
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             startBGM();
-            requestAnimationFrame(gameLoop);
+            animFrameId = requestAnimationFrame(gameLoop);
         }
 
         function returnToMenu() {
             gameRunning = false;
+            canvas.onclick = null;
+            if (animFrameId) cancelAnimationFrame(animFrameId);
             if (bgmInterval) clearInterval(bgmInterval);
             document.getElementById('game-container').classList.add('hidden');
             document.getElementById('main-menu').classList.remove('hidden');
@@ -607,21 +680,16 @@
             }
         }
 
-        canvas.addEventListener('pointermove', (e) => {
+        function updatePaddleFromPointer(e) {
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
             const touchX = e.clientX - rect.left;
             player.x = touchX - player.width / 2;
             player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-        });
+        }
 
-        canvas.addEventListener('pointerdown', (e) => {
-            if (!gameRunning) return;
-            const rect = canvas.getBoundingClientRect();
-            const touchX = e.clientX - rect.left;
-            player.x = touchX - player.width / 2;
-            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-        });
+        canvas.addEventListener('pointermove', updatePaddleFromPointer);
+        canvas.addEventListener('pointerdown', updatePaddleFromPointer);
 
         function addFloatingText(text, x, y, color) {
             floatingTexts.push({ text, x, y, life: 1.0, color });
@@ -666,7 +734,7 @@
             }
 
             playSound(isFireMode ? 'firekick' : 'kick');
-            if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 80 : 45); } catch(e) {}
+            if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 80 : 45); } catch (e) {}
 
             const pCount = isFireMode ? 24 : 15;
             for (let i = 0; i < pCount; i++) {
@@ -676,12 +744,12 @@
                     vy: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
                     life: 1.0,
                     color: isFireMode ? (Math.random() > 0.5 ? '#f97316' : '#ef4444') :
-                           (activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff')
+                        (activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff')
                 });
             }
 
             let angle = (Math.random() - 0.5) * 1.4;
-            ball.vy = isFireMode ? -24 : -22; 
+            ball.vy = isFireMode ? -24 : -22;
             ball.vx += angle * 7;
 
             const pointsEarned = isFireMode ? 2 : 1;
@@ -769,8 +837,8 @@
 
                 if (ball.y - ball.radius <= bot.y + bot.height + 20 && ball.vy < 0) {
                     playSound('kick');
-                    if (navigator.vibrate) try { navigator.vibrate(50); } catch(e) {}
-                    
+                    if (navigator.vibrate) try { navigator.vibrate(50); } catch (e) {}
+
                     for (let i = 0; i < 15; i++) {
                         particles.push({
                             x: ball.x, y: ball.y,
@@ -782,7 +850,7 @@
                     }
 
                     let botAngle = (Math.random() - 0.5) * 1.4;
-                    ball.vy = 22; 
+                    ball.vy = 22;
                     ball.vx += botAngle * 7;
                 }
             }
@@ -891,7 +959,7 @@
                 }
             }
 
-            requestAnimationFrame(gameLoop);
+            animFrameId = requestAnimationFrame(gameLoop);
         }
 
         function showGameOverScreen() {
@@ -955,6 +1023,7 @@
             };
         }
 
+        // --- Shop & Achievements Modals ---
         function openShopModal() {
             renderShop('skins');
             document.getElementById('shop-modal').classList.remove('hidden');
@@ -997,8 +1066,8 @@
                             </div>
                             <div>
                                 ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
-                                  isOwned ? `<button onclick="equipSkin('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
-                                  `<button onclick="buySkin('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
+                                    isOwned ? `<button type="button" onclick="equipSkin('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
+                                    `<button type="button" onclick="buySkin('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
                             </div>
                         </div>
                     `;
@@ -1018,8 +1087,8 @@
                             </div>
                             <div>
                                 ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
-                                  isOwned ? `<button onclick="equipSong('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
-                                  `<button onclick="buySong('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
+                                    isOwned ? `<button type="button" onclick="equipSong('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
+                                    `<button type="button" onclick="buySong('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
                             </div>
                         </div>
                     `;
@@ -1079,9 +1148,9 @@
             const t = translations[lang];
 
             const achieveList = [
-                {id: 'juggles_50', title: {he: 'שולט בכדור (50 הקפצות)', en: 'Ball Master (50 juggles)', ru: 'Мастер (50)', fr: 'Maître (50)'}},
-                {id: 'shop_2', title: {he: 'אספן עשיר (קנה 2 פריטים)', en: 'Rich Collector (Buy 2 items)', ru: 'Коллекционер', fr: 'Collectionneur'}},
-                {id: 'score_100', title: {he: 'אגדת הקפצות (100 נקודות)', en: 'Legend (100 score)', ru: 'Легенда (100)', fr: 'Légende (100)'}}
+                { id: 'juggles_50', title: { he: 'שולט בכדור (50 הקפצות)', en: 'Ball Master (50 juggles)', ru: 'Мастер (50)', fr: 'Maître (50)' } },
+                { id: 'shop_2', title: { he: 'אספן עשיר (קנה 2 פריטים)', en: 'Rich Collector (Buy 2 items)', ru: 'Коллекционер', fr: 'Collectionneur' } },
+                { id: 'score_100', title: { he: 'אגדת הקפצות (100 נקודות)', en: 'Legend (100 score)', ru: 'Легенда (100)', fr: 'Légende (100)' } }
             ];
 
             achieveList.forEach(item => {
@@ -1099,8 +1168,8 @@
                         <div class="flex justify-between items-center text-xs text-slate-400">
                             <span>${data.progress} / ${data.target}</span>
                             ${data.claimed ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` :
-                              isCompleted ? `<button onclick="claimAchievement('${item.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded-xl transition cursor-pointer">${t.claim}</button>` :
-                              `<span class="text-slate-500">בתהליך</span>`}
+                                isCompleted ? `<button type="button" onclick="claimAchievement('${item.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded-xl transition cursor-pointer">${t.claim}</button>` :
+                                `<span class="text-slate-500">בתהליך</span>`}
                         </div>
                     </div>
                 `;
