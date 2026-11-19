@@ -196,9 +196,10 @@
                 <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="flex gap-2 mb-4 bg-slate-800/60 p-1 rounded-xl">
+            <div id="shop-tabs-bar" class="flex gap-1.5 mb-4 bg-slate-800/60 p-1 rounded-xl">
                 <button type="button" onclick="switchShopTab('skins')" id="tab-skins-btn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer">סקינים לכדור</button>
                 <button type="button" onclick="switchShopTab('songs')" id="tab-songs-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">מוזיקת רקע</button>
+                <button type="button" onclick="switchShopTab('vip')" id="tab-vip-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">יוקרה 👑</button>
             </div>
 
             <div id="shop-items-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
@@ -289,16 +290,18 @@
         let personalBest = parseInt(localStorage.getItem('juggle_personal_best')) || 0;
         let bestDifficulty = localStorage.getItem('juggle_best_diff') || 'medium';
 
-        let lang = 'he';
-        let difficulty = 'medium';
+        let lang = localStorage.getItem('juggle_lang') || 'he';
+        const savedDiff = localStorage.getItem('juggle_difficulty');
+        let difficulty = ['easy', 'medium', 'hard'].includes(savedDiff) ? savedDiff : 'medium';
         let coins = parseInt(localStorage.getItem('juggle_coins')) || 75;
         let activeSkin = localStorage.getItem('juggle_active_skin') || 'classic';
         let activeSong = localStorage.getItem('juggle_active_song') || 'none';
         let unlockedSkins = JSON.parse(localStorage.getItem('juggle_unlocked_skins')) || ['classic'];
         let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
+        let unlockedVip = JSON.parse(localStorage.getItem('juggle_unlocked_vip')) || [];
         let achievements = JSON.parse(localStorage.getItem('juggle_achievements')) || {
             juggles_50: { progress: 0, target: 50, reward: 30, claimed: false },
-            shop_2: { progress: unlockedSkins.length + unlockedSongs.length - 1, target: 2, reward: 50, claimed: false },
+            shop_2: { progress: unlockedSkins.length + unlockedSongs.length + unlockedVip.length - 1, target: 2, reward: 50, claimed: false },
             score_100: { progress: 0, target: 100, reward: 100, claimed: false }
         };
 
@@ -313,7 +316,7 @@
                 lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
                 lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
                 lbSynced: "✓ השיא מסונכרן לענן",
-                shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע",
+                shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע", tabVip: "יוקרה 👑",
                 achieveTitle: "מערכת הישגים",
                 buy: "קנה", equip: "השתמש", equipped: "בשימוש", owned: "בבעלותך",
                 claim: "אסוף פרס", claimed: "הושלם",
@@ -333,7 +336,7 @@
                 lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
                 lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
                 lbSynced: "✓ Score synced to cloud",
-                shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks",
+                shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks", tabVip: "VIP 👑",
                 achieveTitle: "Achievements System",
                 buy: "Buy", equip: "Equip", equipped: "Equipped", owned: "Owned",
                 claim: "Claim", claimed: "Completed",
@@ -353,7 +356,7 @@
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
                 lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
                 lbSynced: "✓ Рекорд сохранён",
-                shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка",
+                shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка", tabVip: "VIP 👑",
                 achieveTitle: "Система достижений",
                 buy: "Купить", equip: "Выбрать", equipped: "Активно", owned: "Куплено",
                 claim: "Забрать", claimed: "Выполнено",
@@ -373,7 +376,7 @@
                 lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
                 lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
                 lbSynced: "✓ Score synchronisé",
-                shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique",
+                shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique", tabVip: "VIP 👑",
                 achieveTitle: "Système de Succès",
                 buy: "Acheter", equip: "Équiper", equipped: "Équipé", owned: "Possédé",
                 claim: "Récupérer", claimed: "Terminé",
@@ -392,7 +395,12 @@
             { id: 'fire', name: { he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu' }, price: 150, color: '#f97316' },
             { id: 'rainbow', name: { he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel' }, price: 200, color: '#ec4899' },
             { id: 'steel', name: { he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier' }, price: 250, color: '#64748b' },
-            { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' }
+            { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' },
+            { id: 'emerald_pro', name: { he: 'אמרלד אלופים', en: 'Emerald Pro', ru: 'Изумруд Про', fr: 'Émeraude Pro' }, price: 420, color: '#10b981' },
+            { id: 'crimson_lord', name: { he: 'ארגמן מלכותי', en: 'Crimson Royal', ru: 'Багровый', fr: 'Cramoisi Royal' }, price: 550, color: '#e11d48' },
+            { id: 'diamond', name: { he: 'יהלום קריסטל', en: 'Crystal Diamond', ru: 'Алмаз', fr: 'Diamant' }, price: 750, color: '#67e8f9' },
+            { id: 'magma_king', name: { he: 'מלך הלבה', en: 'Magma King', ru: 'Король Лавы', fr: 'Roi de Magma' }, price: 1000, color: '#ea580c' },
+            { id: 'phantom_void', name: { he: 'צללים נדירים', en: 'Phantom Void', ru: 'Тень Бездны', fr: 'Ombre Royale' }, price: 1500, color: '#a855f7' }
         ];
 
         const songsData = [
@@ -400,8 +408,54 @@
             { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40 },
             { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80 },
             { id: 'rock', name: { he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade' }, price: 120 },
-            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180 }
+            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180 },
+            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280 },
+            { id: 'cyber_cup', name: { he: 'סייבר קאפ', en: 'Cyber Cup', ru: 'Кибер Кубок', fr: 'Cyber Coupe' }, price: 450 },
+            { id: 'hall_of_fame', name: { he: 'היכל התהילה', en: 'Hall of Fame', ru: 'Зал Славы', fr: 'Panthéon' }, price: 750 }
         ];
+
+        const vipItemsData = [
+            {
+                id: 'hot_start',
+                name: { he: 'פתיחה טעונה (50% מד)', en: 'Charged Start (50%)', ru: 'Старт с 50% заряда', fr: 'Départ Chargé (50%)' },
+                desc: { he: 'מתחיל כל ריצה עם 50% במד הטעינה', en: 'Start each run at 50% charge', ru: 'Старт с 50% заряда', fr: 'Démarre à 50% de charge' },
+                price: 350,
+                icon: '⚡'
+            },
+            {
+                id: 'coin_magnet',
+                name: { he: 'מגנט מטבעות (+1 בונוס)', en: 'Coin Magnet (+1 Bonus)', ru: 'Магнит Монет (+1)', fr: 'Aimant à Pièces (+1)' },
+                desc: { he: '+1 מטבע נוסף על כל השלמת משימה בסולו', en: '+1 extra coin per mission in Solo', ru: '+1 монета за миссию в соло', fr: '+1 pièce par mission en Solo' },
+                price: 500,
+                icon: '🧲'
+            },
+            {
+                id: 'wide_master',
+                name: { he: 'מחבט אלופים רחב', en: 'Wide Champion Paddle', ru: 'Широкая ракетка', fr: 'Raquette Champion' },
+                desc: { he: 'מגדיל מעט את רוחב המחבט הבסיסי', en: 'Slightly increases base paddle width', ru: 'Немного увеличивает ширину', fr: 'Élargit légèrement la raquette' },
+                price: 650,
+                icon: '🛡️'
+            },
+            {
+                id: 'overdrive_boost',
+                name: { he: 'טעינה מהירה לאוברדרייב', en: 'Fast Overdrive Charge', ru: 'Быстрый заряд', fr: 'Charge Rapide' },
+                desc: { he: 'ממלא מהר יותר את מד הטעינה בכל הקפצה', en: 'Faster charge gain on kicks', ru: 'Быстрее заполняет шкалу', fr: 'Charge plus vite à chaque frappe' },
+                price: 900,
+                icon: '🚀'
+            },
+            {
+                id: 'royal_crown',
+                name: { he: 'כתר המלך היוקרתי', en: 'Royal Crown Prestige', ru: 'Корона Престижа', fr: 'Couronne Royale' },
+                desc: { he: 'סטטוס יוקרה על גביע הכדור והמחבט', en: 'Prestige crown accent on paddle & ball', ru: 'Корона престижа на ракетке', fr: 'Couronne prestige sur la raquette' },
+                price: 1250,
+                icon: '👑'
+            }
+        ];
+
+        function persistPrefs() {
+            localStorage.setItem('juggle_difficulty', difficulty);
+            localStorage.setItem('juggle_lang', lang);
+        }
 
         function updateUIStrings() {
             const t = translations[lang];
@@ -426,9 +480,18 @@
             document.getElementById('shop-title').innerHTML = `<i class="fa-solid fa-store"></i> ${t.shopTitle}`;
             document.getElementById('tab-skins-btn').innerText = t.tabSkins;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
+            document.getElementById('tab-vip-btn').innerText = t.tabVip;
             document.getElementById('achieve-title').innerHTML = `<i class="fa-solid fa-medal"></i> ${t.achieveTitle}`;
 
             const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
+            const diffBtn = document.getElementById('diff-btn');
+            diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer ' + (
+                difficulty === 'easy'
+                    ? 'bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-500/50 text-emerald-300'
+                    : difficulty === 'hard'
+                        ? 'bg-rose-950/80 hover:bg-rose-900/80 border-rose-500/50 text-rose-300'
+                        : 'bg-slate-700/85 hover:bg-slate-700 border-slate-600 text-white'
+            );
             document.getElementById('diff-text').innerText = diffNames[difficulty];
             document.getElementById('lang-text').innerText = { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang];
             document.getElementById('header-coins').innerText = coins;
@@ -439,13 +502,19 @@
         function toggleLang() {
             const langs = ['he', 'en', 'ru', 'fr'];
             lang = langs[(langs.indexOf(lang) + 1) % langs.length];
+            persistPrefs();
             updateUIStrings();
         }
 
         function changeDifficulty() {
             const diffs = ['easy', 'medium', 'hard'];
             difficulty = diffs[(diffs.indexOf(difficulty) + 1) % diffs.length];
+            persistPrefs();
             updateUIStrings();
+            if (gameRunning) {
+                player.baseWidth = getBasePlayerWidth();
+                player.width = player.baseWidth;
+            }
         }
 
         function saveGameData() {
@@ -454,9 +523,12 @@
             localStorage.setItem('juggle_active_song', activeSong);
             localStorage.setItem('juggle_unlocked_skins', JSON.stringify(unlockedSkins));
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
+            localStorage.setItem('juggle_unlocked_vip', JSON.stringify(unlockedVip));
+            achievements.shop_2.progress = unlockedSkins.length + unlockedSongs.length + unlockedVip.length - 1;
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
             localStorage.setItem('juggle_personal_best', personalBest);
             localStorage.setItem('juggle_best_diff', bestDifficulty);
+            persistPrefs();
             document.getElementById('header-coins').innerText = coins;
         }
 
@@ -742,12 +814,10 @@
         let combo = 0;
         let isFireMode = false;
 
-        // מד טעינה ואוברדרייב + משימה מתחלפת
-        let chargeMeter = 0; // 0..100
+        let chargeMeter = 0;
         let overdriveEnd = 0;
         let currentMission = { kind: 'juggles', target: 6, progress: 0 };
 
-        // פיצ'רים ייעודיים למצב שבירת שיא (סולו) בלבד
         let bonusTarget = null;
         let targetCooldown = 0;
         let movingObstacle = null;
@@ -770,6 +840,50 @@
             return Date.now() < overdriveEnd;
         }
 
+        function getDifficultyConfig() {
+            if (difficulty === 'easy') {
+                return {
+                    speedScale: 0.82,
+                    gravityScale: 0.84,
+                    kickPower: 19.5,
+                    botTrack: 0.12,
+                    widthBonus: 12
+                };
+            }
+            if (difficulty === 'hard') {
+                return {
+                    speedScale: 1.28,
+                    gravityScale: 1.24,
+                    kickPower: 23.5,
+                    botTrack: 0.42,
+                    widthBonus: -10
+                };
+            }
+            return {
+                speedScale: 1.0,
+                gravityScale: 1.0,
+                kickPower: 21.0,
+                botTrack: 0.24,
+                widthBonus: 0
+            };
+        }
+
+        function getBasePlayerWidth() {
+            const cfg = getDifficultyConfig();
+            const vipBonus = unlockedVip.includes('wide_master') ? 14 : 0;
+            return Math.max(66, 90 + cfg.widthBonus + vipBonus);
+        }
+
+        function getEscalationFactor() {
+            return Math.min(1.45, 1 + Math.floor(score / 10) * 0.05);
+        }
+
+        function updateLevelBadge() {
+            const t = translations[lang];
+            const lvl = Math.max(1, Math.floor(score / 10) + 1);
+            document.getElementById('level-badge').innerText = `${t.levelPrefix} ${lvl}`;
+        }
+
         function pickNextMission() {
             const pool = [
                 { kind: 'juggles', target: 6 + Math.floor(Math.random() * 5), progress: 0 },
@@ -785,7 +899,8 @@
 
         function addCharge(amount) {
             if (isOverdriveActive()) return;
-            chargeMeter = Math.min(100, chargeMeter + amount);
+            const boost = unlockedVip.includes('overdrive_boost') ? 1.35 : 1.0;
+            chargeMeter = Math.min(100, chargeMeter + amount * boost);
             if (chargeMeter >= 100) {
                 chargeMeter = 0;
                 overdriveEnd = Date.now() + 7000;
@@ -803,8 +918,9 @@
                 currentMission.progress += amountOrSet;
             }
             if (currentMission.progress >= currentMission.target) {
+                const magnetBonus = (isSoloMode() && unlockedVip.includes('coin_magnet')) ? 1 : 0;
                 score += 4;
-                coins += 3;
+                coins += 3 + magnetBonus;
                 saveGameData();
                 document.getElementById('game-score-board').innerText = score;
                 currentLevel = Math.max(1, Math.floor(score / 10) + 1);
@@ -812,7 +928,7 @@
                 ensureMovingObstacle();
                 ensureExtraSoloBall();
                 checkAchievements();
-                addFloatingText('⭐ +4 | +3 🪙', canvas.width / 2, canvas.height * 0.25, '#34d399');
+                addFloatingText(`⭐ +4 | +${3 + magnetBonus} 🪙`, canvas.width / 2, canvas.height * 0.25, '#34d399');
                 pickNextMission();
             } else {
                 updateChargeAndMissionUI();
@@ -847,24 +963,9 @@
             mProgEl.innerText = `${Math.min(currentMission.progress, currentMission.target)}/${currentMission.target}`;
         }
 
-        function getDifficultyBaseScale() {
-            if (difficulty === 'easy') return 0.92;
-            if (difficulty === 'hard') return 1.14;
-            return 1.0;
-        }
-
-        function getEscalationFactor() {
-            return Math.min(1.42, 1 + Math.floor(score / 10) * 0.045);
-        }
-
-        function updateLevelBadge() {
-            const t = translations[lang];
-            const lvl = Math.max(1, Math.floor(score / 10) + 1);
-            document.getElementById('level-badge').innerText = `${t.levelPrefix} ${lvl}`;
-        }
-
         function spawnBonusTarget() {
             if (!isSoloMode()) return;
+            const cfg = getDifficultyConfig();
             const margin = 48;
             const minY = 75;
             const maxY = Math.max(minY + 40, canvas.height * 0.52);
@@ -872,7 +973,7 @@
                 x: Math.random() * Math.max(40, canvas.width - margin * 2) + margin,
                 y: Math.random() * (maxY - minY) + minY,
                 radius: 24,
-                vx: (Math.random() > 0.5 ? 1 : -1) * (1.1 + Math.min(1.8, currentLevel * 0.15)),
+                vx: (Math.random() > 0.5 ? 1 : -1) * (1.1 + Math.min(2.0, currentLevel * 0.16)) * cfg.speedScale,
                 pulse: 0
             };
         }
@@ -882,13 +983,14 @@
                 movingObstacle = null;
                 return;
             }
+            const cfg = getDifficultyConfig();
             if (score >= 15 && !movingObstacle) {
                 movingObstacle = {
                     x: canvas.width / 2 - 36,
                     y: canvas.height * 0.44,
                     width: 72,
                     height: 14,
-                    vx: 1.8 + Math.min(2.2, (score - 15) * 0.04)
+                    vx: (1.8 + Math.min(2.4, (score - 15) * 0.045)) * cfg.speedScale
                 };
             }
         }
@@ -898,12 +1000,13 @@
                 extraSoloBall = null;
                 return;
             }
+            const cfg = getDifficultyConfig();
             if (score >= 25 && !extraSoloBall) {
                 extraSoloBall = {
                     x: canvas.width * 0.35,
                     y: canvas.height * 0.32,
-                    vx: 2.2,
-                    vy: -8,
+                    vx: 2.2 * cfg.speedScale,
+                    vy: -8 * cfg.speedScale,
                     radius: 16,
                     rot: 0
                 };
@@ -928,13 +1031,15 @@
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('game-container').classList.remove('hidden');
             resizeCanvas();
+            player.baseWidth = getBasePlayerWidth();
+            player.width = player.baseWidth;
             resetPositions();
             gameRunning = true;
             score = 0;
             currentLevel = 1;
             combo = 0;
             isFireMode = false;
-            chargeMeter = 0;
+            chargeMeter = unlockedVip.includes('hot_start') ? 50 : 0;
             overdriveEnd = 0;
             powerups = [];
             particles = [];
@@ -945,7 +1050,6 @@
             targetCooldown = 0;
             movingObstacle = null;
             extraSoloBall = null;
-            player.width = player.baseWidth;
             if (isSoloMode()) {
                 spawnBonusTarget();
             } else {
@@ -970,10 +1074,11 @@
         }
 
         function resetPositions() {
+            const cfg = getDifficultyConfig();
             ball.x = canvas.width / 2;
             ball.y = canvas.height / 2;
-            ball.vx = (Math.random() - 0.5) * 3;
-            ball.vy = -6;
+            ball.vx = (Math.random() - 0.5) * 3.5 * cfg.speedScale;
+            ball.vy = -6 * cfg.speedScale;
             ball.rot = 0;
 
             player.x = canvas.width / 2 - player.width / 2;
@@ -1019,6 +1124,7 @@
         }
 
         function applyKickToBall(targetBall, isPrimaryBall) {
+            const cfg = getDifficultyConfig();
             const paddleCenter = player.x + player.width / 2;
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.28;
@@ -1058,10 +1164,11 @@
                 });
             }
 
-            const escalation = getEscalationFactor() * getDifficultyBaseScale();
+            const escalation = getEscalationFactor();
             const offsetRatio = Math.max(-1, Math.min(1, (targetBall.x - paddleCenter) / (player.width / 2)));
-            targetBall.vy = (isFireMode ? -23 : -21) * Math.min(1.22, escalation);
-            targetBall.vx = offsetRatio * 8.5 * Math.min(1.25, escalation);
+            const baseKick = isFireMode ? cfg.kickPower + 2.2 : cfg.kickPower;
+            targetBall.vy = -baseKick * Math.min(1.24, escalation);
+            targetBall.vx = offsetRatio * 8.8 * cfg.speedScale * Math.min(1.25, escalation);
 
             const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1);
             score += mult;
@@ -1087,14 +1194,18 @@
         function gameLoop() {
             if (!gameRunning) return;
             const now = Date.now();
+            const cfg = getDifficultyConfig();
 
             if (isOverdriveActive()) {
                 updateChargeAndMissionUI();
             }
 
-            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.5 : player.baseWidth;
-            const escalation = getEscalationFactor() * getDifficultyBaseScale();
-            const timeScale = ((now < slowMoEnd) ? 0.65 : 1.0) * Math.min(1.28, escalation);
+            player.baseWidth = getBasePlayerWidth();
+            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.45 : player.baseWidth;
+            const escalation = getEscalationFactor();
+            const slowFactor = (now < slowMoEnd) ? 0.65 : 1.0;
+            const moveScale = slowFactor * cfg.speedScale * Math.min(1.28, escalation);
+            const gravScale = slowFactor * cfg.gravityScale * Math.min(1.24, escalation);
 
             powerupTimer++;
             if (powerupTimer > 420 && powerups.length < 2) {
@@ -1111,7 +1222,7 @@
                     }
                 } else {
                     bonusTarget.pulse += 0.08;
-                    bonusTarget.x += bonusTarget.vx * timeScale;
+                    bonusTarget.x += bonusTarget.vx * moveScale;
                     if (bonusTarget.x - bonusTarget.radius < 12) {
                         bonusTarget.x = 12 + bonusTarget.radius;
                         bonusTarget.vx *= -1;
@@ -1152,7 +1263,7 @@
                 }
 
                 if (movingObstacle) {
-                    movingObstacle.x += movingObstacle.vx * timeScale;
+                    movingObstacle.x += movingObstacle.vx * moveScale;
                     if (movingObstacle.x < 10) {
                         movingObstacle.x = 10;
                         movingObstacle.vx = Math.abs(movingObstacle.vx);
@@ -1180,9 +1291,9 @@
                 }
             }
 
-            ball.vy += 0.42 * timeScale;
-            ball.x += ball.vx * timeScale;
-            ball.y += ball.vy * timeScale;
+            ball.vy += 0.42 * gravScale;
+            ball.x += ball.vx * moveScale;
+            ball.y += ball.vy * moveScale;
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
 
@@ -1201,9 +1312,9 @@
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
 
             if (isSoloMode() && extraSoloBall) {
-                extraSoloBall.vy += 0.38 * timeScale;
-                extraSoloBall.x += extraSoloBall.vx * timeScale;
-                extraSoloBall.y += extraSoloBall.vy * timeScale;
+                extraSoloBall.vy += 0.38 * gravScale;
+                extraSoloBall.x += extraSoloBall.vx * moveScale;
+                extraSoloBall.y += extraSoloBall.vy * moveScale;
                 extraSoloBall.vx *= 0.99;
                 extraSoloBall.rot += extraSoloBall.vx * 0.05;
 
@@ -1258,7 +1369,7 @@
 
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 bot.y = 35;
-                let trackSpeed = (difficulty === 'hard' ? 0.32 : difficulty === 'medium' ? 0.22 : 0.14) * Math.min(1.25, getEscalationFactor());
+                let trackSpeed = cfg.botTrack * Math.min(1.25, escalation);
                 bot.x += (ball.x - (bot.x + bot.width / 2)) * trackSpeed;
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
 
@@ -1277,8 +1388,8 @@
                     }
 
                     let botAngle = (Math.random() - 0.5) * 1.4;
-                    ball.vy = 21 * Math.min(1.2, escalation);
-                    ball.vx += botAngle * 7;
+                    ball.vy = cfg.kickPower * Math.min(1.2, escalation);
+                    ball.vx += botAngle * 7.2 * cfg.speedScale;
                 }
             }
 
@@ -1380,6 +1491,12 @@
             ctx.beginPath();
             ctx.roundRect(player.x + player.width * 0.35, player.y + 3, player.width * 0.3, 4, 2);
             ctx.fill();
+
+            if (unlockedVip.includes('royal_crown')) {
+                ctx.font = '13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('👑', player.x + player.width / 2, player.y - 6);
+            }
 
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 ctx.fillStyle = '#6366f1';
@@ -1490,29 +1607,36 @@
         }
 
         // --- Shop & Achievements Modals ---
+        let currentShopTab = 'skins';
+
         function openShopModal() {
-            renderShop('skins');
+            switchShopTab(currentShopTab);
             document.getElementById('shop-modal').classList.remove('hidden');
         }
         function closeShopModal() {
             document.getElementById('shop-modal').classList.add('hidden');
         }
 
-        function switchShopTab(tab) {
+        function setShopTabVisuals(tab) {
             const skinBtn = document.getElementById('tab-skins-btn');
             const songBtn = document.getElementById('tab-songs-btn');
-            if (tab === 'skins') {
-                skinBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer';
-                songBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
-                renderShop('skins');
-            } else {
-                songBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer';
-                skinBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
-                renderShop('songs');
-            }
+            const vipBtn = document.getElementById('tab-vip-btn');
+            const activeCls = 'flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer';
+            const idleCls = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
+
+            skinBtn.className = (tab === 'skins') ? activeCls : idleCls;
+            songBtn.className = (tab === 'songs') ? activeCls : idleCls;
+            vipBtn.className = (tab === 'vip') ? activeCls : idleCls;
+        }
+
+        function switchShopTab(tab) {
+            currentShopTab = tab;
+            setShopTabVisuals(tab);
+            renderShop(tab);
         }
 
         function renderShop(type) {
+            setShopTabVisuals(type);
             const container = document.getElementById('shop-items-container');
             container.innerHTML = '';
             const t = translations[lang];
@@ -1538,7 +1662,7 @@
                         </div>
                     `;
                 });
-            } else {
+            } else if (type === 'songs') {
                 songsData.forEach(item => {
                     let isOwned = unlockedSongs.includes(item.id);
                     let isEquipped = activeSong === item.id;
@@ -1555,6 +1679,26 @@
                                 ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
                                     isOwned ? `<button type="button" onclick="equipSong('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
                                     `<button type="button" onclick="buySong('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                vipItemsData.forEach(item => {
+                    let isOwned = unlockedVip.includes(item.id);
+                    container.innerHTML += `
+                        <div class="bg-slate-800/80 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 bg-amber-500/15 border border-amber-400/30 rounded-xl flex items-center justify-center text-lg shrink-0">${item.icon}</div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-sm text-amber-200 truncate">${item.name[lang] || item.name.en}</div>
+                                    <div class="text-[11px] text-slate-400 truncate">${item.desc[lang] || item.desc.en}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1 mt-0.5"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                ${isOwned ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.owned}</span>` :
+                                    `<button type="button" onclick="buyVip('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
                             </div>
                         </div>
                     `;
@@ -1598,6 +1742,18 @@
             saveGameData();
             renderShop('songs');
             startBGM();
+        }
+
+        function buyVip(id, price) {
+            if (unlockedVip.includes(id)) return;
+            if (coins >= price) {
+                coins -= price;
+                unlockedVip.push(id);
+                saveGameData();
+                renderShop('vip');
+            } else {
+                alert(lang === 'he' ? 'אין לך מספיק מטבעות!' : 'Not enough coins!');
+            }
         }
 
         function openAchievementsModal() {
