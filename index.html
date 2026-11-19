@@ -50,9 +50,9 @@
     <!-- Main Menu -->
     <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-3 z-20 px-2">
         <div class="text-center mb-5">
-            <span class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest">מטרות בונוס + אתגר מדורג 🎯</span>
+            <span class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest">מד טעינה + משימות מתחלפות ⚡🎯</span>
             <h1 class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text">מלך ההקפצות</h1>
-            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">כוון למטרות באוויר והתמודד עם קצב שעולה בהדרגה!</p>
+            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">מלא את מד האנרגיה, השלם משימות ושבור שיאים!</p>
         </div>
 
         <div class="w-full space-y-3">
@@ -61,7 +61,7 @@
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-futbol text-emerald-300"></i></div>
                     <div class="text-right">
                         <div id="btn-solo-title" class="font-bold text-base">שבירת שיא (סולו)</div>
-                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">הקפץ כמה שיותר ופגע במטרות בונוס</div>
+                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">משימות מתחלפות, מד טעינה ומטרות בונוס</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
@@ -92,7 +92,7 @@
     </div>
 
     <!-- Game Arena -->
-    <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2 min-h-[420px]">
+    <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2 min-h-[430px]">
         <div class="w-full flex justify-between items-center mb-1 px-1 shrink-0">
             <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer">
                 <i class="fa-solid fa-arrow-right"></i> <span id="lbl-menu">תפריט</span>
@@ -115,10 +115,25 @@
             </button>
         </div>
 
-        <div class="relative w-full flex-1 min-h-[380px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
+        <!-- Charge Gauge + Active Mission HUD -->
+        <div id="hud-panel" class="w-full bg-slate-800/85 border border-slate-700/70 rounded-2xl px-3 py-1.5 mb-1.5 flex flex-col gap-1.5 shrink-0">
+            <div class="flex items-center justify-between gap-2">
+                <span id="charge-label" class="text-[11px] font-bold text-amber-300 whitespace-nowrap">⚡ מד טעינה</span>
+                <div class="flex-1 h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-700/80">
+                    <div id="charge-bar-fill" class="h-full w-0 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 transition-all duration-150"></div>
+                </div>
+                <span id="charge-pct" class="text-[11px] font-black text-amber-400 w-9 text-left">0%</span>
+            </div>
+            <div id="mission-row" class="flex items-center justify-between text-xs bg-slate-900/80 px-2.5 py-1 rounded-xl border border-cyan-500/20">
+                <span id="mission-text" class="text-cyan-200 font-semibold truncate">🎯 משימה: פגע במטרה 1</span>
+                <span id="mission-progress" class="text-emerald-400 font-black ml-2 shrink-0">0/1</span>
+            </div>
+        </div>
+
+        <div class="relative w-full flex-1 min-h-[340px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
             <div id="tap-instruction" class="absolute bottom-3 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/85 px-4 py-1 rounded-full border border-slate-700/80 pointer-events-none">
-                גרור את השחקן כדי לתפוס ולבעוט בכדור!
+                גרור את השחקן ופגע במטרות הבונוס 🎯!
             </div>
         </div>
     </div>
@@ -155,7 +170,6 @@
                 </div>
             </div>
 
-            <!-- Personal Stats & Name Card -->
             <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 mb-3 flex flex-col gap-2">
                 <div class="flex justify-between items-center text-xs">
                     <span id="lb-your-rank" class="text-cyan-400 font-bold">--</span>
@@ -168,7 +182,6 @@
                 <div id="lb-sync-status" class="text-[11px] text-slate-400 text-center hidden"></div>
             </div>
 
-            <!-- Scores List -->
             <div id="leaderboard-list" class="overflow-y-auto space-y-2 pr-1 flex-1">
                 <div class="text-center text-slate-400 py-8 text-sm">טוען נתונים מהשרת...</div>
             </div>
@@ -291,8 +304,8 @@
 
         const translations = {
             he: {
-                subtitle: "כוון למטרות באוויר והתמודד עם קצב שעולה בהדרגה!",
-                soloTitle: "שבירת שיא (סולו)", soloDesc: "הקפץ כמה שיותר ופגע במטרות בונוס",
+                subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
+                soloTitle: "שבירת שיא (סולו)", soloDesc: "משימות מתחלפות, מד טעינה ומטרות בונוס",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
                 menu: "תפריט", tap: "גרור את השחקן ופגע במטרות הבונוס 🎯!",
@@ -306,11 +319,13 @@
                 claim: "אסוף פרס", claimed: "הושלם",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
                 gameOver: "המשחק נגמר!", scoreTxt: "תוצאה", bestTxt: "שיא אישי",
-                retry: "שחק שוב", levelPrefix: "שלב"
+                retry: "שחק שוב", levelPrefix: "שלב",
+                chargeLbl: "⚡ מד טעינה", overdriveLbl: "🔥 אוברדרייב x2",
+                mJuggles: "הקפץ {n} פעמים", mTargets: "פגע ב-{n} מטרות 🎯", mCombo: "הגע לקומבו {n}"
             },
             en: {
-                subtitle: "Aim for air targets and handle gradually rising pace!",
-                soloTitle: "Solo High Score", soloDesc: "Juggle & hit bonus targets",
+                subtitle: "Fill the charge gauge, complete missions & beat records!",
+                soloTitle: "Solo High Score", soloDesc: "Dynamic missions, charge gauge & bonus targets",
                 pvpTitle: "1v1 Match", pvpDesc: "Duel against smart AI",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
                 menu: "Menu", tap: "Drag player & hit bonus targets 🎯!",
@@ -324,11 +339,13 @@
                 claim: "Claim", claimed: "Completed",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
                 gameOver: "Game Over!", scoreTxt: "Score", bestTxt: "Best",
-                retry: "Play Again", levelPrefix: "Lvl"
+                retry: "Play Again", levelPrefix: "Lvl",
+                chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
+                mJuggles: "Juggle {n} times", mTargets: "Hit {n} targets 🎯", mCombo: "Reach {n} combo"
             },
             ru: {
-                subtitle: "Цельтесь в мишени и справляйтесь с ростом темпа!",
-                soloTitle: "Рекорд (Соло)", soloDesc: "Чеканьте и бейте по целям",
+                subtitle: "Заряжайте шкалу, выполняйте задания и бейте рекорды!",
+                soloTitle: "Рекорд (Соло)", soloDesc: "Задания, шкала заряда и цели",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
                 menu: "Меню", tap: "Ведите игрока и бейте по целям 🎯!",
@@ -342,11 +359,13 @@
                 claim: "Забрать", claimed: "Выполнено",
                 diffEasy: "Легко", diffMedium: "Средне", diffHard: "Сложно",
                 gameOver: "Игра окончена!", scoreTxt: "Счет", bestTxt: "Рекорд",
-                retry: "Ещё раз", levelPrefix: "Ур."
+                retry: "Ещё раз", levelPrefix: "Ур.",
+                chargeLbl: "⚡ Заряд", overdriveLbl: "🔥 ОВЕРДРАЙВ x2",
+                mJuggles: "Чеканьте {n} раз", mTargets: "Попадите в {n} целей 🎯", mCombo: "Комбо {n}"
             },
             fr: {
-                subtitle: "Visez les cibles et suivez le rythme progressif !",
-                soloTitle: "Record Solo", soloDesc: "Jonglez et visez les cibles",
+                subtitle: "Chargez la jauge, validez des missions et battez des records !",
+                soloTitle: "Record Solo", soloDesc: "Missions dynamiques, jauge et cibles",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
                 menu: "Menu", tap: "Glissez et visez les cibles 🎯 !",
@@ -360,7 +379,9 @@
                 claim: "Récupérer", claimed: "Terminé",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
                 gameOver: "Partie Terminée !", scoreTxt: "Score", bestTxt: "Meilleur",
-                retry: "Rejouer", levelPrefix: "Niv."
+                retry: "Rejouer", levelPrefix: "Niv.",
+                chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
+                mJuggles: "Jonglez {n} fois", mTargets: "Touchez {n} cibles 🎯", mCombo: "Combo {n}"
             }
         };
 
@@ -412,6 +433,7 @@
             document.getElementById('lang-text').innerText = { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang];
             document.getElementById('header-coins').innerText = coins;
             updateLevelBadge();
+            updateChargeAndMissionUI();
         }
 
         function toggleLang() {
@@ -720,6 +742,11 @@
         let combo = 0;
         let isFireMode = false;
 
+        // מד טעינה ואוברדרייב + משימה מתחלפת
+        let chargeMeter = 0; // 0..100
+        let overdriveEnd = 0;
+        let currentMission = { kind: 'juggles', target: 6, progress: 0 };
+
         // פיצ'רים ייעודיים למצב שבירת שיא (סולו) בלבד
         let bonusTarget = null;
         let targetCooldown = 0;
@@ -737,6 +764,87 @@
 
         function isSoloMode() {
             return gameMode === 'solo';
+        }
+
+        function isOverdriveActive() {
+            return Date.now() < overdriveEnd;
+        }
+
+        function pickNextMission() {
+            const pool = [
+                { kind: 'juggles', target: 6 + Math.floor(Math.random() * 5), progress: 0 },
+                { kind: 'targets', target: 1 + (Math.random() > 0.55 ? 1 : 0), progress: 0 },
+                { kind: 'combo', target: 3 + (Math.random() > 0.5 ? 1 : 0), progress: Math.min(combo, 3) }
+            ];
+            currentMission = pool[Math.floor(Math.random() * pool.length)];
+            if (currentMission.kind === 'combo') {
+                currentMission.progress = Math.min(currentMission.target, combo);
+            }
+            updateChargeAndMissionUI();
+        }
+
+        function addCharge(amount) {
+            if (isOverdriveActive()) return;
+            chargeMeter = Math.min(100, chargeMeter + amount);
+            if (chargeMeter >= 100) {
+                chargeMeter = 0;
+                overdriveEnd = Date.now() + 7000;
+                playSound('powerup');
+                addFloatingText('🔥 OVERDRIVE x2!', canvas.width / 2, canvas.height * 0.32, '#f97316');
+            }
+            updateChargeAndMissionUI();
+        }
+
+        function advanceMission(kind, amountOrSet = 1, isAbsolute = false) {
+            if (!currentMission || currentMission.kind !== kind) return;
+            if (isAbsolute) {
+                currentMission.progress = Math.max(currentMission.progress, amountOrSet);
+            } else {
+                currentMission.progress += amountOrSet;
+            }
+            if (currentMission.progress >= currentMission.target) {
+                score += 4;
+                coins += 3;
+                saveGameData();
+                document.getElementById('game-score-board').innerText = score;
+                currentLevel = Math.max(1, Math.floor(score / 10) + 1);
+                updateLevelBadge();
+                ensureMovingObstacle();
+                ensureExtraSoloBall();
+                checkAchievements();
+                addFloatingText('⭐ +4 | +3 🪙', canvas.width / 2, canvas.height * 0.25, '#34d399');
+                pickNextMission();
+            } else {
+                updateChargeAndMissionUI();
+            }
+        }
+
+        function updateChargeAndMissionUI() {
+            const t = translations[lang];
+            const barEl = document.getElementById('charge-bar-fill');
+            const pctEl = document.getElementById('charge-pct');
+            const lblEl = document.getElementById('charge-label');
+            const mTextEl = document.getElementById('mission-text');
+            const mProgEl = document.getElementById('mission-progress');
+
+            if (isOverdriveActive()) {
+                const remSec = Math.max(1, Math.ceil((overdriveEnd - Date.now()) / 1000));
+                lblEl.innerText = `${t.overdriveLbl} (${remSec}s)`;
+                barEl.style.width = '100%';
+                pctEl.innerText = 'x2';
+            } else {
+                lblEl.innerText = t.chargeLbl;
+                barEl.style.width = `${chargeMeter}%`;
+                pctEl.innerText = `${Math.floor(chargeMeter)}%`;
+            }
+
+            let title = '';
+            if (currentMission.kind === 'juggles') title = t.mJuggles.replace('{n}', currentMission.target);
+            else if (currentMission.kind === 'targets') title = t.mTargets.replace('{n}', currentMission.target);
+            else title = t.mCombo.replace('{n}', currentMission.target);
+
+            mTextEl.innerText = title;
+            mProgEl.innerText = `${Math.min(currentMission.progress, currentMission.target)}/${currentMission.target}`;
         }
 
         function getDifficultyBaseScale() {
@@ -786,7 +894,6 @@
         }
 
         function ensureExtraSoloBall() {
-            // כדור נוסף קיים אך ורק במצב שבירת שיא (סולו) ולעולם לא ב-1 נגד 1 או טורניר
             if (!isSoloMode()) {
                 extraSoloBall = null;
                 return;
@@ -807,7 +914,7 @@
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
             canvas.width = Math.max(300, Math.floor(rect.width));
-            canvas.height = Math.max(360, Math.floor(rect.height));
+            canvas.height = Math.max(340, Math.floor(rect.height));
         }
 
         window.addEventListener('resize', () => {
@@ -827,6 +934,8 @@
             currentLevel = 1;
             combo = 0;
             isFireMode = false;
+            chargeMeter = 0;
+            overdriveEnd = 0;
             powerups = [];
             particles = [];
             floatingTexts = [];
@@ -842,6 +951,7 @@
             } else {
                 bonusTarget = null;
             }
+            pickNextMission();
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             updateLevelBadge();
@@ -923,11 +1033,14 @@
                     } else if (combo > 1) {
                         addFloatingText(`COMBO x${combo}`, targetBall.x, targetBall.y - 25, '#fbbf24');
                     }
+                    advanceMission('combo', combo, true);
                 } else {
                     combo = 0;
                     isFireMode = false;
+                    chargeMeter = Math.max(0, chargeMeter - 12);
                     document.getElementById('combo-badge').classList.add('hidden');
                 }
+                addCharge(isSweetSpot ? 22 : 12);
             }
 
             playSound(isFireMode ? 'firekick' : 'kick');
@@ -950,14 +1063,14 @@
             targetBall.vy = (isFireMode ? -23 : -21) * Math.min(1.22, escalation);
             targetBall.vx = offsetRatio * 8.5 * Math.min(1.25, escalation);
 
-            const pointsEarned = (isPrimaryBall && isFireMode) ? 2 : 1;
-            score += pointsEarned;
+            const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1);
+            score += mult;
             document.getElementById('game-score-board').innerText = score;
             currentLevel = Math.max(1, Math.floor(score / 10) + 1);
             updateLevelBadge();
             ensureMovingObstacle();
             ensureExtraSoloBall();
-
+            advanceMission('juggles', 1, false);
             checkAchievements();
         }
 
@@ -975,6 +1088,10 @@
             if (!gameRunning) return;
             const now = Date.now();
 
+            if (isOverdriveActive()) {
+                updateChargeAndMissionUI();
+            }
+
             player.width = (now < widePaddleEnd) ? player.baseWidth * 1.5 : player.baseWidth;
             const escalation = getEscalationFactor() * getDifficultyBaseScale();
             const timeScale = ((now < slowMoEnd) ? 0.65 : 1.0) * Math.min(1.28, escalation);
@@ -985,7 +1102,6 @@
                 powerupTimer = 0;
             }
 
-            // מטרות בונוס ומכשול נע פועלים במצב סולו בלבד
             if (isSoloMode()) {
                 if (!bonusTarget) {
                     targetCooldown++;
@@ -1007,8 +1123,11 @@
                     const distTarget = Math.hypot(ball.x - bonusTarget.x, ball.y - bonusTarget.y);
                     if (distTarget < ball.radius + bonusTarget.radius) {
                         playSound('target');
-                        score += 3;
+                        const targetPts = 3 * (isOverdriveActive() ? 2 : 1);
+                        score += targetPts;
                         coins += 2;
+                        addCharge(30);
+                        advanceMission('targets', 1, false);
                         saveGameData();
                         document.getElementById('game-score-board').innerText = score;
                         currentLevel = Math.max(1, Math.floor(score / 10) + 1);
@@ -1016,7 +1135,7 @@
                         ensureMovingObstacle();
                         ensureExtraSoloBall();
                         checkAchievements();
-                        addFloatingText('🎯 +3 | +2 🪙', bonusTarget.x, bonusTarget.y - 10, '#f43f5e');
+                        addFloatingText(`🎯 +${targetPts} | +2 🪙`, bonusTarget.x, bonusTarget.y - 10, '#f43f5e');
 
                         for (let i = 0; i < 18; i++) {
                             particles.push({
@@ -1067,21 +1186,20 @@
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
 
-            if (isFireMode) {
+            if (isFireMode || isOverdriveActive()) {
                 particles.push({
                     x: ball.x + (Math.random() - 0.5) * 12,
                     y: ball.y + (Math.random() - 0.5) * 12,
                     vx: (Math.random() - 0.5) * 2,
                     vy: (Math.random() - 0.5) * 2,
                     life: 0.7,
-                    color: Math.random() > 0.4 ? '#f97316' : '#fbbf24'
+                    color: isOverdriveActive() ? '#f43f5e' : (Math.random() > 0.4 ? '#f97316' : '#fbbf24')
                 });
             }
 
             if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.85; }
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
 
-            // כדור בונוס נוסף רק במצב שבירת שיא (סולו)
             if (isSoloMode() && extraSoloBall) {
                 extraSoloBall.vy += 0.38 * timeScale;
                 extraSoloBall.x += extraSoloBall.vx * timeScale;
@@ -1273,7 +1391,6 @@
                 ctx.shadowBlur = 0;
             }
 
-            // ציור כדור הבונוס הנוסף במצב סולו בלבד
             if (isSoloMode() && extraSoloBall) {
                 ctx.save();
                 ctx.translate(extraSoloBall.x, extraSoloBall.y);
@@ -1292,9 +1409,9 @@
             ctx.translate(ball.x, ball.y);
             ctx.rotate(ball.rot);
             let skinObj = skinsData.find(s => s.id === activeSkin) || skinsData[0];
-            ctx.fillStyle = isFireMode ? '#f97316' : skinObj.color;
-            ctx.shadowColor = isFireMode ? '#ef4444' : skinObj.color;
-            ctx.shadowBlur = isFireMode ? 26 : 18;
+            ctx.fillStyle = isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color);
+            ctx.shadowColor = isOverdriveActive() ? '#fbbf24' : (isFireMode ? '#ef4444' : skinObj.color);
+            ctx.shadowBlur = (isOverdriveActive() || isFireMode) ? 28 : 18;
             ctx.beginPath();
             ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
             ctx.fill();
