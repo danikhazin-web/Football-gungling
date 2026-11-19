@@ -50,9 +50,9 @@
     <!-- Main Menu -->
     <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-3 z-20 px-2">
         <div class="text-center mb-5">
-            <span class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest">טבלת שיאים עולמית בלייב 🏆</span>
+            <span class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest">מטרות בונוס + אתגר מדורג 🎯</span>
             <h1 class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text">מלך ההקפצות</h1>
-            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">פגע במרכז המחבט כדי להדליק את הכדור באש!</p>
+            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">כוון למטרות באוויר והתמודד עם קצב שעולה בהדרגה!</p>
         </div>
 
         <div class="w-full space-y-3">
@@ -61,7 +61,7 @@
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-futbol text-emerald-300"></i></div>
                     <div class="text-right">
                         <div id="btn-solo-title" class="font-bold text-base">שבירת שיא (סולו)</div>
-                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">הקפץ כמה שיותר בלי להפיל</div>
+                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">הקפץ כמה שיותר ופגע במטרות בונוס</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
@@ -99,6 +99,9 @@
             </button>
 
             <div class="flex items-center gap-2">
+                <div id="level-badge" class="text-xs font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-xl border border-cyan-500/30">
+                    שלב 1
+                </div>
                 <div id="combo-badge" class="hidden text-xs font-black text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-xl border border-orange-500/40 animate-bounce">
                     🔥 x2
                 </div>
@@ -276,11 +279,11 @@
 
         const translations = {
             he: {
-                subtitle: "פגע במרכז המחבט כדי להדליק את הכדור באש!",
-                soloTitle: "שבירת שיא (סולו)", soloDesc: "הקפץ כמה שיותר בלי להפיל",
+                subtitle: "כוון למטרות באוויר והתמודד עם קצב שעולה בהדרגה!",
+                soloTitle: "שבירת שיא (סולו)", soloDesc: "הקפץ כמה שיותר ופגע במטרות בונוס",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
-                menu: "תפריט", tap: "גרור את השחקן כדי לתפוס ולבעוט בכדור!",
+                menu: "תפריט", tap: "גרור את השחקן ופגע במטרות הבונוס 🎯!",
                 navAchieve: "הישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת מובילים עולמית", lbYourName: "השם שלך בטבלה:", lbBest: "השיא שלך:", lbSave: "שמור",
                 shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע",
@@ -289,14 +292,14 @@
                 claim: "אסוף פרס", claimed: "הושלם",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
                 gameOver: "המשחק נגמר!", scoreTxt: "תוצאה", bestTxt: "שיא אישי",
-                retry: "שחק שוב"
+                retry: "שחק שוב", levelPrefix: "שלב"
             },
             en: {
-                subtitle: "Hit the center of the paddle to ignite Fire Mode!",
-                soloTitle: "Solo High Score", soloDesc: "Juggle as much as you can",
+                subtitle: "Aim for air targets and handle gradually rising pace!",
+                soloTitle: "Solo High Score", soloDesc: "Juggle & hit bonus targets",
                 pvpTitle: "1v1 Match", pvpDesc: "Duel against smart AI",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
-                menu: "Menu", tap: "Drag player to catch & kick the ball!",
+                menu: "Menu", tap: "Drag player & hit bonus targets 🎯!",
                 navAchieve: "Achievements", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbYourName: "Your Name:", lbBest: "Your Best:", lbSave: "Save",
                 shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks",
@@ -305,14 +308,14 @@
                 claim: "Claim", claimed: "Completed",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
                 gameOver: "Game Over!", scoreTxt: "Score", bestTxt: "Best",
-                retry: "Play Again"
+                retry: "Play Again", levelPrefix: "Lvl"
             },
             ru: {
-                subtitle: "Бей центром, чтобы зажечь Огненный режим!",
-                soloTitle: "Рекорд (Соло)", soloDesc: "Чекань мяч как можно дольше",
+                subtitle: "Цельтесь в мишени и справляйтесь с ростом темпа!",
+                soloTitle: "Рекорд (Соло)", soloDesc: "Чеканьте и бейте по целям",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
-                menu: "Меню", tap: "Ведите игрока, чтобы поймать мяч!",
+                menu: "Меню", tap: "Ведите игрока и бейте по целям 🎯!",
                 navAchieve: "Достижения", navLeaderboard: "Рейтинг", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbYourName: "Ваше имя:", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
                 shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка",
@@ -321,14 +324,14 @@
                 claim: "Забрать", claimed: "Выполнено",
                 diffEasy: "Легко", diffMedium: "Средне", diffHard: "Сложно",
                 gameOver: "Игра окончена!", scoreTxt: "Счет", bestTxt: "Рекорд",
-                retry: "Ещё раз"
+                retry: "Ещё раз", levelPrefix: "Ур."
             },
             fr: {
-                subtitle: "Frappez au centre pour activer le Mode Feu !",
-                soloTitle: "Record Solo", soloDesc: "Faites des jongles sans tomber",
+                subtitle: "Visez les cibles et suivez le rythme progressif !",
+                soloTitle: "Record Solo", soloDesc: "Jonglez et visez les cibles",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
-                menu: "Menu", tap: "Glissez pour attraper le ballon !",
+                menu: "Menu", tap: "Glissez et visez les cibles 🎯 !",
                 navAchieve: "Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement Mondial", lbYourName: "Votre nom :", lbBest: "Meilleur :", lbSave: "Sauver",
                 shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique",
@@ -337,7 +340,7 @@
                 claim: "Récupérer", claimed: "Terminé",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
                 gameOver: "Partie Terminée !", scoreTxt: "Score", bestTxt: "Meilleur",
-                retry: "Rejouer"
+                retry: "Rejouer", levelPrefix: "Niv."
             }
         };
 
@@ -388,6 +391,7 @@
             document.getElementById('diff-text').innerText = diffNames[difficulty];
             document.getElementById('lang-text').innerText = { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang];
             document.getElementById('header-coins').innerText = coins;
+            updateLevelBadge();
         }
 
         function toggleLang() {
@@ -541,6 +545,14 @@
                     gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
                     osc.start(now);
                     osc.stop(now + 0.18);
+                } else if (type === 'target') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(980, now + 0.18);
+                    gain.gain.setValueAtTime(0.55, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+                    osc.start(now);
+                    osc.stop(now + 0.18);
                 } else if (type === 'powerup') {
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(400, now);
@@ -603,12 +615,18 @@
         let gameMode = 'solo';
         let gameRunning = false;
         let score = 0;
+        let currentLevel = 1;
         let particles = [];
         let floatingTexts = [];
         let animFrameId = null;
 
         let combo = 0;
         let isFireMode = false;
+
+        // #1: Air Bonus Target & #2: Gradual Difficulty Obstacle
+        let bonusTarget = null;
+        let targetCooldown = 0;
+        let movingObstacle = null;
 
         let powerups = [];
         let powerupTimer = 0;
@@ -618,6 +636,48 @@
         let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
         let player = { x: 0, y: 0, baseWidth: 90, width: 90, height: 26 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
+
+        function getDifficultyBaseScale() {
+            if (difficulty === 'easy') return 0.92;
+            if (difficulty === 'hard') return 1.14;
+            return 1.0;
+        }
+
+        function getEscalationFactor() {
+            // עולה בהדרגה עם הניקוד, עם תקרה מאוזנת כדי לא לשבור את השליטה
+            return Math.min(1.42, 1 + Math.floor(score / 10) * 0.045);
+        }
+
+        function updateLevelBadge() {
+            const t = translations[lang];
+            const lvl = Math.max(1, Math.floor(score / 10) + 1);
+            document.getElementById('level-badge').innerText = `${t.levelPrefix} ${lvl}`;
+        }
+
+        function spawnBonusTarget() {
+            const margin = 48;
+            const minY = (gameMode === 'solo') ? 75 : 105;
+            const maxY = Math.max(minY + 40, canvas.height * 0.52);
+            bonusTarget = {
+                x: Math.random() * Math.max(40, canvas.width - margin * 2) + margin,
+                y: Math.random() * (maxY - minY) + minY,
+                radius: 24,
+                vx: (Math.random() > 0.5 ? 1 : -1) * (1.1 + Math.min(1.8, currentLevel * 0.15)),
+                pulse: 0
+            };
+        }
+
+        function ensureMovingObstacle() {
+            if (score >= 15 && !movingObstacle) {
+                movingObstacle = {
+                    x: canvas.width / 2 - 36,
+                    y: canvas.height * 0.44,
+                    width: 72,
+                    height: 14,
+                    vx: 1.8 + Math.min(2.2, (score - 15) * 0.04)
+                };
+            }
+        }
 
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
@@ -639,6 +699,7 @@
             resetPositions();
             gameRunning = true;
             score = 0;
+            currentLevel = 1;
             combo = 0;
             isFireMode = false;
             powerups = [];
@@ -647,9 +708,13 @@
             widePaddleEnd = 0;
             slowMoEnd = 0;
             powerupTimer = 0;
+            targetCooldown = 0;
+            movingObstacle = null;
             player.width = player.baseWidth;
+            spawnBonusTarget();
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
+            updateLevelBadge();
             startBGM();
             animFrameId = requestAnimationFrame(gameLoop);
         }
@@ -748,13 +813,18 @@
                 });
             }
 
-            let angle = (Math.random() - 0.5) * 1.4;
-            ball.vy = isFireMode ? -24 : -22;
-            ball.vx += angle * 7;
+            const escalation = getEscalationFactor() * getDifficultyBaseScale();
+            // כיוון הבעיטה מושפע ממיקום הפגיעה במחבט כדי לאפשר כיוון למטרות בונוס
+            const offsetRatio = Math.max(-1, Math.min(1, (ball.x - paddleCenter) / (player.width / 2)));
+            ball.vy = (isFireMode ? -23 : -21) * Math.min(1.22, escalation);
+            ball.vx = offsetRatio * 8.5 * Math.min(1.25, escalation);
 
             const pointsEarned = isFireMode ? 2 : 1;
             score += pointsEarned;
             document.getElementById('game-score-board').innerText = score;
+            currentLevel = Math.max(1, Math.floor(score / 10) + 1);
+            updateLevelBadge();
+            ensureMovingObstacle();
 
             checkAchievements();
         }
@@ -774,12 +844,85 @@
             const now = Date.now();
 
             player.width = (now < widePaddleEnd) ? player.baseWidth * 1.5 : player.baseWidth;
-            const timeScale = (now < slowMoEnd) ? 0.65 : 1.0;
+            const escalation = getEscalationFactor() * getDifficultyBaseScale();
+            const timeScale = ((now < slowMoEnd) ? 0.65 : 1.0) * Math.min(1.28, escalation);
 
             powerupTimer++;
             if (powerupTimer > 420 && powerups.length < 2) {
                 spawnPowerup();
                 powerupTimer = 0;
+            }
+
+            if (!bonusTarget) {
+                targetCooldown++;
+                if (targetCooldown > 150) {
+                    spawnBonusTarget();
+                    targetCooldown = 0;
+                }
+            } else {
+                bonusTarget.pulse += 0.08;
+                bonusTarget.x += bonusTarget.vx * timeScale;
+                if (bonusTarget.x - bonusTarget.radius < 12) {
+                    bonusTarget.x = 12 + bonusTarget.radius;
+                    bonusTarget.vx *= -1;
+                } else if (bonusTarget.x + bonusTarget.radius > canvas.width - 12) {
+                    bonusTarget.x = canvas.width - 12 - bonusTarget.radius;
+                    bonusTarget.vx *= -1;
+                }
+
+                const distTarget = Math.hypot(ball.x - bonusTarget.x, ball.y - bonusTarget.y);
+                if (distTarget < ball.radius + bonusTarget.radius) {
+                    playSound('target');
+                    score += 3;
+                    coins += 2;
+                    saveGameData();
+                    document.getElementById('game-score-board').innerText = score;
+                    currentLevel = Math.max(1, Math.floor(score / 10) + 1);
+                    updateLevelBadge();
+                    ensureMovingObstacle();
+                    checkAchievements();
+                    addFloatingText('🎯 +3 | +2 🪙', bonusTarget.x, bonusTarget.y - 10, '#f43f5e');
+
+                    for (let i = 0; i < 18; i++) {
+                        particles.push({
+                            x: bonusTarget.x, y: bonusTarget.y,
+                            vx: (Math.random() - 0.5) * 12,
+                            vy: (Math.random() - 0.5) * 12,
+                            life: 1.0,
+                            color: i % 2 === 0 ? '#f43f5e' : '#fbbf24'
+                        });
+                    }
+                    bonusTarget = null;
+                    targetCooldown = 0;
+                }
+            }
+
+            if (movingObstacle) {
+                movingObstacle.x += movingObstacle.vx * timeScale;
+                if (movingObstacle.x < 10) {
+                    movingObstacle.x = 10;
+                    movingObstacle.vx = Math.abs(movingObstacle.vx);
+                } else if (movingObstacle.x + movingObstacle.width > canvas.width - 10) {
+                    movingObstacle.x = canvas.width - 10 - movingObstacle.width;
+                    movingObstacle.vx = -Math.abs(movingObstacle.vx);
+                }
+
+                const closestX = Math.max(movingObstacle.x, Math.min(ball.x, movingObstacle.x + movingObstacle.width));
+                const closestY = Math.max(movingObstacle.y, Math.min(ball.y, movingObstacle.y + movingObstacle.height));
+                const dxObs = ball.x - closestX;
+                const dyObs = ball.y - closestY;
+                if (dxObs * dxObs + dyObs * dyObs < ball.radius * ball.radius) {
+                    playSound('kick');
+                    if (ball.y < movingObstacle.y + movingObstacle.height / 2) {
+                        ball.vy = -Math.abs(ball.vy) * 0.9 - 3;
+                        ball.y = movingObstacle.y - ball.radius - 1;
+                    } else {
+                        ball.vy = Math.abs(ball.vy) * 0.9 + 3;
+                        ball.y = movingObstacle.y + movingObstacle.height + ball.radius + 1;
+                    }
+                    ball.vx += (ball.x - (movingObstacle.x + movingObstacle.width / 2)) * 0.14;
+                    addFloatingText('⚡ הסטה!', ball.x, ball.y - 18, '#a855f7');
+                }
             }
 
             ball.vy += 0.42 * timeScale;
@@ -831,7 +974,7 @@
 
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 bot.y = 35;
-                let trackSpeed = difficulty === 'hard' ? 0.32 : difficulty === 'medium' ? 0.22 : 0.14;
+                let trackSpeed = (difficulty === 'hard' ? 0.32 : difficulty === 'medium' ? 0.22 : 0.14) * Math.min(1.25, getEscalationFactor());
                 bot.x += (ball.x - (bot.x + bot.width / 2)) * trackSpeed;
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
 
@@ -850,7 +993,7 @@
                     }
 
                     let botAngle = (Math.random() - 0.5) * 1.4;
-                    ball.vy = 22;
+                    ball.vy = 21 * Math.min(1.2, escalation);
                     ball.vx += botAngle * 7;
                 }
             }
@@ -871,6 +1014,43 @@
             ctx.moveTo(0, canvas.height / 2);
             ctx.lineTo(canvas.width, canvas.height / 2);
             ctx.stroke();
+
+            // Draw Air Bonus Target
+            if (bonusTarget) {
+                ctx.save();
+                const rOuter = bonusTarget.radius + Math.sin(bonusTarget.pulse) * 3;
+                ctx.beginPath();
+                ctx.arc(bonusTarget.x, bonusTarget.y, rOuter, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.18)';
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#f43f5e';
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(bonusTarget.x, bonusTarget.y, bonusTarget.radius * 0.52, 0, Math.PI * 2);
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ctx.font = '15px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🎯', bonusTarget.x, bonusTarget.y);
+                ctx.restore();
+            }
+
+            // Draw Moving Obstacle (from score 15+)
+            if (movingObstacle) {
+                ctx.save();
+                ctx.fillStyle = '#a855f7';
+                ctx.shadowColor = '#a855f7';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.roundRect(movingObstacle.x, movingObstacle.y, movingObstacle.width, movingObstacle.height, 8);
+                ctx.fill();
+                ctx.restore();
+            }
 
             powerups.forEach(pw => {
                 ctx.save();
