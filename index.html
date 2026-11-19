@@ -196,9 +196,10 @@
                 <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="flex gap-2 mb-4 bg-slate-800/60 p-1 rounded-xl">
+            <div class="flex gap-1.5 mb-4 bg-slate-800/60 p-1 rounded-xl">
                 <button type="button" onclick="switchShopTab('skins')" id="tab-skins-btn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer">סקינים לכדור</button>
                 <button type="button" onclick="switchShopTab('songs')" id="tab-songs-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">מוזיקת רקע</button>
+                <button type="button" onclick="switchShopTab('vip')" id="tab-vip-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">יוקרה 👑</button>
             </div>
 
             <div id="shop-items-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
@@ -296,9 +297,10 @@
         let activeSong = localStorage.getItem('juggle_active_song') || 'none';
         let unlockedSkins = JSON.parse(localStorage.getItem('juggle_unlocked_skins')) || ['classic'];
         let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
+        let unlockedVip = JSON.parse(localStorage.getItem('juggle_unlocked_vip')) || [];
         let achievements = JSON.parse(localStorage.getItem('juggle_achievements')) || {
             juggles_50: { progress: 0, target: 50, reward: 30, claimed: false },
-            shop_2: { progress: unlockedSkins.length + unlockedSongs.length - 1, target: 2, reward: 50, claimed: false },
+            shop_2: { progress: unlockedSkins.length + unlockedSongs.length + unlockedVip.length - 1, target: 2, reward: 50, claimed: false },
             score_100: { progress: 0, target: 100, reward: 100, claimed: false }
         };
 
@@ -313,7 +315,7 @@
                 lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
                 lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
                 lbSynced: "✓ השיא מסונכרן לענן",
-                shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע",
+                shopTitle: "חנות המשחק", tabSkins: "סקינים לכדור", tabSongs: "מוזיקת רקע", tabVip: "יוקרה 👑",
                 achieveTitle: "מערכת הישגים",
                 buy: "קנה", equip: "השתמש", equipped: "בשימוש", owned: "בבעלותך",
                 claim: "אסוף פרס", claimed: "הושלם",
@@ -333,7 +335,7 @@
                 lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
                 lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
                 lbSynced: "✓ Score synced to cloud",
-                shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks",
+                shopTitle: "Game Shop", tabSkins: "Ball Skins", tabSongs: "BGM Tracks", tabVip: "VIP 👑",
                 achieveTitle: "Achievements System",
                 buy: "Buy", equip: "Equip", equipped: "Equipped", owned: "Owned",
                 claim: "Claim", claimed: "Completed",
@@ -353,7 +355,7 @@
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
                 lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
                 lbSynced: "✓ Рекорд сохранён",
-                shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка",
+                shopTitle: "Магазин", tabSkins: "Скины мяча", tabSongs: "Музыка", tabVip: "VIP 👑",
                 achieveTitle: "Система достижений",
                 buy: "Купить", equip: "Выбрать", equipped: "Активно", owned: "Куплено",
                 claim: "Забрать", claimed: "Выполнено",
@@ -373,7 +375,7 @@
                 lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
                 lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
                 lbSynced: "✓ Score synchronisé",
-                shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique",
+                shopTitle: "Boutique", tabSkins: "Skins de Ballon", tabSongs: "Musique", tabVip: "VIP 👑",
                 achieveTitle: "Système de Succès",
                 buy: "Acheter", equip: "Équiper", equipped: "Équipé", owned: "Possédé",
                 claim: "Récupérer", claimed: "Terminé",
@@ -392,7 +394,12 @@
             { id: 'fire', name: { he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu' }, price: 150, color: '#f97316' },
             { id: 'rainbow', name: { he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel' }, price: 200, color: '#ec4899' },
             { id: 'steel', name: { he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier' }, price: 250, color: '#64748b' },
-            { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' }
+            { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' },
+            { id: 'emerald_pro', name: { he: 'אמרלד אלופים', en: 'Emerald Pro', ru: 'Изумруд Про', fr: 'Émeraude Pro' }, price: 420, color: '#10b981' },
+            { id: 'crimson_lord', name: { he: 'ארגמן מלכותי', en: 'Crimson Royal', ru: 'Багровый', fr: 'Cramoisi Royal' }, price: 550, color: '#e11d48' },
+            { id: 'diamond', name: { he: 'יהלום קריסטל', en: 'Crystal Diamond', ru: 'Алмаз', fr: 'Diamant' }, price: 750, color: '#67e8f9' },
+            { id: 'magma_king', name: { he: 'מלך הלבה', en: 'Magma King', ru: 'Король Лавы', fr: 'Roi de Magma' }, price: 1000, color: '#ea580c' },
+            { id: 'phantom_void', name: { he: 'צללים נדירים', en: 'Phantom Void', ru: 'Тень Бездны', fr: 'Ombre Royale' }, price: 1500, color: '#a855f7' }
         ];
 
         const songsData = [
@@ -400,7 +407,48 @@
             { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40 },
             { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80 },
             { id: 'rock', name: { he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade' }, price: 120 },
-            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180 }
+            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180 },
+            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280 },
+            { id: 'cyber_cup', name: { he: 'סייבר קאפ', en: 'Cyber Cup', ru: 'Кибер Кубок', fr: 'Cyber Coupe' }, price: 450 },
+            { id: 'hall_of_fame', name: { he: 'היכל התהילה', en: 'Hall of Fame', ru: 'Зал Славы', fr: 'Panthéon' }, price: 750 }
+        ];
+
+        const vipItemsData = [
+            {
+                id: 'hot_start',
+                name: { he: 'פתיחה טעונה (50% מד)', en: 'Charged Start (50%)', ru: 'Старт с 50% заряда', fr: 'Départ Chargé (50%)' },
+                desc: { he: 'מתחיל כל ריצה עם 50% במד הטעינה', en: 'Start each run at 50% charge', ru: 'Старт с 50% заряда', fr: 'Démarre à 50% de charge' },
+                price: 350,
+                icon: '⚡'
+            },
+            {
+                id: 'coin_magnet',
+                name: { he: 'מגנט מטבעות (+1 בונוס)', en: 'Coin Magnet (+1 Bonus)', ru: 'Магнит Монет (+1)', fr: 'Aimant à Pièces (+1)' },
+                desc: { he: '+1 מטבע נוסף על כל השלמת משימה בסולו', en: '+1 extra coin per mission in Solo', ru: '+1 монета за миссию в соло', fr: '+1 pièce par mission en Solo' },
+                price: 500,
+                icon: '🧲'
+            },
+            {
+                id: 'wide_master',
+                name: { he: 'מחבט אלופים רחב', en: 'Wide Champion Paddle', ru: 'Широкая ракетка', fr: 'Raquette Champion' },
+                desc: { he: 'מגדיל מעט את רוחב המחבט הבסיסי', en: 'Slightly increases base paddle width', ru: 'Немного увеличивает ширину', fr: 'Élargit légèrement la raquette' },
+                price: 650,
+                icon: '🛡️'
+            },
+            {
+                id: 'overdrive_boost',
+                name: { he: 'טעינה מהירה לאוברדרייב', en: 'Fast Overdrive Charge', ru: 'Быстрый заряд', fr: 'Charge Rapide' },
+                desc: { he: 'ממלא מהר יותר את מד הטעינה בכל הקפצה', en: 'Faster charge gain on kicks', ru: 'Быстрее заполняет шкалу', fr: 'Charge plus vite à chaque frappe' },
+                price: 900,
+                icon: '🚀'
+            },
+            {
+                id: 'royal_crown',
+                name: { he: 'כתר המלך היוקרתי', en: 'Royal Crown Prestige', ru: 'Корона Престижа', fr: 'Couronne Royale' },
+                desc: { he: 'סטטוס יוקרה על גביע הכדור והמחבט', en: 'Prestige crown accent on paddle & ball', ru: 'Корона престижа на ракетке', fr: 'Couronne prestige sur la raquette' },
+                price: 1250,
+                icon: '👑'
+            }
         ];
 
         function updateUIStrings() {
@@ -426,6 +474,7 @@
             document.getElementById('shop-title').innerHTML = `<i class="fa-solid fa-store"></i> ${t.shopTitle}`;
             document.getElementById('tab-skins-btn').innerText = t.tabSkins;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
+            document.getElementById('tab-vip-btn').innerText = t.tabVip;
             document.getElementById('achieve-title').innerHTML = `<i class="fa-solid fa-medal"></i> ${t.achieveTitle}`;
 
             const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
@@ -454,6 +503,8 @@
             localStorage.setItem('juggle_active_song', activeSong);
             localStorage.setItem('juggle_unlocked_skins', JSON.stringify(unlockedSkins));
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
+            localStorage.setItem('juggle_unlocked_vip', JSON.stringify(unlockedVip));
+            achievements.shop_2.progress = unlockedSkins.length + unlockedSongs.length + unlockedVip.length - 1;
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
             localStorage.setItem('juggle_personal_best', personalBest);
             localStorage.setItem('juggle_best_diff', bestDifficulty);
@@ -742,12 +793,10 @@
         let combo = 0;
         let isFireMode = false;
 
-        // מד טעינה ואוברדרייב + משימה מתחלפת
-        let chargeMeter = 0; // 0..100
+        let chargeMeter = 0;
         let overdriveEnd = 0;
         let currentMission = { kind: 'juggles', target: 6, progress: 0 };
 
-        // פיצ'רים ייעודיים למצב שבירת שיא (סולו) בלבד
         let bonusTarget = null;
         let targetCooldown = 0;
         let movingObstacle = null;
@@ -770,6 +819,10 @@
             return Date.now() < overdriveEnd;
         }
 
+        function getBasePlayerWidth() {
+            return unlockedVip.includes('wide_master') ? 104 : 90;
+        }
+
         function pickNextMission() {
             const pool = [
                 { kind: 'juggles', target: 6 + Math.floor(Math.random() * 5), progress: 0 },
@@ -785,7 +838,8 @@
 
         function addCharge(amount) {
             if (isOverdriveActive()) return;
-            chargeMeter = Math.min(100, chargeMeter + amount);
+            const boost = unlockedVip.includes('overdrive_boost') ? 1.35 : 1.0;
+            chargeMeter = Math.min(100, chargeMeter + amount * boost);
             if (chargeMeter >= 100) {
                 chargeMeter = 0;
                 overdriveEnd = Date.now() + 7000;
@@ -803,8 +857,9 @@
                 currentMission.progress += amountOrSet;
             }
             if (currentMission.progress >= currentMission.target) {
+                const magnetBonus = (isSoloMode() && unlockedVip.includes('coin_magnet')) ? 1 : 0;
                 score += 4;
-                coins += 3;
+                coins += 3 + magnetBonus;
                 saveGameData();
                 document.getElementById('game-score-board').innerText = score;
                 currentLevel = Math.max(1, Math.floor(score / 10) + 1);
@@ -812,7 +867,7 @@
                 ensureMovingObstacle();
                 ensureExtraSoloBall();
                 checkAchievements();
-                addFloatingText('⭐ +4 | +3 🪙', canvas.width / 2, canvas.height * 0.25, '#34d399');
+                addFloatingText(`⭐ +4 | +${3 + magnetBonus} 🪙`, canvas.width / 2, canvas.height * 0.25, '#34d399');
                 pickNextMission();
             } else {
                 updateChargeAndMissionUI();
@@ -928,13 +983,15 @@
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('game-container').classList.remove('hidden');
             resizeCanvas();
+            player.baseWidth = getBasePlayerWidth();
+            player.width = player.baseWidth;
             resetPositions();
             gameRunning = true;
             score = 0;
             currentLevel = 1;
             combo = 0;
             isFireMode = false;
-            chargeMeter = 0;
+            chargeMeter = unlockedVip.includes('hot_start') ? 50 : 0;
             overdriveEnd = 0;
             powerups = [];
             particles = [];
@@ -945,7 +1002,6 @@
             targetCooldown = 0;
             movingObstacle = null;
             extraSoloBall = null;
-            player.width = player.baseWidth;
             if (isSoloMode()) {
                 spawnBonusTarget();
             } else {
@@ -1092,7 +1148,8 @@
                 updateChargeAndMissionUI();
             }
 
-            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.5 : player.baseWidth;
+            player.baseWidth = getBasePlayerWidth();
+            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.45 : player.baseWidth;
             const escalation = getEscalationFactor() * getDifficultyBaseScale();
             const timeScale = ((now < slowMoEnd) ? 0.65 : 1.0) * Math.min(1.28, escalation);
 
@@ -1381,6 +1438,12 @@
             ctx.roundRect(player.x + player.width * 0.35, player.y + 3, player.width * 0.3, 4, 2);
             ctx.fill();
 
+            if (unlockedVip.includes('royal_crown')) {
+                ctx.font = '13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('👑', player.x + player.width / 2, player.y - 6);
+            }
+
             if (gameMode === 'pvp' || gameMode === 'tournament') {
                 ctx.fillStyle = '#6366f1';
                 ctx.shadowColor = '#6366f1';
@@ -1501,15 +1564,14 @@
         function switchShopTab(tab) {
             const skinBtn = document.getElementById('tab-skins-btn');
             const songBtn = document.getElementById('tab-songs-btn');
-            if (tab === 'skins') {
-                skinBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer';
-                songBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
-                renderShop('skins');
-            } else {
-                songBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer';
-                skinBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
-                renderShop('songs');
-            }
+            const vipBtn = document.getElementById('tab-vip-btn');
+            const activeCls = 'flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer';
+            const idleCls = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
+
+            skinBtn.className = (tab === 'skins') ? activeCls : idleCls;
+            songBtn.className = (tab === 'songs') ? activeCls : idleCls;
+            vipBtn.className = (tab === 'vip') ? activeCls : idleCls;
+            renderShop(tab);
         }
 
         function renderShop(type) {
@@ -1538,7 +1600,7 @@
                         </div>
                     `;
                 });
-            } else {
+            } else if (type === 'songs') {
                 songsData.forEach(item => {
                     let isOwned = unlockedSongs.includes(item.id);
                     let isEquipped = activeSong === item.id;
@@ -1555,6 +1617,26 @@
                                 ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
                                     isOwned ? `<button type="button" onclick="equipSong('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
                                     `<button type="button" onclick="buySong('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                vipItemsData.forEach(item => {
+                    let isOwned = unlockedVip.includes(item.id);
+                    container.innerHTML += `
+                        <div class="bg-slate-800/80 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 bg-amber-500/15 border border-amber-400/30 rounded-xl flex items-center justify-center text-lg shrink-0">${item.icon}</div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-sm text-amber-200 truncate">${item.name[lang] || item.name.en}</div>
+                                    <div class="text-[11px] text-slate-400 truncate">${item.desc[lang] || item.desc.en}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1 mt-0.5"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                ${isOwned ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.owned}</span>` :
+                                    `<button type="button" onclick="buyVip('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
                             </div>
                         </div>
                     `;
@@ -1598,6 +1680,18 @@
             saveGameData();
             renderShop('songs');
             startBGM();
+        }
+
+        function buyVip(id, price) {
+            if (unlockedVip.includes(id)) return;
+            if (coins >= price) {
+                coins -= price;
+                unlockedVip.push(id);
+                saveGameData();
+                renderShop('vip');
+            } else {
+                alert(lang === 'he' ? 'אין לך מספיק מטבעות!' : 'Not enough coins!');
+            }
         }
 
         function openAchievementsModal() {
