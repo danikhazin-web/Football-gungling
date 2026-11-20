@@ -115,7 +115,7 @@
             </button>
         </div>
 
-        <!-- Charge Gauge + Active Mission HUD -->
+        <!-- Charge Gauge + Active Mission / Duel HUD -->
         <div id="hud-panel" class="w-full bg-slate-800/85 border border-slate-700/70 rounded-2xl px-3 py-1.5 mb-1.5 flex flex-col gap-1.5 shrink-0">
             <div class="flex items-center justify-between gap-2">
                 <span id="charge-label" class="text-[11px] font-bold text-amber-300 whitespace-nowrap">⚡ מד טעינה</span>
@@ -330,9 +330,9 @@
             he: {
                 subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
                 soloTitle: "שבירת שיא (סולו)", soloDesc: "משימות מתחלפות, מד טעינה ומטרות בונוס",
-                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם",
-                tourneyTitle: "טורניר אלופים", tourneyDesc: "שלבי נוקאאוט עד הגביע הגדול",
-                menu: "תפריט", tap: "גרור את השחקן ופגע במטרות הבונוס 🎯!",
+                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם עד 5 נקודות",
+                tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
+                menu: "תפריט", tap: "גרור את השחקן והשג נקודות / משימות 🎯!",
                 navAchieve: "הישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
                 lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
@@ -343,10 +343,13 @@
                 activeOneGame: "מוכן למשחק 1", oneGameTag: "למשחק אחד",
                 claim: "אסוף פרס", claimed: "הושלם", inProgress: "בתהליך",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
-                gameOver: "המשחק נגמר!", scoreTxt: "תוצאה", bestTxt: "שיא אישי",
+                gameOver: "המשחק נגמר!", tourneyWon: "🏆 אלוף הטורניר!", duelWon: "🎉 ניצחת בדו-קרב!", duelLost: "🤖 הבוט ניצח",
+                scoreTxt: "תוצאה", bestTxt: "שיא אישי",
                 retry: "שחק שוב", levelPrefix: "שלב",
                 chargeLbl: "⚡ מד טעינה", overdriveLbl: "🔥 אוברדרייב x2",
                 mJuggles: "הקפץ {n} פעמים", mTargets: "פגע ב-{n} מטרות 🎯", mCombo: "הגע לקומבו {n}",
+                duelMission: "⚔️ יעד ניצחון: {p} - {b} (יעד: {goal})",
+                tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
                 levelUpPhrases: [
                     "וואו! מצוין!",
                     "יפה מאוד!",
@@ -357,9 +360,9 @@
             en: {
                 subtitle: "Fill the charge gauge, complete missions & beat records!",
                 soloTitle: "Solo High Score", soloDesc: "Dynamic missions, charge gauge & bonus targets",
-                pvpTitle: "1v1 Match", pvpDesc: "Duel against smart AI",
-                tourneyTitle: "Champions Tournament", tourneyDesc: "Knockout stages to the trophy",
-                menu: "Menu", tap: "Drag player & hit bonus targets 🎯!",
+                pvpTitle: "1v1 Match", pvpDesc: "Smart AI duel first to 5 points",
+                tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final",
+                menu: "Menu", tap: "Drag player & score / hit targets 🎯!",
                 navAchieve: "Achievements", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
                 lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
@@ -370,10 +373,13 @@
                 activeOneGame: "1 Game Ready", oneGameTag: "1 Game",
                 claim: "Claim", claimed: "Completed", inProgress: "In Progress",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
-                gameOver: "Game Over!", scoreTxt: "Score", bestTxt: "Best",
+                gameOver: "Game Over!", tourneyWon: "🏆 Tournament Champion!", duelWon: "🎉 You Won the Duel!", duelLost: "🤖 Bot Won",
+                scoreTxt: "Score", bestTxt: "Best",
                 retry: "Play Again", levelPrefix: "Lvl",
                 chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
                 mJuggles: "Juggle {n} times", mTargets: "Hit {n} targets 🎯", mCombo: "Reach {n} combo",
+                duelMission: "⚔️ Score {p} - {b} (First to {goal})",
+                tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
                 levelUpPhrases: [
                     "WOW! AWESOME!",
                     "GREAT JOB!",
@@ -384,9 +390,9 @@
             ru: {
                 subtitle: "Заряжайте шкалу, выполняйте задания и бейте рекорды!",
                 soloTitle: "Рекорд (Соло)", soloDesc: "Задания, шкала заряда и цели",
-                pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота",
-                tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Плей-офф до кубка",
-                menu: "Меню", tap: "Ведите игрока и бейте по целям 🎯!",
+                pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота до 5 очков",
+                tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал",
+                menu: "Меню", tap: "Ведите игрока и побеждайте 🎯!",
                 navAchieve: "Достижения", navLeaderboard: "Рейтинг", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
                 lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
@@ -397,10 +403,13 @@
                 activeOneGame: "На 1 игру", oneGameTag: "1 игра",
                 claim: "Забрать", claimed: "Выполнено", inProgress: "В процессе",
                 diffEasy: "Легко", diffMedium: "Средне", diffHard: "Сложно",
-                gameOver: "Игра окончена!", scoreTxt: "Счет", bestTxt: "Рекорд",
+                gameOver: "Игра окончена!", tourneyWon: "🏆 Чемпион Турнира!", duelWon: "🎉 Победа в дуэли!", duelLost: "🤖 Бот победил",
+                scoreTxt: "Счет", bestTxt: "Рекорд",
                 retry: "Ещё раз", levelPrefix: "Ур.",
                 chargeLbl: "⚡ Заряд", overdriveLbl: "🔥 ОВЕРДРАЙВ x2",
                 mJuggles: "Чеканьте {n} раз", mTargets: "Попадите в {n} целей 🎯", mCombo: "Комбо {n}",
+                duelMission: "⚔️ Счёт {p} - {b} (До {goal})",
+                tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
                 levelUpPhrases: [
                     "ВАУ! ОТЛИЧНО!",
                     "ОЧЕНЬ КРУТО!",
@@ -411,9 +420,9 @@
             fr: {
                 subtitle: "Chargez la jauge, validez des missions et battez des records !",
                 soloTitle: "Record Solo", soloDesc: "Missions dynamiques, jauge et cibles",
-                pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA",
-                tourneyTitle: "Tournoi des Champions", tourneyDesc: "Phases finales",
-                menu: "Menu", tap: "Glissez et visez les cibles 🎯 !",
+                pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA en 5 points",
+                tourneyTitle: "Tournoi des Champions", tourneyDesc: "Quart, demi et finale",
+                menu: "Menu", tap: "Glissez et marquez 🎯 !",
                 navAchieve: "Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
                 lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
@@ -424,10 +433,13 @@
                 activeOneGame: "1 Partie Prête", oneGameTag: "1 Partie",
                 claim: "Récupérer", claimed: "Terminé", inProgress: "En cours",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
-                gameOver: "Partie Terminée !", scoreTxt: "Score", bestTxt: "Meilleur",
+                gameOver: "Partie Terminée !", tourneyWon: "🏆 Champion du Tournoi !", duelWon: "🎉 Victoire au Duel !", duelLost: "🤖 Le Bot a Gagné",
+                scoreTxt: "Score", bestTxt: "Meilleur",
                 retry: "Rejouer", levelPrefix: "Niv.",
                 chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
                 mJuggles: "Jonglez {n} fois", mTargets: "Touchez {n} cibles 🎯", mCombo: "Combo {n}",
+                duelMission: "⚔️ Score {p} - {b} (Premier à {goal})",
+                tourneyStages: ["Quart", "Demi-finale", "Finale"],
                 levelUpPhrases: [
                     "WAOUH ! SUPER !",
                     "TRÈS BIEN !",
@@ -467,15 +479,15 @@
         ];
 
         const songsData = [
-            { id: 'none', name: { he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique' }, price: 0 },
-            { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40 },
-            { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80 },
-            { id: 'rock', name: { he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade' }, price: 120 },
-            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180 },
-            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280 },
-            { id: 'cyber_cup', name: { he: 'סייבר קאפ', en: 'Cyber Cup', ru: 'Кибер Кубок', fr: 'Cyber Coupe' }, price: 450 },
-            { id: 'hall_of_fame', name: { he: 'היכל התהילה', en: 'Hall of Fame', ru: 'Зал Славы', fr: 'Panthéon' }, price: 750 },
-            { id: 'night_derby', name: { he: 'דרבי לילה', en: 'Night Derby', ru: 'Ночное Дерби', fr: 'Derby Nocturne' }, price: 900 }
+            { id: 'none', name: { he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique' }, price: 0, wave: 'sine', tempo: 500, notes: [] },
+            { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40, wave: 'sine', tempo: 380, notes: [196, 261.6, 329.6, 392] },
+            { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80, wave: 'sawtooth', tempo: 260, notes: [146.8, 174.6, 220, 293.7, 220, 174.6] },
+            { id: 'rock', name: { he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade' }, price: 120, wave: 'square', tempo: 240, notes: [164.8, 164.8, 196, 220, 246.9, 220] },
+            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180, wave: 'sawtooth', tempo: 185, notes: [261.6, 311.1, 392, 523.2, 392, 311.1] },
+            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] },
+            { id: 'cyber_cup', name: { he: 'סייבר קאפ', en: 'Cyber Cup', ru: 'Кибер Кубок', fr: 'Cyber Coupe' }, price: 450, wave: 'square', tempo: 210, notes: [220, 277.2, 330, 440, 370, 330] },
+            { id: 'hall_of_fame', name: { he: 'היכל התהילה', en: 'Hall of Fame', ru: 'Зал Славы', fr: 'Panthéon' }, price: 750, wave: 'triangle', tempo: 350, notes: [293.7, 369.9, 440, 587.3, 493.9, 440] },
+            { id: 'night_derby', name: { he: 'דרבי לילה', en: 'Night Derby', ru: 'Ночное Дерби', fr: 'Derby Nocturne' }, price: 900, wave: 'sawtooth', tempo: 225, notes: [130.8, 155.6, 196, 233.1, 261.6, 196] }
         ];
 
         // Single-game VIP items (lasts for 1 game/run only)
@@ -780,7 +792,7 @@
             syncScoreToFirebase(personalBest);
         }
 
-        // --- Audio Engine ---
+        // --- Audio Engine with Unique Track per Song ---
         let audioCtx = null;
         let isAudioEnabled = true;
         let bgmInterval = null;
@@ -866,26 +878,31 @@
 
         function startBGM() {
             if (bgmInterval) clearInterval(bgmInterval);
-            if (activeSong === 'none' || !isAudioEnabled) return;
+            const song = songsData.find(s => s.id === activeSong) || songsData[0];
+            if (song.id === 'none' || !song.notes || song.notes.length === 0 || !isAudioEnabled) return;
             initAudio();
-            let notes = activeSong === 'beat1' ? [220, 261, 330, 392] : [150, 200, 250, 300];
             let step = 0;
+            const dur = Math.max(0.11, (song.tempo / 1000) * 0.72);
+            const peakGain = song.wave === 'square' || song.wave === 'sawtooth' ? 0.035 : 0.06;
+
             bgmInterval = setInterval(() => {
                 if (!isAudioEnabled || activeSong === 'none') return;
                 try {
+                    const now = audioCtx.currentTime;
+                    const freq = song.notes[step % song.notes.length];
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-                    osc.type = activeSong === 'beat1' ? 'sine' : 'square';
-                    osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+                    osc.type = song.wave;
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(peakGain, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.2);
+                    osc.start(now);
+                    osc.stop(now + dur);
                     step++;
                 } catch (e) {}
-            }, 500);
+            }, song.tempo);
         }
 
         // --- Canvas & Game Engine ---
@@ -899,6 +916,13 @@
         let particles = [];
         let floatingTexts = [];
         let animFrameId = null;
+
+        // 1v1 & Tournament state
+        let opponentScore = 0;
+        let duelGoal = 5;
+        let tournamentRound = 0; // 0 = Quarterfinal, 1 = Semifinal, 2 = Final
+        let tournamentWins = 0;
+        let endScreenOutcome = 'gameover'; // 'gameover' | 'duel_win' | 'duel_lose' | 'tourney_win'
 
         let combo = 0;
         let isFireMode = false;
@@ -925,6 +949,10 @@
             return gameMode === 'solo';
         }
 
+        function isDuelMode() {
+            return gameMode === 'pvp' || gameMode === 'tournament';
+        }
+
         function isOverdriveActive() {
             return Date.now() < overdriveEnd;
         }
@@ -935,16 +963,18 @@
                     speedScale: 0.82,
                     gravityScale: 0.84,
                     kickPower: 19.5,
-                    botTrack: 0.12,
+                    botTrack: 0.085,
+                    botSpeedCap: 4.2,
                     widthBonus: 12
                 };
             }
             if (difficulty === 'hard') {
                 return {
-                    speedScale: 1.28,
-                    gravityScale: 1.24,
-                    kickPower: 23.5,
-                    botTrack: 0.42,
+                    speedScale: 1.24,
+                    gravityScale: 1.2,
+                    kickPower: 23.0,
+                    botTrack: 0.24,
+                    botSpeedCap: 9.2,
                     widthBonus: -10
                 };
             }
@@ -952,7 +982,8 @@
                 speedScale: 1.0,
                 gravityScale: 1.0,
                 kickPower: 21.0,
-                botTrack: 0.24,
+                botTrack: 0.145,
+                botSpeedCap: 6.4,
                 widthBonus: 0
             };
         }
@@ -969,6 +1000,15 @@
 
         function updateLevelBadge() {
             const t = translations[lang];
+            if (gameMode === 'tournament') {
+                const stageName = t.tourneyStages[Math.min(tournamentRound, t.tourneyStages.length - 1)];
+                document.getElementById('level-badge').innerText = `🏆 ${stageName}`;
+                return;
+            }
+            if (gameMode === 'pvp') {
+                document.getElementById('level-badge').innerText = `⚔️ ${score} : ${opponentScore}`;
+                return;
+            }
             document.getElementById('level-badge').innerText = `${t.levelPrefix} ${currentLevel}`;
         }
 
@@ -977,7 +1017,9 @@
             const phrases = t.levelUpPhrases || ["WOW!"];
             const chosen = phrases[(newLvl - 2) % phrases.length] || phrases[0];
             const phraseText = chosen.replace('{lvl}', String(newLvl));
-            const subText = `${t.levelPrefix} ${newLvl}`;
+            const subText = gameMode === 'tournament'
+                ? (t.tourneyStages[Math.min(tournamentRound, t.tourneyStages.length - 1)])
+                : `${t.levelPrefix} ${newLvl}`;
             levelUpBanner = {
                 phrase: phraseText,
                 sub: subText,
@@ -991,11 +1033,16 @@
 
         function handleScoreChanged() {
             document.getElementById('game-score-board').innerText = score;
-            const nextLvl = computeLevelFromScore(score);
-            if (nextLvl > currentLevel) {
-                currentLevel = nextLvl;
+            if (isSoloMode()) {
+                const nextLvl = computeLevelFromScore(score);
+                if (nextLvl > currentLevel) {
+                    currentLevel = nextLvl;
+                    updateLevelBadge();
+                    triggerLevelUpCelebration(currentLevel);
+                }
+            } else {
                 updateLevelBadge();
-                triggerLevelUpCelebration(currentLevel);
+                updateChargeAndMissionUI();
             }
             ensureMovingObstacle();
             ensureExtraSoloBall();
@@ -1003,6 +1050,11 @@
         }
 
         function pickNextMission() {
+            const t = translations[lang];
+            if (isDuelMode()) {
+                updateChargeAndMissionUI();
+                return;
+            }
             const levelScale = Math.min(1.6, 1 + (currentLevel - 1) * 0.12);
             const pool = [
                 { kind: 'juggles', target: Math.round((16 + Math.floor(Math.random() * 10)) * levelScale), progress: 0 },
@@ -1030,14 +1082,14 @@
         }
 
         function advanceMission(kind, amountOrSet = 1, isAbsolute = false) {
-            if (!currentMission || currentMission.kind !== kind) return;
+            if (!isSoloMode() || !currentMission || currentMission.kind !== kind) return;
             if (isAbsolute) {
                 currentMission.progress = Math.max(currentMission.progress, amountOrSet);
             } else {
                 currentMission.progress += amountOrSet;
             }
             if (currentMission.progress >= currentMission.target) {
-                const magnetBonus = (isSoloMode() && hasVip('coin_magnet')) ? 2 : 0;
+                const magnetBonus = hasVip('coin_magnet') ? 2 : 0;
                 score += 4;
                 coins += 3 + magnetBonus;
                 saveGameData();
@@ -1066,6 +1118,15 @@
                 lblEl.innerText = t.chargeLbl;
                 barEl.style.width = `${chargeMeter}%`;
                 pctEl.innerText = `${Math.floor(chargeMeter)}%`;
+            }
+
+            if (isDuelMode()) {
+                mTextEl.innerText = t.duelMission
+                    .replace('{p}', String(score))
+                    .replace('{b}', String(opponentScore))
+                    .replace('{goal}', String(duelGoal));
+                mProgEl.innerText = `${score}/${duelGoal}`;
+                return;
             }
 
             let title = '';
@@ -1138,18 +1199,22 @@
             if (gameRunning) resizeCanvas();
         });
 
-        function startGame(mode) {
-            if (animFrameId) cancelAnimationFrame(animFrameId);
-            canvas.onclick = null;
+        function setupMatchForMode(mode, keepTournamentProgress = false) {
             gameMode = mode;
-            document.getElementById('main-menu').classList.add('hidden');
-            document.getElementById('game-container').classList.remove('hidden');
             resizeCanvas();
             player.baseWidth = getBasePlayerWidth();
             player.width = player.baseWidth;
+            bot.width = difficulty === 'hard' ? 96 : difficulty === 'easy' ? 78 : 88;
             resetPositions();
-            gameRunning = true;
-            score = 0;
+
+            if (!keepTournamentProgress) {
+                tournamentRound = 0;
+                tournamentWins = 0;
+                score = 0;
+            }
+
+            opponentScore = 0;
+            duelGoal = mode === 'tournament' ? 3 + tournamentRound : 5;
             currentLevel = 1;
             levelUpBanner = null;
             combo = 0;
@@ -1165,16 +1230,39 @@
             targetCooldown = 0;
             movingObstacle = null;
             extraSoloBall = null;
+
             if (isSoloMode()) {
                 spawnBonusTarget();
             } else {
                 bonusTarget = null;
+                const t = translations[lang];
+                const stageBanner = mode === 'tournament'
+                    ? (t.tourneyStages[Math.min(tournamentRound, t.tourneyStages.length - 1)])
+                    : t.pvpTitle;
+                levelUpBanner = {
+                    phrase: `⚔️ ${stageBanner}`,
+                    sub: `${t.duelMission.replace('{p}', '0').replace('{b}', '0').replace('{goal}', String(duelGoal))}`,
+                    alpha: 1.0,
+                    scale: 0.9,
+                    createdAt: Date.now(),
+                    duration: 1700
+                };
             }
+
             pickNextMission();
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             updateLevelBadge();
             startBGM();
+        }
+
+        function startGame(mode, keepTournamentProgress = false) {
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            canvas.onclick = null;
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('game-container').classList.remove('hidden');
+            setupMatchForMode(mode, keepTournamentProgress);
+            gameRunning = true;
             animFrameId = requestAnimationFrame(gameLoop);
         }
 
@@ -1188,18 +1276,18 @@
             updateUIStrings();
         }
 
-        function resetPositions() {
+        function resetPositions(serveTowardPlayer = false) {
             const cfg = getDifficultyConfig();
             ball.x = canvas.width / 2;
             ball.y = canvas.height / 2;
-            ball.vx = (Math.random() - 0.5) * 3.5 * cfg.speedScale;
-            ball.vy = -6 * cfg.speedScale;
+            ball.vx = (Math.random() - 0.5) * 3.8 * cfg.speedScale;
+            ball.vy = (serveTowardPlayer ? 5.2 : -6.0) * cfg.speedScale;
             ball.rot = 0;
 
             player.x = canvas.width / 2 - player.width / 2;
             player.y = canvas.height - 65;
 
-            if (gameMode === 'pvp' || gameMode === 'tournament') {
+            if (isDuelMode()) {
                 bot.x = canvas.width / 2 - bot.width / 2;
                 bot.y = 35;
             }
@@ -1236,6 +1324,52 @@
                 icon: chosen.icon,
                 pulse: 0
             });
+        }
+
+        function awardDuelPointToPlayer(reasonText = '🎯 +1') {
+            const pts = isOverdriveActive() ? 2 : 1;
+            score += pts;
+            addFloatingText(`${reasonText} (+${pts})`, canvas.width / 2, canvas.height * 0.36, '#34d399');
+            handleScoreChanged();
+
+            if (score >= duelGoal) {
+                playSound('levelup');
+                gameRunning = false;
+                if (bgmInterval) clearInterval(bgmInterval);
+                if (gameMode === 'tournament') {
+                    tournamentWins++;
+                    if (tournamentRound < 2) {
+                        tournamentRound++;
+                        endScreenOutcome = 'tourney_next';
+                    } else {
+                        endScreenOutcome = 'tourney_win';
+                    }
+                } else {
+                    endScreenOutcome = 'duel_win';
+                }
+                showGameOverScreen();
+                return true;
+            }
+            resetPositions(false);
+            return false;
+        }
+
+        function awardDuelPointToBot() {
+            opponentScore++;
+            playSound('fail');
+            addFloatingText('🤖 +1', canvas.width / 2, canvas.height * 0.36, '#f87171');
+            updateLevelBadge();
+            updateChargeAndMissionUI();
+
+            if (opponentScore >= duelGoal) {
+                gameRunning = false;
+                if (bgmInterval) clearInterval(bgmInterval);
+                endScreenOutcome = 'duel_lose';
+                showGameOverScreen();
+                return true;
+            }
+            resetPositions(true);
+            return false;
         }
 
         function applyKickToBall(targetBall, isPrimaryBall) {
@@ -1285,10 +1419,12 @@
             targetBall.vy = -baseKick * Math.min(1.24, escalation);
             targetBall.vx = offsetRatio * 8.8 * cfg.speedScale * Math.min(1.25, escalation);
 
-            const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1);
-            score += mult;
-            advanceMission('juggles', 1, false);
-            handleScoreChanged();
+            if (isSoloMode()) {
+                const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1);
+                score += mult;
+                advanceMission('juggles', 1, false);
+                handleScoreChanged();
+            }
         }
 
         function checkAchievements() {
@@ -1479,13 +1615,15 @@
                 applyKickToBall(ball, true);
             }
 
-            if (gameMode === 'pvp' || gameMode === 'tournament') {
+            if (isDuelMode()) {
                 bot.y = 35;
-                let trackSpeed = cfg.botTrack * Math.min(1.25, escalation);
-                bot.x += (ball.x - (bot.x + bot.width / 2)) * trackSpeed;
-                bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x));
+                const roundFactor = gameMode === 'tournament' ? 1 + tournamentRound * 0.14 : 1;
+                const desiredX = ball.x - bot.width / 2;
+                const deltaX = desiredX - bot.x;
+                const stepX = Math.max(-cfg.botSpeedCap * roundFactor, Math.min(cfg.botSpeedCap * roundFactor, deltaX * cfg.botTrack * roundFactor));
+                bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x + stepX));
 
-                if (ball.y - ball.radius <= bot.y + bot.height + 20 && ball.vy < 0) {
+                if (ball.y - ball.radius <= bot.y + bot.height + 16 && ball.vy < 0) {
                     playSound('kick');
                     if (navigator.vibrate) try { navigator.vibrate(50); } catch (e) {}
 
@@ -1499,16 +1637,22 @@
                         });
                     }
 
-                    let botAngle = (Math.random() - 0.5) * 1.4;
-                    ball.vy = cfg.kickPower * Math.min(1.2, escalation);
-                    ball.vx += botAngle * 7.2 * cfg.speedScale;
+                    const aimSpread = difficulty === 'hard' ? 1.1 : difficulty === 'easy' ? 1.55 : 1.35;
+                    const botAngle = (Math.random() - 0.5) * aimSpread;
+                    ball.vy = cfg.kickPower * Math.min(1.18, 1 + tournamentRound * 0.05);
+                    ball.vx = botAngle * 7.4 * cfg.speedScale;
                 }
-            }
 
-            if (ball.y > canvas.height + 40) {
+                if (ball.y < -35) {
+                    if (awardDuelPointToPlayer('⚡ נקודה!')) return;
+                } else if (ball.y > canvas.height + 40) {
+                    if (awardDuelPointToBot()) return;
+                }
+            } else if (ball.y > canvas.height + 40) {
                 playSound('fail');
                 gameRunning = false;
                 if (bgmInterval) clearInterval(bgmInterval);
+                endScreenOutcome = 'gameover';
                 showGameOverScreen();
                 return;
             }
@@ -1612,7 +1756,7 @@
                 ctx.fillText('👑', player.x + player.width / 2, player.y - 6);
             }
 
-            if (gameMode === 'pvp' || gameMode === 'tournament') {
+            if (isDuelMode()) {
                 ctx.fillStyle = '#6366f1';
                 ctx.shadowColor = '#6366f1';
                 ctx.shadowBlur = 12;
@@ -1708,6 +1852,10 @@
             }
 
             let earnedCoins = Math.floor(score / 4);
+            if (endScreenOutcome === 'duel_win') earnedCoins += 6;
+            if (endScreenOutcome === 'tourney_next') earnedCoins += 5;
+            if (endScreenOutcome === 'tourney_win') earnedCoins += 15;
+
             if (hasVip('double_coins_run') && earnedCoins > 0) {
                 earnedCoins *= 2;
             }
@@ -1715,21 +1863,32 @@
                 coins += earnedCoins;
             }
 
-            // Consume all single-game VIP items after the run ends
-            activeRunVip = [];
+            // Consume all single-game VIP items after the match/run ends
+            if (endScreenOutcome !== 'tourney_next') {
+                activeRunVip = [];
+            }
             saveGameData();
 
             ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            let headline = t.gameOver;
+            if (endScreenOutcome === 'duel_win') headline = t.duelWon;
+            else if (endScreenOutcome === 'duel_lose') headline = t.duelLost;
+            else if (endScreenOutcome === 'tourney_win') headline = t.tourneyWon;
+            else if (endScreenOutcome === 'tourney_next') headline = `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]}`;
+
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 28px Rubik, sans-serif';
+            ctx.font = 'bold 26px Rubik, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(t.gameOver, canvas.width / 2, canvas.height / 2 - 55);
+            ctx.fillText(headline, canvas.width / 2, canvas.height / 2 - 55);
 
             ctx.fillStyle = '#34d399';
-            ctx.font = 'bold 22px Rubik, sans-serif';
-            ctx.fillText(`${t.scoreTxt}: ${score}`, canvas.width / 2, canvas.height / 2 - 15);
+            ctx.font = 'bold 21px Rubik, sans-serif';
+            const scoreSummary = isDuelMode()
+                ? `${score} - ${opponentScore}`
+                : `${t.scoreTxt}: ${score}`;
+            ctx.fillText(scoreSummary, canvas.width / 2, canvas.height / 2 - 15);
 
             ctx.fillStyle = isNewRecord ? '#fbbf24' : '#94a3b8';
             ctx.font = 'bold 15px Rubik, sans-serif';
@@ -1741,18 +1900,26 @@
                 ctx.fillText(`+${earnedCoins} 🪙`, canvas.width / 2, canvas.height / 2 + 42);
             }
 
+            const btnLabel = endScreenOutcome === 'tourney_next'
+                ? (t.tourneyStages[Math.min(tournamentRound, 2)])
+                : t.retry;
+
             ctx.fillStyle = '#10b981';
             ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - 90, canvas.height / 2 + 65, 180, 45, 12);
+            ctx.roundRect(canvas.width / 2 - 95, canvas.height / 2 + 65, 190, 45, 12);
             ctx.fill();
 
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 16px Rubik, sans-serif';
-            ctx.fillText(t.retry, canvas.width / 2, canvas.height / 2 + 93);
+            ctx.fillText(btnLabel, canvas.width / 2, canvas.height / 2 + 93);
 
             canvas.onclick = function() {
                 canvas.onclick = null;
-                startGame(gameMode);
+                if (endScreenOutcome === 'tourney_next') {
+                    startGame('tournament', true);
+                } else {
+                    startGame(gameMode, false);
+                }
             };
         }
 
