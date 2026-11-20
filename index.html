@@ -282,7 +282,7 @@
                         שמור שם
                     </button>
                 </div>
-                <div id="lb-sync-status" class="text-[11px] text-emerald-400/90 hidden"></div>
+                <div id="lb-sync-status" class="text-[11px] text-rose-400 hidden"></div>
             </div>
 
             <div id="leaderboard-list" class="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar"></div>
@@ -665,8 +665,7 @@
                 lbSave: "שמור שם",
                 lbNamePlaceholder: "הכנס שם לתצוגה...",
                 lbRankPrefix: "הדירוג שלך:",
-                lbSynced: "השיא מסונכרן עם הענן",
-                lbLocalMode: "מצב מקומי — השיא שלך מוצג בטבלה",
+                lbConnectError: "לא ניתן להתחבר לטבלה כרגע",
                 shopTitle: "חנות",
                 tabSkins: "כדורים",
                 tabPaddles: "פאדלים",
@@ -750,8 +749,7 @@
                 lbSave: "Save Name",
                 lbNamePlaceholder: "Enter display name...",
                 lbRankPrefix: "Your rank:",
-                lbSynced: "Score synced to cloud",
-                lbLocalMode: "Local mode — your score is shown in the board",
+                lbConnectError: "Unable to connect to leaderboard",
                 shopTitle: "Shop",
                 tabSkins: "Balls",
                 tabPaddles: "Paddles",
@@ -835,8 +833,7 @@
                 lbSave: "Сохранить",
                 lbNamePlaceholder: "Введите имя...",
                 lbRankPrefix: "Ваше место:",
-                lbSynced: "Рекорд сохранён в облаке",
-                lbLocalMode: "Локальный режим — ваш рекорд в таблице",
+                lbConnectError: "Не удалось подключиться к таблице",
                 shopTitle: "Магазин",
                 tabSkins: "Мячи",
                 tabPaddles: "Ракетки",
@@ -920,8 +917,7 @@
                 lbSave: "Enregistrer",
                 lbNamePlaceholder: "Entrez votre pseudo...",
                 lbRankPrefix: "Votre rang :",
-                lbSynced: "Score synchronisé",
-                lbLocalMode: "Mode local — votre score est affiché",
+                lbConnectError: "Connexion au classement impossible",
                 shopTitle: "Boutique",
                 tabSkins: "Ballons",
                 tabPaddles: "Raquettes",
@@ -1233,12 +1229,16 @@
             location.reload();
         }
 
-        function setSyncStatusMessage(text, isLocal = false) {
+        function setSyncStatusMessage(text, isError = false) {
             const statusEl = document.getElementById('lb-sync-status');
             if (!statusEl) return;
+            if (!text) {
+                statusEl.classList.add('hidden');
+                return;
+            }
             statusEl.innerText = text;
-            statusEl.className = isLocal
-                ? 'text-[11px] text-amber-300 font-semibold'
+            statusEl.className = isError
+                ? 'text-[11px] text-rose-400 font-semibold'
                 : 'text-[11px] text-emerald-400 font-semibold';
             statusEl.classList.remove('hidden');
         }
@@ -1267,39 +1267,34 @@
                         localStorage.setItem('juggle_last_synced_score', String(validScore));
                         const dot = document.getElementById('sync-dot');
                         if (dot) dot.classList.add('hidden');
-                        setSyncStatusMessage(translations[lang].lbSynced, false);
                         return true;
                     }
                 } catch (e) {
                     await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
                 }
             }
-            const dot = document.getElementById('sync-dot');
-            if (dot) dot.classList.add('hidden');
-            setSyncStatusMessage(translations[lang].lbLocalMode, true);
             return false;
         }
 
         function renderLeaderboardRows(players) {
             const t = translations[lang];
             const listEl = document.getElementById('leaderboard-list');
-            const myName = (playerName || '').trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
 
-            const normalized = Array.isArray(players) ? players.filter(p => p && typeof p === 'object') : [];
-            const hasSelf = normalized.some(p => p.id === playerId);
-            if (!hasSelf && (personalBest > 0 || playerName)) {
-                normalized.push({
-                    id: playerId,
-                    name: myName,
-                    score: Number(personalBest) || 0,
-                    diff: bestDifficulty || difficulty
-                });
-            }
+            const normalized = Array.isArray(players)
+                ? players
+                    .filter(p => p && typeof p === 'object')
+                    .map(p => ({
+                        id: String(p.id || ''),
+                        name: String(p.name || 'Player'),
+                        score: Number(p.score) || 0,
+                        diff: String(p.difficulty || '')
+                    }))
+                : [];
 
-            normalized.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
+            normalized.sort((a, b) => b.score - a.score);
 
             if (normalized.length > 0) {
-                topGlobalScore = Math.max(topGlobalScore, Number(normalized[0].score) || 0);
+                topGlobalScore = Math.max(topGlobalScore, normalized[0].score);
                 localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
                 updateMenuRecordsStrip();
             }
@@ -1309,11 +1304,15 @@
                 ? `${t.lbRankPrefix} #${myIndex + 1} / ${normalized.length}`
                 : `${t.lbRankPrefix} -`;
 
-            const top30 = normalized.slice(0, 30);
             const diffLabels = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
 
             listEl.innerHTML = '';
-            top30.forEach((p, idx) => {
+            if (normalized.length === 0) {
+                listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm">${lang === 'he' ? 'אין שחקנים בטבלה עדיין' : 'No players on the leaderboard yet'}</div>`;
+                return;
+            }
+
+            normalized.forEach((p, idx) => {
                 const rank = idx + 1;
                 const isMe = p.id === playerId;
                 let badge = `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
@@ -1347,7 +1346,7 @@
 
                 const scoreSpan = document.createElement('span');
                 scoreSpan.className = 'font-black text-base text-amber-400 shrink-0';
-                scoreSpan.textContent = String(Number(p.score) || 0);
+                scoreSpan.textContent = String(p.score);
 
                 rowDiv.appendChild(leftDiv);
                 rowDiv.appendChild(scoreSpan);
@@ -1398,6 +1397,7 @@
             document.getElementById('player-name-input').value = playerName;
             document.getElementById('lb-personal-best').innerText = personalBest;
             renderDiffBestsBox();
+            setSyncStatusMessage('');
             if (refreshBtn) refreshBtn.disabled = true;
             if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
@@ -1423,11 +1423,6 @@
                     personalBest = cloudScore;
                     saveGameData();
                     document.getElementById('lb-personal-best').innerText = personalBest;
-                    setSyncStatusMessage(t.lbSynced, false);
-                } else if (personalBest > 0 && cloudScore >= personalBest) {
-                    const dot = document.getElementById('sync-dot');
-                    if (dot) dot.classList.add('hidden');
-                    setSyncStatusMessage(t.lbSynced, false);
                 }
 
                 const players = (data && typeof data === 'object')
@@ -1437,14 +1432,14 @@
                             id: key,
                             name: String(data[key].name || 'Player'),
                             score: Number(data[key].score) || 0,
-                            diff: String(data[key].difficulty || '')
+                            difficulty: String(data[key].difficulty || '')
                         }))
                     : [];
 
                 renderLeaderboardRows(players);
             } catch (e) {
-                setSyncStatusMessage(t.lbLocalMode, true);
-                renderLeaderboardRows([]);
+                setSyncStatusMessage(t.lbConnectError, true);
+                listEl.innerHTML = `<div class="text-center text-rose-300 py-8 text-xs">${t.lbConnectError}</div>`;
             } finally {
                 if (refreshBtn) refreshBtn.disabled = false;
                 if (refreshIcon) refreshIcon.classList.remove('animate-spin');
@@ -1594,7 +1589,7 @@
                     gain.gain.setValueAtTime(peakGain, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
                     osc.connect(gain);
-                    osc.connect(audioCtx.destination);
+                    gain.connect(audioCtx.destination);
                     osc.start(now);
                     osc.stop(now + dur);
                     step++;
