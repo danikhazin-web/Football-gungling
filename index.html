@@ -185,9 +185,6 @@
                 <button type="button" onclick="cycleAudioLevel()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 cursor-pointer text-sm" aria-label="Audio">
                     <span id="audio-icon">🔊</span>
                 </button>
-                <div class="bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 font-black text-base text-emerald-400 min-w-[40px] text-center" id="game-score-board">
-                    0
-                </div>
             </div>
         </div>
 
@@ -209,6 +206,14 @@
         <!-- Canvas Area -->
         <div class="flex-1 relative w-full overflow-hidden">
             <canvas id="gameCanvas" class="w-full h-full"></canvas>
+
+            <!-- Big Top-Center Live Score -->
+            <div class="pointer-events-none absolute top-3 left-0 right-0 flex justify-center z-10">
+                <div id="live-center-score" class="px-6 py-1.5 rounded-3xl bg-slate-950/65 backdrop-blur-sm border border-emerald-400/35 text-5xl font-black tracking-tight text-emerald-400 drop-shadow-[0_4px_16px_rgba(16,185,129,0.45)]">
+                    0
+                </div>
+            </div>
+
             <div id="tap-instruction" class="pointer-events-none absolute bottom-24 left-0 right-0 text-center text-slate-400/50 text-xs font-medium">
                 גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר
             </div>
@@ -241,7 +246,10 @@
                 <button id="go-retry-btn" type="button" onclick="handleGameOverRetry()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-2xl transition cursor-pointer mb-2">
                     שחק שוב
                 </button>
-                <button id="go-share-btn" type="button" onclick="handleGameOverShare()" class="w-full bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold py-2 rounded-2xl border border-slate-700 transition cursor-pointer text-xs">
+                <button id="go-menu-btn" type="button" onclick="returnToMenu()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-2xl border border-slate-700 transition cursor-pointer mb-2">
+                    תפריט
+                </button>
+                <button id="go-share-btn" type="button" onclick="handleGameOverShare()" class="w-full bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-bold py-2 rounded-2xl border border-slate-700 transition cursor-pointer text-xs">
                     שתף תוצאה
                 </button>
                 <div id="go-copied" class="text-[11px] text-emerald-400 font-semibold mt-1 h-4"></div>
@@ -289,12 +297,11 @@
                 <button type="button" onclick="closeShopModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
 
-            <div class="grid grid-cols-5 gap-1 p-2 bg-slate-950/50 border-b border-slate-800">
-                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדורים</button>
-                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
-                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
-                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
-                <button id="tab-vip-btn" type="button" onclick="switchShopTab('vip')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">יוקרה</button>
+            <div class="grid grid-cols-4 gap-1.5 p-2 bg-slate-950/50 border-b border-slate-800">
+                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדורים</button>
+                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
+                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
+                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
             </div>
 
             <div id="shop-items-container" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
@@ -330,8 +337,8 @@
             <div class="grid grid-cols-2 gap-2 text-xs font-bold">
                 <button type="button" onclick="adminAddCoins(500)" class="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 py-2.5 rounded-xl cursor-pointer">+500 🪙</button>
                 <button type="button" onclick="adminBoostScore(25)" class="bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 py-2.5 rounded-xl cursor-pointer">+25 נקודות</button>
-                <button type="button" onclick="adminGrantAllVip()" class="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-200 py-2.5 rounded-xl cursor-pointer">כל היוקרה לריצה</button>
                 <button type="button" onclick="adminCompleteDaily()" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 py-2.5 rounded-xl cursor-pointer">השלם אתגר יומי</button>
+                <button type="button" onclick="adminAddCoins(150)" class="bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 py-2.5 rounded-xl cursor-pointer">+150 🪙</button>
             </div>
             <button type="button" onclick="adminResetAllData()" class="w-full bg-rose-950/70 hover:bg-rose-900/70 border border-rose-500/40 text-rose-200 py-2 rounded-xl text-xs font-bold cursor-pointer">
                 איפוס נתונים מקומיים
@@ -414,10 +421,6 @@
 
         let unlockedSongs = safeParseJSON('juggle_unlocked_songs', ['none']);
         if (!Array.isArray(unlockedSongs) || !unlockedSongs.includes('none')) unlockedSongs = ['none'];
-
-        let activeRunVip = safeParseJSON('juggle_active_run_vip', []);
-        if (!Array.isArray(activeRunVip)) activeRunVip = [];
-        let redCardShieldUsed = false;
 
         let careerStats = safeParseJSON('juggle_career_stats', {
             totalJuggles: 0,
@@ -663,14 +666,12 @@
                 lbNamePlaceholder: "הכנס שם לתצוגה...",
                 lbRankPrefix: "הדירוג שלך:",
                 lbSynced: "השיא מסונכרן עם הענן",
-                lbSyncPending: "ממתין לחיבור לענן — לחץ לרענון",
-                lbSyncError: "לא ניתן להתחבר לטבלה כרגע",
+                lbLocalMode: "מצב מקומי — השיא שלך מוצג בטבלה",
                 shopTitle: "חנות",
                 tabSkins: "כדורים",
                 tabPaddles: "פאדלים",
                 tabStadiums: "אצטדיונים",
                 tabSongs: "מוזיקה",
-                tabVip: "יוקרה",
                 achieveTitle: "הישגים",
                 gameOver: "המשחק נגמר!",
                 timeUp: "הזמן נגמר!",
@@ -688,8 +689,6 @@
                 buy: "קנה",
                 equip: "בחר",
                 equipped: "נבחר",
-                oneGameTag: "למשחק אחד",
-                activeOneGame: "פעיל למשחק 1",
                 claim: "אסוף פרס",
                 claimed: "נאסף ✓",
                 inProgress: "בתהליך",
@@ -752,14 +751,12 @@
                 lbNamePlaceholder: "Enter display name...",
                 lbRankPrefix: "Your rank:",
                 lbSynced: "Score synced to cloud",
-                lbSyncPending: "Pending cloud sync — tap refresh",
-                lbSyncError: "Unable to reach leaderboard right now",
+                lbLocalMode: "Local mode — your score is shown in the board",
                 shopTitle: "Shop",
                 tabSkins: "Balls",
                 tabPaddles: "Paddles",
                 tabStadiums: "Stadiums",
                 tabSongs: "Music",
-                tabVip: "VIP",
                 achieveTitle: "Achievements",
                 gameOver: "Game Over!",
                 timeUp: "Time's Up!",
@@ -777,8 +774,6 @@
                 buy: "Buy",
                 equip: "Equip",
                 equipped: "Equipped",
-                oneGameTag: "1 Game Only",
-                activeOneGame: "Active (1 Game)",
                 claim: "Claim",
                 claimed: "Claimed ✓",
                 inProgress: "In Progress",
@@ -841,14 +836,12 @@
                 lbNamePlaceholder: "Введите имя...",
                 lbRankPrefix: "Ваше место:",
                 lbSynced: "Рекорд сохранён в облаке",
-                lbSyncPending: "Ожидает синхронизации — нажмите обновить",
-                lbSyncError: "Не удалось загрузить таблицу",
+                lbLocalMode: "Локальный режим — ваш рекорд в таблице",
                 shopTitle: "Магазин",
                 tabSkins: "Мячи",
                 tabPaddles: "Ракетки",
                 tabStadiums: "Стадионы",
                 tabSongs: "Музыка",
-                tabVip: "VIP",
                 achieveTitle: "Награды",
                 gameOver: "Игра окончена!",
                 timeUp: "Время вышло!",
@@ -866,8 +859,6 @@
                 buy: "Купить",
                 equip: "Выбрать",
                 equipped: "Выбрано",
-                oneGameTag: "На 1 игру",
-                activeOneGame: "Активно (1 игра)",
                 claim: "Забрать",
                 claimed: "Получено ✓",
                 inProgress: "В процессе",
@@ -930,14 +921,12 @@
                 lbNamePlaceholder: "Entrez votre pseudo...",
                 lbRankPrefix: "Votre rang :",
                 lbSynced: "Score synchronisé",
-                lbSyncPending: "En attente de synchro — actualisez",
-                lbSyncError: "Impossible de charger le classement",
+                lbLocalMode: "Mode local — votre score est affiché",
                 shopTitle: "Boutique",
                 tabSkins: "Ballons",
                 tabPaddles: "Raquettes",
                 tabStadiums: "Stades",
                 tabSongs: "Musique",
-                tabVip: "VIP",
                 achieveTitle: "Succès",
                 gameOver: "Partie terminée !",
                 timeUp: "Temps écoulé !",
@@ -955,8 +944,6 @@
                 buy: "Acheter",
                 equip: "Équiper",
                 equipped: "Équipé",
-                oneGameTag: "1 partie",
-                activeOneGame: "Actif (1 partie)",
                 claim: "Réclamer",
                 claimed: "Réclamé ✓",
                 inProgress: "En cours",
@@ -1036,79 +1023,6 @@
             { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] }
         ];
 
-        const vipItemsData = [
-            {
-                id: 'hot_start',
-                name: { he: 'פתיחה טעונה (50% מד)', en: 'Charged Start (50%)', ru: 'Старт с 50% заряда', fr: 'Départ Chargé (50%)' },
-                desc: { he: 'מתחיל את המשחק הקרוב עם 50% טעינה (למשחק אחד)', en: 'Starts next game at 50% charge (1 game only)', ru: 'На 1 игру: старт с 50% заряда', fr: '1 partie : démarre à 50% de charge' },
-                price: 120,
-                icon: '⚡'
-            },
-            {
-                id: 'coin_magnet',
-                name: { he: 'מגנט מטבעות (+2 בונוס)', en: 'Coin Magnet (+2 Bonus)', ru: 'Магнит Монет (+2)', fr: 'Aimant à Pièces (+2)' },
-                desc: { he: '+2 מטבעות נוספים על כל משימה בסולו (למשחק אחד)', en: '+2 extra coins per mission in Solo (1 game only)', ru: 'На 1 игру: +2 монеты за миссию', fr: '1 partie : +2 pièces par mission' },
-                price: 160,
-                icon: '🧲'
-            },
-            {
-                id: 'wide_master',
-                name: { he: 'מחבט אלופים רחב', en: 'Wide Champion Paddle', ru: 'Широкая ракетка', fr: 'Raquette Champion' },
-                desc: { he: 'מגדיל את רוחב הפאדל במשחק הקרוב (למשחק אחד)', en: 'Widens paddle for the next game (1 game only)', ru: 'На 1 игру: шире ракетка', fr: '1 partie : raquette plus large' },
-                price: 200,
-                icon: '🛡️'
-            },
-            {
-                id: 'extra_time_start',
-                name: { he: 'תוספת זמן פתיחה (+12s)', en: 'Bonus Start Time (+12s)', ru: 'Бонус времени (+12с)', fr: 'Temps Bonus (+12s)' },
-                desc: { he: 'מוסיף 12 שניות לפתיחת ריצת סולו (למשחק אחד)', en: 'Adds 12s to Solo timer (1 game only)', ru: 'На 1 игру: +12с в соло', fr: '1 partie : +12s en solo' },
-                price: 220,
-                icon: '⏳'
-            },
-            {
-                id: 'overdrive_boost',
-                name: { he: 'טעינה מהירה לאוברדרייב', en: 'Fast Overdrive Charge', ru: 'Быстрый заряд', fr: 'Charge Rapide' },
-                desc: { he: 'ממלא מהר יותר את מד הטעינה (למשחק אחד)', en: 'Faster charge gain on kicks (1 game only)', ru: 'На 1 игру: быстрый заряд', fr: '1 partie : charge plus rapide' },
-                price: 280,
-                icon: '🚀'
-            },
-            {
-                id: 'red_card_shield',
-                name: { he: 'הגנה מפני כרטיס אדום', en: 'Red Card Shield', ru: 'Щит от красной карточки', fr: 'Bouclier Carton Rouge' },
-                desc: { he: 'חוסם פעם אחת פגיעה של כרטיס אדום בריצה (למשחק אחד)', en: 'Blocks 1 red card hit per run (1 game only)', ru: 'На 1 игру: защита от красной карты', fr: '1 partie : bloque 1 carton rouge' },
-                price: 295,
-                icon: '🛑'
-            },
-            {
-                id: 'heel_master',
-                name: { he: 'אמן נגיעות עקב (x2)', en: 'Heel Spin Master (x2)', ru: 'Мастер кручёных (x2)', fr: 'Maître Brossé (x2)' },
-                desc: { he: 'כפל נקודות וטעינה על נגיעות עקב חדות (למשחק אחד)', en: 'Double bonus on heel spin kicks (1 game only)', ru: 'На 1 игру: x2 за кручёные удары', fr: '1 partie : x2 sur effets brossés' },
-                price: 310,
-                icon: '🌀'
-            },
-            {
-                id: 'double_coins_run',
-                name: { he: 'בונוס מטבעות כפול', en: 'Double End Coins', ru: 'Двойные монеты в конце', fr: 'Pièces Doublées Fin' },
-                desc: { he: 'מכפיל את מטבעות הסיום של המשחק הקרוב (למשחק אחד)', en: 'Doubles end-of-game coins for next run (1 game only)', ru: 'На 1 игру: x2 монет в конце', fr: '1 partie : pièces x2 à la fin' },
-                price: 360,
-                icon: '💎'
-            },
-            {
-                id: 'golden_aura',
-                name: { he: 'הילת זהב ובונוס מטרה (+2 🪙)', en: 'Golden Target Aura (+2 🪙)', ru: 'Аура целей (+2 🪙)', fr: 'Aura Cibles (+2 🪙)' },
-                desc: { he: '+2 מטבעות נוספים בכל פגיעה במטרה (למשחק אחד)', en: '+2 extra coins on every target hit (1 game only)', ru: 'На 1 игру: +2 монеты за цель', fr: '1 partie : +2 pièces par cible' },
-                price: 390,
-                icon: '✨'
-            },
-            {
-                id: 'royal_crown',
-                name: { he: 'כתר המלך היוקרתי', en: 'Royal Crown Prestige', ru: 'Корона Престижа', fr: 'Couronne Royale' },
-                desc: { he: 'כתר זהב מעל הפאדל במשחק הקרוב (למשחק אחד)', en: 'Golden crown above paddle for next game (1 game only)', ru: 'На 1 игру: корона над ракеткой', fr: '1 partie : couronne sur raquette' },
-                price: 450,
-                icon: '👑'
-            }
-        ];
-
         function persistPrefs() {
             localStorage.setItem('juggle_difficulty', difficulty);
             localStorage.setItem('juggle_lang', lang);
@@ -1177,12 +1091,13 @@
             document.getElementById('tab-paddles-btn').innerText = t.tabPaddles;
             document.getElementById('tab-stadiums-btn').innerText = t.tabStadiums;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
-            document.getElementById('tab-vip-btn').innerText = t.tabVip;
             document.getElementById('achieve-title').innerHTML = `🏅 ${t.achieveTitle}`;
             document.getElementById('pause-title').innerText = t.pauseTitle;
             document.getElementById('pause-resume-btn').innerText = t.resumeBtn;
             document.getElementById('pause-menu-btn').innerText = t.pauseMenuBtn;
             document.getElementById('go-retry-btn').innerText = t.retry;
+            const goMenuBtn = document.getElementById('go-menu-btn');
+            if (goMenuBtn) goMenuBtn.innerText = t.menu;
             document.getElementById('go-share-btn').innerText = t.shareBtn;
             const hotBadge = document.getElementById('hot-minute-badge');
             if (hotBadge) hotBadge.innerText = t.hotMinuteLbl;
@@ -1235,7 +1150,6 @@
             localStorage.setItem('juggle_unlocked_paddles', JSON.stringify(unlockedPaddles));
             localStorage.setItem('juggle_unlocked_stadiums', JSON.stringify(unlockedStadiums));
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
-            localStorage.setItem('juggle_active_run_vip', JSON.stringify(activeRunVip));
             localStorage.setItem('juggle_career_stats', JSON.stringify(careerStats));
             localStorage.setItem('juggle_series_quest', JSON.stringify(seriesQuest));
             localStorage.setItem('juggle_daily_challenge', JSON.stringify(dailyChallenge));
@@ -1251,10 +1165,6 @@
             document.getElementById('header-coins').innerText = coins;
             updateMenuRecordsStrip();
             updateDailyBadge();
-        }
-
-        function hasVip(id) {
-            return activeRunVip.includes(id);
         }
 
         let secretTapCount = 0;
@@ -1301,13 +1211,6 @@
             document.getElementById('admin-feedback').innerText = `+${pts} נקודות נוספו לריצה`;
         }
 
-        function adminGrantAllVip() {
-            activeRunVip = vipItemsData.map(v => v.id);
-            redCardShieldUsed = false;
-            saveGameData();
-            document.getElementById('admin-feedback').innerText = 'כל פריטי היוקרה הופעלו לריצה הקרובה 👑';
-        }
-
         function adminCompleteDaily() {
             syncDailyAndStreak();
             dailyChallenge.progress = dailyChallenge.target;
@@ -1320,7 +1223,7 @@
             const keysToClear = [
                 'juggle_coins', 'juggle_active_skin', 'juggle_active_paddle', 'juggle_active_stadium',
                 'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
-                'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_active_run_vip',
+                'juggle_unlocked_stadiums', 'juggle_unlocked_songs',
                 'juggle_career_stats', 'juggle_series_quest', 'juggle_daily_challenge', 'juggle_streak_data',
                 'juggle_total_purchases', 'juggle_achievements', 'juggle_personal_best',
                 'juggle_top_global_score', 'juggle_best_diff', 'juggle_last_synced_score',
@@ -1330,17 +1233,17 @@
             location.reload();
         }
 
-        function setSyncStatusMessage(text, isError = false) {
+        function setSyncStatusMessage(text, isLocal = false) {
             const statusEl = document.getElementById('lb-sync-status');
             if (!statusEl) return;
             statusEl.innerText = text;
-            statusEl.className = isError
+            statusEl.className = isLocal
                 ? 'text-[11px] text-amber-300 font-semibold'
                 : 'text-[11px] text-emerald-400 font-semibold';
             statusEl.classList.remove('hidden');
         }
 
-        async function syncScoreToFirebase(scoreToSync, retries = 3) {
+        async function syncScoreToFirebase(scoreToSync, retries = 2) {
             const validScore = Math.max(Number(scoreToSync) || 0, Number(personalBest) || 0);
             if (validScore <= 0) return false;
 
@@ -1368,13 +1271,88 @@
                         return true;
                     }
                 } catch (e) {
-                    await new Promise(r => setTimeout(r, 400 * (attempt + 1)));
+                    await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
                 }
             }
             const dot = document.getElementById('sync-dot');
-            if (dot) dot.classList.remove('hidden');
-            setSyncStatusMessage(translations[lang].lbSyncPending, true);
+            if (dot) dot.classList.add('hidden');
+            setSyncStatusMessage(translations[lang].lbLocalMode, true);
             return false;
+        }
+
+        function renderLeaderboardRows(players) {
+            const t = translations[lang];
+            const listEl = document.getElementById('leaderboard-list');
+            const myName = (playerName || '').trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
+
+            const normalized = Array.isArray(players) ? players.filter(p => p && typeof p === 'object') : [];
+            const hasSelf = normalized.some(p => p.id === playerId);
+            if (!hasSelf && (personalBest > 0 || playerName)) {
+                normalized.push({
+                    id: playerId,
+                    name: myName,
+                    score: Number(personalBest) || 0,
+                    diff: bestDifficulty || difficulty
+                });
+            }
+
+            normalized.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
+
+            if (normalized.length > 0) {
+                topGlobalScore = Math.max(topGlobalScore, Number(normalized[0].score) || 0);
+                localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
+                updateMenuRecordsStrip();
+            }
+
+            const myIndex = normalized.findIndex(p => p.id === playerId);
+            document.getElementById('lb-your-rank').innerText = myIndex >= 0
+                ? `${t.lbRankPrefix} #${myIndex + 1} / ${normalized.length}`
+                : `${t.lbRankPrefix} -`;
+
+            const top30 = normalized.slice(0, 30);
+            const diffLabels = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
+
+            listEl.innerHTML = '';
+            top30.forEach((p, idx) => {
+                const rank = idx + 1;
+                const isMe = p.id === playerId;
+                let badge = `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
+                if (rank === 1) badge = `<span class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/50 font-black text-sm flex items-center justify-center shrink-0">👑</span>`;
+                else if (rank === 2) badge = `<span class="w-7 h-7 rounded-full bg-slate-300/20 text-slate-200 border border-slate-300/50 font-bold text-xs flex items-center justify-center shrink-0">🥈</span>`;
+                else if (rank === 3) badge = `<span class="w-7 h-7 rounded-full bg-orange-600/20 text-orange-400 border border-orange-500/50 font-bold text-xs flex items-center justify-center shrink-0">🥉</span>`;
+
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `p-3 rounded-2xl flex items-center justify-between border ${isMe ? 'bg-emerald-950/60 border-emerald-500/70' : 'bg-slate-800/70 border-slate-700/60'}`;
+
+                const leftDiv = document.createElement('div');
+                leftDiv.className = 'flex items-center gap-2.5 min-w-0';
+                leftDiv.innerHTML = badge;
+
+                const infoCol = document.createElement('div');
+                infoCol.className = 'flex flex-col min-w-0';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = `font-bold text-sm truncate ${isMe ? 'text-emerald-300' : 'text-white'}`;
+                nameSpan.textContent = p.name + (isMe ? (lang === 'he' ? ' (אתה)' : ' (You)') : '');
+                infoCol.appendChild(nameSpan);
+
+                if (p.diff && diffLabels[p.diff]) {
+                    const diffTag = document.createElement('span');
+                    diffTag.className = 'text-[10px] text-slate-400';
+                    diffTag.textContent = diffLabels[p.diff];
+                    infoCol.appendChild(diffTag);
+                }
+
+                leftDiv.appendChild(infoCol);
+
+                const scoreSpan = document.createElement('span');
+                scoreSpan.className = 'font-black text-base text-amber-400 shrink-0';
+                scoreSpan.textContent = String(Number(p.score) || 0);
+
+                rowDiv.appendChild(leftDiv);
+                rowDiv.appendChild(scoreSpan);
+                listEl.appendChild(rowDiv);
+            });
         }
 
         async function savePlayerName() {
@@ -1423,7 +1401,7 @@
             if (refreshBtn) refreshBtn.disabled = true;
             if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
-            listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm animate-pulse">${lang === 'he' ? 'טוען שיאים מהענן...' : 'Loading scores...'}</div>`;
+            listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm animate-pulse">${lang === 'he' ? 'טוען שיאים...' : 'Loading scores...'}</div>`;
 
             try {
                 let res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
@@ -1452,80 +1430,21 @@
                     setSyncStatusMessage(t.lbSynced, false);
                 }
 
-                if (!data || typeof data !== 'object') {
-                    listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm">${lang === 'he' ? 'עדיין אין שיאים. היה הראשון!' : 'No scores yet. Be the first!'}</div>`;
-                    document.getElementById('lb-your-rank').innerText = `${t.lbRankPrefix} -`;
-                    return;
-                }
+                const players = (data && typeof data === 'object')
+                    ? Object.keys(data)
+                        .filter(key => data[key] && typeof data[key] === 'object')
+                        .map(key => ({
+                            id: key,
+                            name: String(data[key].name || 'Player'),
+                            score: Number(data[key].score) || 0,
+                            diff: String(data[key].difficulty || '')
+                        }))
+                    : [];
 
-                const players = Object.keys(data)
-                    .filter(key => data[key] && typeof data[key] === 'object')
-                    .map(key => ({
-                        id: key,
-                        name: String(data[key].name || 'Player'),
-                        score: Number(data[key].score) || 0,
-                        diff: String(data[key].difficulty || '')
-                    }));
-
-                players.sort((a, b) => b.score - a.score);
-                if (players.length > 0) {
-                    topGlobalScore = Math.max(topGlobalScore, players[0].score);
-                    localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
-                    updateMenuRecordsStrip();
-                }
-
-                const myIndex = players.findIndex(p => p.id === playerId);
-                document.getElementById('lb-your-rank').innerText = myIndex >= 0
-                    ? `${t.lbRankPrefix} #${myIndex + 1} / ${players.length}`
-                    : `${t.lbRankPrefix} -`;
-
-                const top30 = players.slice(0, 30);
-                const diffLabels = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
-
-                listEl.innerHTML = '';
-                top30.forEach((p, idx) => {
-                    const rank = idx + 1;
-                    const isMe = p.id === playerId;
-                    let badge = `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
-                    if (rank === 1) badge = `<span class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/50 font-black text-sm flex items-center justify-center shrink-0">👑</span>`;
-                    else if (rank === 2) badge = `<span class="w-7 h-7 rounded-full bg-slate-300/20 text-slate-200 border border-slate-300/50 font-bold text-xs flex items-center justify-center shrink-0">🥈</span>`;
-                    else if (rank === 3) badge = `<span class="w-7 h-7 rounded-full bg-orange-600/20 text-orange-400 border border-orange-500/50 font-bold text-xs flex items-center justify-center shrink-0">🥉</span>`;
-
-                    const rowDiv = document.createElement('div');
-                    rowDiv.className = `p-3 rounded-2xl flex items-center justify-between border ${isMe ? 'bg-emerald-950/60 border-emerald-500/70' : 'bg-slate-800/70 border-slate-700/60'}`;
-
-                    const leftDiv = document.createElement('div');
-                    leftDiv.className = 'flex items-center gap-2.5 min-w-0';
-                    leftDiv.innerHTML = badge;
-
-                    const infoCol = document.createElement('div');
-                    infoCol.className = 'flex flex-col min-w-0';
-
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = `font-bold text-sm truncate ${isMe ? 'text-emerald-300' : 'text-white'}`;
-                    nameSpan.textContent = p.name + (isMe ? (lang === 'he' ? ' (אתה)' : ' (You)') : '');
-                    infoCol.appendChild(nameSpan);
-
-                    if (p.diff && diffLabels[p.diff]) {
-                        const diffTag = document.createElement('span');
-                        diffTag.className = 'text-[10px] text-slate-400';
-                        diffTag.textContent = diffLabels[p.diff];
-                        infoCol.appendChild(diffTag);
-                    }
-
-                    leftDiv.appendChild(infoCol);
-
-                    const scoreSpan = document.createElement('span');
-                    scoreSpan.className = 'font-black text-base text-amber-400 shrink-0';
-                    scoreSpan.textContent = p.score;
-
-                    rowDiv.appendChild(leftDiv);
-                    rowDiv.appendChild(scoreSpan);
-                    listEl.appendChild(rowDiv);
-                });
+                renderLeaderboardRows(players);
             } catch (e) {
-                listEl.innerHTML = `<div class="text-center text-red-400 py-8 text-sm">${t.lbSyncError}</div>`;
-                setSyncStatusMessage(t.lbSyncPending, true);
+                setSyncStatusMessage(t.lbLocalMode, true);
+                renderLeaderboardRows([]);
             } finally {
                 if (refreshBtn) refreshBtn.disabled = false;
                 if (refreshIcon) refreshIcon.classList.remove('animate-spin');
@@ -1756,6 +1675,11 @@
         function isOverdriveActive() { return Date.now() < overdriveEnd; }
         function isHotMinuteActive() { return isSoloMode() && Date.now() < hotMinuteEnd; }
 
+        function updateLiveScoreBoard() {
+            const bigEl = document.getElementById('live-center-score');
+            if (bigEl) bigEl.innerText = String(score);
+        }
+
         function getActiveStageModifier() {
             if (!isSoloMode() || currentLevel < 3) return 'none';
             return (currentLevel % 2 === 1) ? 'double_targets' : 'crosswind';
@@ -1837,8 +1761,7 @@
 
         function getBasePlayerWidth() {
             const cfg = getDifficultyConfig();
-            const vipBonus = hasVip('wide_master') ? 18 : 0;
-            return Math.max(72, 92 + cfg.widthBonus + vipBonus);
+            return Math.max(72, 92 + cfg.widthBonus);
         }
 
         function getEscalationFactor() {
@@ -1897,7 +1820,7 @@
         }
 
         function handleScoreChanged() {
-            document.getElementById('game-score-board').innerText = score;
+            updateLiveScoreBoard();
             if (isSoloMode()) {
                 updateDailyProgress('score', score, true);
                 const nextLvl = computeLevelFromScore(score);
@@ -1937,8 +1860,7 @@
 
         function addCharge(amount) {
             if (isOverdriveActive()) return;
-            const boost = hasVip('overdrive_boost') ? 1.45 : 1.0;
-            chargeMeter = Math.min(100, chargeMeter + amount * boost);
+            chargeMeter = Math.min(100, chargeMeter + amount);
             if (chargeMeter >= 100) {
                 chargeMeter = 0;
                 overdriveEnd = Date.now() + 7500;
@@ -1956,15 +1878,14 @@
                 currentMission.progress += amountOrSet;
             }
             if (currentMission.progress >= currentMission.target) {
-                const magnetBonus = hasVip('coin_magnet') ? 2 : 0;
                 const hotBonus = isHotMinuteActive() ? 2 : 0;
                 score += 4;
-                coins += 4 + magnetBonus + hotBonus;
+                coins += 4 + hotBonus;
                 soloTimeRemaining = Math.min(90, soloTimeRemaining + 5);
                 updateTimerBadge();
                 saveGameData();
                 handleScoreChanged();
-                addFloatingText(`⭐ +4 | +${4 + magnetBonus + hotBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
+                addFloatingText(`⭐ +4 | +${4 + hotBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
                 pickNextMission();
             } else {
                 updateChargeAndMissionUI();
@@ -2020,7 +1941,7 @@
             if (!isSoloMode() && !isPracticeMode()) return;
             const cfg = getDifficultyConfig();
             const margin = 48;
-            const minY = 75;
+            const minY = 95;
             const maxY = Math.max(minY + 40, canvas.height * 0.50);
             bonusTargets.push({
                 x: Math.random() * Math.max(40, canvas.width - margin * 2) + margin,
@@ -2131,7 +2052,6 @@
             gameMode = mode;
             isPaused = false;
             releaseAllPointers();
-            redCardShieldUsed = false;
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
             const pIcon = document.getElementById('pause-icon');
@@ -2157,7 +2077,7 @@
 
             runJuggles = 0;
             runBestCombo = 0;
-            soloTimeRemaining = 65 + (isSoloMode() && hasVip('extra_time_start') ? 12 : 0);
+            soloTimeRemaining = 65;
             lastFrameTime = performance.now();
             endReason = 'fall';
 
@@ -2168,7 +2088,7 @@
             combo = 0;
             isFireMode = false;
             ball.powerShot = false;
-            chargeMeter = hasVip('hot_start') ? 50 : 0;
+            chargeMeter = 0;
             overdriveEnd = 0;
             hotMinuteEnd = 0;
             hotMinuteTriggered = false;
@@ -2213,7 +2133,7 @@
             updateStageModifierUI();
             updateTimerBadge();
             document.getElementById('combo-badge').classList.add('hidden');
-            document.getElementById('game-score-board').innerText = score;
+            updateLiveScoreBoard();
             updateLevelBadge();
             saveGameData();
             startBGM();
@@ -2427,11 +2347,10 @@
                     combo++;
                     runBestCombo = Math.max(runBestCombo, combo);
                     careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
-                    const heelMult = hasVip('heel_master') ? 2 : 1;
-                    addCharge(28 * heelMult);
-                    addFloatingText(`🌀 HEEL SPIN +${heelMult}`, targetBall.x, targetBall.y - 34, '#38bdf8');
+                    addCharge(28);
+                    addFloatingText('🌀 HEEL SPIN +1', targetBall.x, targetBall.y - 34, '#38bdf8');
                     if (isSoloMode()) {
-                        score += heelMult;
+                        score += 1;
                     }
                     playSound('spin');
                 } else if (isSweetSpot) {
@@ -2651,8 +2570,7 @@
                         playSound('target');
                         const hotMult = isHotMinuteActive() ? 2 : 1;
                         const targetPts = 3 * (isOverdriveActive() ? 2 : 1) * hotMult;
-                        const auraCoins = hasVip('golden_aura') ? 2 : 0;
-                        const totalTargetCoins = (2 + auraCoins) * hotMult;
+                        const totalTargetCoins = 2 * hotMult;
                         score += targetPts;
                         coins += totalTargetCoins;
                         if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + 2);
@@ -2702,22 +2620,16 @@
                     if (hazardCard.life <= 0) {
                         hazardCard = null;
                     } else if (Math.hypot(ball.x - hazardCard.x, ball.y - hazardCard.y) < ball.radius + hazardCard.radius) {
-                        if (hasVip('red_card_shield') && !redCardShieldUsed) {
-                            redCardShieldUsed = true;
-                            playSound('powerup');
-                            addFloatingText('🛑 מגן כרטיס אדום חסם!', hazardCard.x, hazardCard.y - 12, '#34d399');
-                        } else {
-                            playSound('hazard');
-                            screenShake = Math.max(screenShake, 6.5);
-                            combo = 0;
-                            isFireMode = false;
-                            document.getElementById('combo-badge').classList.add('hidden');
-                            if (isSoloMode()) {
-                                soloTimeRemaining = Math.max(0, soloTimeRemaining - 4);
-                                updateTimerBadge();
-                            }
-                            addFloatingText('🟥 -4s & COMBO RESET', hazardCard.x, hazardCard.y - 12, '#ef4444');
+                        playSound('hazard');
+                        screenShake = Math.max(screenShake, 6.5);
+                        combo = 0;
+                        isFireMode = false;
+                        document.getElementById('combo-badge').classList.add('hidden');
+                        if (isSoloMode()) {
+                            soloTimeRemaining = Math.max(0, soloTimeRemaining - 4);
+                            updateTimerBadge();
                         }
+                        addFloatingText('🟥 -4s & COMBO RESET', hazardCard.x, hazardCard.y - 12, '#ef4444');
                         hazardCard = null;
                     }
                 }
@@ -2912,7 +2824,7 @@
                 ctx.fillStyle = 'rgba(226, 232, 240, 0.72)';
                 ctx.font = 'bold 13px Rubik, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(windDir, canvas.width / 2, 34);
+                ctx.fillText(windDir, canvas.width / 2, 74);
                 ctx.restore();
             }
 
@@ -3075,12 +2987,6 @@
                 ctx.fillRect(player.x, drawPlayerY - 6, player.width * sRatio, 3);
             }
 
-            if (hasVip('royal_crown')) {
-                ctx.font = '13px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('👑', player.x + player.width / 2, drawPlayerY - 9);
-            }
-
             if (isDuelMode()) {
                 ctx.fillStyle = '#6366f1';
                 ctx.shadowColor = '#6366f1';
@@ -3137,7 +3043,7 @@
             if (levelUpBanner) {
                 ctx.save();
                 ctx.globalAlpha = levelUpBanner.alpha;
-                ctx.translate(canvas.width / 2, canvas.height * 0.34);
+                ctx.translate(canvas.width / 2, canvas.height * 0.36);
                 ctx.scale(levelUpBanner.scale, levelUpBanner.scale);
 
                 const boxW = Math.min(canvas.width - 28, 320);
@@ -3193,17 +3099,10 @@
             if (endReason === 'tourney_next') earnedCoins += 5;
             if (endReason === 'tourney_win') earnedCoins += 15;
 
-            if (hasVip('double_coins_run') && earnedCoins > 0) {
-                earnedCoins *= 2;
-            }
             if (earnedCoins > 0) {
                 coins += earnedCoins;
             }
 
-            if (endReason !== 'tourney_next') {
-                activeRunVip = [];
-                redCardShieldUsed = false;
-            }
             saveGameData();
 
             if (!isPracticeMode() && personalBest > 0) {
@@ -3285,11 +3184,10 @@
                 skins: 'tab-skins-btn',
                 paddles: 'tab-paddles-btn',
                 stadiums: 'tab-stadiums-btn',
-                songs: 'tab-songs-btn',
-                vip: 'tab-vip-btn'
+                songs: 'tab-songs-btn'
             };
-            const activeCls = 'py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate';
-            const idleCls = 'py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
+            const activeCls = 'py-2 px-1 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate';
+            const idleCls = 'py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
 
             Object.keys(ids).forEach(key => {
                 const el = document.getElementById(ids[key]);
@@ -3376,7 +3274,7 @@
                         </div>
                     `;
                 });
-            } else if (type === 'songs') {
+            } else {
                 songsData.forEach(item => {
                     let isOwned = unlockedSongs.includes(item.id);
                     let isEquipped = activeSong === item.id;
@@ -3393,29 +3291,6 @@
                                 ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
                                     isOwned ? `<button type="button" onclick="equipSong('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
                                     `<button type="button" onclick="buySong('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                vipItemsData.forEach(item => {
-                    let isActiveForNext = activeRunVip.includes(item.id);
-                    container.innerHTML += `
-                        <div class="bg-slate-800/80 border border-amber-500/30 p-3 rounded-2xl flex items-center justify-between gap-2">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 bg-amber-500/15 border border-amber-400/30 rounded-xl flex items-center justify-center text-lg shrink-0">${item.icon}</div>
-                                <div class="min-w-0">
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <span class="font-bold text-sm text-amber-200">${item.name[lang] || item.name.en}</span>
-                                        <span class="text-[10px] bg-amber-500/15 text-amber-300 px-1.5 py-0.5 rounded-md font-semibold">${t.oneGameTag}</span>
-                                    </div>
-                                    <div class="text-[11px] text-slate-400">${item.desc[lang] || item.desc.en}</div>
-                                    <div class="text-xs text-amber-400 flex items-center gap-1 mt-0.5">🪙 ${item.price}</div>
-                                </div>
-                            </div>
-                            <div class="shrink-0">
-                                ${isActiveForNext ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1.5 rounded-xl font-bold">${t.activeOneGame}</span>` :
-                                    `<button type="button" onclick="buyVip('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
                             </div>
                         </div>
                     `;
@@ -3503,19 +3378,6 @@
             saveGameData();
             renderShop('songs');
             startBGM();
-        }
-
-        function buyVip(id, price) {
-            if (activeRunVip.includes(id)) return;
-            if (coins >= price) {
-                coins -= price;
-                activeRunVip.push(id);
-                totalPurchasesCount++;
-                saveGameData();
-                renderShop('vip');
-            } else {
-                alert(lang === 'he' ? 'אין לך מספיק מטבעות!' : 'Not enough coins!');
-            }
         }
 
         function renderDailyAndStats() {
