@@ -28,22 +28,22 @@
 <body class="bg-slate-900 text-white min-h-dvh flex flex-col items-center justify-between p-2">
 
     <!-- Top Bar -->
-    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
-        <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-emerald-500/30">
-            <i class="fa-solid fa-coins text-amber-400 text-base"></i>
+    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0 gap-2">
+        <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-emerald-500/30 shrink-0">
+            <span class="text-base leading-none">🪙</span>
             <span id="header-coins" class="font-bold text-amber-400 text-base">75</span>
-            <span id="streak-pill" onclick="openAchievementsModal()" class="hidden text-[11px] font-black text-orange-300 bg-orange-500/15 border border-orange-400/30 px-2 py-0.5 rounded-lg cursor-pointer">🔥 1</span>
+            <span id="streak-pill" onclick="openAchievementsModal()" class="hidden text-[11px] font-black text-orange-300 bg-orange-500/15 border border-orange-400/30 px-2 py-0.5 rounded-lg cursor-pointer whitespace-nowrap shrink-0">🔥 1</span>
         </div>
 
-        <div class="flex gap-1.5 sm:gap-2">
-            <button type="button" onclick="triggerInstallPrompt()" id="install-pwa-btn" class="px-2.5 py-1 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1 transition border border-emerald-500/40 cursor-pointer min-h-[34px]">
-                <i class="fa-solid fa-download"></i> <span id="install-btn-text">התקן</span>
+        <div class="flex gap-1.5 sm:gap-2 shrink-0">
+            <button type="button" onclick="triggerInstallPrompt()" id="install-pwa-btn" class="px-2.5 py-1 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1 transition border border-emerald-500/40 cursor-pointer min-h-[34px] whitespace-nowrap">
+                <span>⬇️</span> <span id="install-btn-text">התקן</span>
             </button>
-            <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px]">
-                <i class="fa-solid fa-bolt text-amber-400"></i> <span id="diff-text">בינוני</span>
+            <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px] whitespace-nowrap">
+                <span>⚡</span> <span id="diff-text">בינוני</span>
             </button>
-            <button type="button" onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px]">
-                <i class="fa-solid fa-globe text-cyan-400"></i> <span id="lang-text">עברית</span>
+            <button type="button" onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px] whitespace-nowrap">
+                <span>🌐</span> <span id="lang-text">עברית</span>
             </button>
         </div>
     </header>
@@ -64,46 +64,46 @@
         <div class="w-full space-y-2.5">
             <button type="button" onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl flex items-center justify-between btn-glow transition transform active:scale-95 border border-emerald-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-futbol text-emerald-300"></i></div>
+                    <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">⚽</div>
                     <div class="text-right">
                         <div id="btn-solo-title" class="font-bold text-base">שבירת שיא (סולו)</div>
                         <div id="btn-solo-desc" class="text-xs text-emerald-200/80">משימות מתחלפות, טיימר, מד טעינה ומצבי שלב</div>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-left text-white/60"></i>
+                <span class="text-white/70 text-lg font-black px-1">‹</span>
             </button>
 
             <button type="button" onclick="startGame('practice')" class="w-full bg-gradient-to-r from-teal-700 to-cyan-700 hover:from-teal-600 hover:to-cyan-600 p-3 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-cyan-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-dumbbell text-cyan-200"></i></div>
+                    <div class="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center text-xl shrink-0">🏋️</div>
                     <div class="text-right">
                         <div id="btn-practice-title" class="font-bold text-sm">אימון חופשי</div>
                         <div id="btn-practice-desc" class="text-[11px] text-cyan-100/80">תרגול קומבואים וטכניקות בלי שעון לחוץ</div>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-left text-white/60"></i>
+                <span class="text-white/70 text-lg font-black px-1">‹</span>
             </button>
 
             <button type="button" onclick="startGame('pvp')" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-indigo-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-user-robot text-indigo-200"></i></div>
+                    <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🤖</div>
                     <div class="text-right">
                         <div id="btn-pvp-title" class="font-bold text-base">תחרות 1 נגד 1</div>
                         <div id="btn-pvp-desc" class="text-xs text-indigo-200/80">דו-קרב מול בוט חכם עד 5 נקודות</div>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-left text-white/60"></i>
+                <span class="text-white/70 text-lg font-black px-1">‹</span>
             </button>
 
             <button type="button" onclick="startGame('tournament')" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-amber-400/30 cursor-pointer">
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-trophy text-amber-200"></i></div>
+                    <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🏆</div>
                     <div class="text-right">
                         <div id="btn-tourney-title" class="font-bold text-base">טורניר אלופים</div>
                         <div id="btn-tourney-desc" class="text-xs text-amber-200/80">רבע גמר, חצי גמר וגמר עד הגביע</div>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-left text-white/60"></i>
+                <span class="text-white/70 text-lg font-black px-1">‹</span>
             </button>
         </div>
     </div>
@@ -112,7 +112,7 @@
     <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2 min-h-[430px]">
         <div class="w-full flex justify-between items-center mb-1 px-1 shrink-0 gap-1.5">
             <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer min-h-[34px]">
-                <i class="fa-solid fa-arrow-right"></i> <span id="lbl-menu">תפריט</span>
+                <span>›</span> <span id="lbl-menu">תפריט</span>
             </button>
 
             <div class="flex items-center gap-1.5 flex-wrap justify-center">
@@ -131,11 +131,11 @@
             </div>
 
             <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="togglePauseGame()" id="pause-toggle-btn" title="השהיה" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer">
-                    <i id="pause-icon" class="fa-solid fa-pause"></i>
+                <button type="button" onclick="togglePauseGame()" id="pause-toggle-btn" title="השהיה" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer text-sm font-black">
+                    <span id="pause-icon">⏸</span>
                 </button>
-                <button type="button" onclick="cycleAudioLevel()" id="audio-toggle-btn" title="שמע" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer">
-                    <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+                <button type="button" onclick="cycleAudioLevel()" id="audio-toggle-btn" title="שמע" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer text-sm">
+                    <span id="audio-icon">🔊</span>
                 </button>
             </div>
         </div>
@@ -192,17 +192,17 @@
     <!-- Bottom Navigation -->
     <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
         <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer relative min-h-[44px] justify-center">
-            <i class="fa-solid fa-medal text-base"></i>
+            <span class="text-base leading-none">🏅</span>
             <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
             <span id="daily-ready-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-400"></span>
         </button>
         <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer relative min-h-[44px] justify-center">
-            <i class="fa-solid fa-ranking-star text-base"></i>
+            <span class="text-base leading-none">🏆</span>
             <span id="nav-leaderboard" class="text-[10px] font-bold">טבלת שיאים</span>
             <span id="sync-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         </button>
         <button type="button" onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer min-h-[44px] justify-center">
-            <i class="fa-solid fa-store text-base"></i>
+            <span class="text-base leading-none">🏪</span>
             <span id="nav-shop" class="text-[10px] font-medium">חנות</span>
         </button>
     </nav>
@@ -211,13 +211,13 @@
     <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeLeaderboardModal()">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col max-h-[88vh]">
             <div class="flex justify-between items-center mb-3">
-                <h2 id="lb-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> טבלת מובילים עולמית</h2>
+                <h2 id="lb-title" class="text-xl font-bold text-amber-400 flex items-center gap-2">🏆 טבלת מובילים עולמית</h2>
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="loadLeaderboard(true)" title="רענן טבלה" class="text-slate-300 hover:text-emerald-400 text-sm w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer transition">
-                        <i id="lb-refresh-icon" class="fa-solid fa-arrows-rotate"></i>
+                        <span id="lb-refresh-icon">🔄</span>
                     </button>
                     <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
+                        ✕
                     </button>
                 </div>
             </div>
@@ -245,8 +245,8 @@
     <div id="shop-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeShopModal()">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4">
-                <h2 id="shop-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-store"></i> חנות המשחק</h2>
-                <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <h2 id="shop-title" class="text-xl font-bold text-amber-400 flex items-center gap-2">🏪 חנות המשחק</h2>
+                <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">✕</button>
             </div>
 
             <div id="shop-tabs-bar" class="grid grid-cols-5 gap-1 mb-4 bg-slate-800/60 p-1 rounded-xl">
@@ -265,8 +265,8 @@
     <div id="achievements-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeAchievementsModal()">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[88vh]">
             <div class="flex justify-between items-center mb-3">
-                <h2 id="achieve-title" class="text-xl font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-medal"></i> מערכת הישגים</h2>
-                <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <h2 id="achieve-title" class="text-xl font-bold text-emerald-400 flex items-center gap-2">🏅 מערכת הישגים</h2>
+                <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">✕</button>
             </div>
 
             <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-950/60 to-orange-950/60 border border-amber-500/35 rounded-2xl p-3.5 mb-3"></div>
@@ -280,8 +280,8 @@
     <div id="admin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeAdminModal()">
         <div class="bg-slate-900 border border-rose-500/40 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col gap-3">
             <div class="flex justify-between items-center">
-                <h2 class="text-lg font-black text-rose-400 flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> פאנל יוצר / מפתח</h2>
-                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <h2 class="text-lg font-black text-rose-400 flex items-center gap-2">🛠️ פאנל יוצר / מפתח</h2>
+                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">✕</button>
             </div>
             <p class="text-xs text-slate-400">כלי בדיקה מהירים לאנדרואיד/כרום. השינויים נשמרים ב-localStorage.</p>
 
@@ -881,17 +881,17 @@
             document.getElementById('nav-achieve').innerText = t.navAchieve;
             document.getElementById('nav-leaderboard').innerText = t.navLeaderboard;
             document.getElementById('nav-shop').innerText = t.navShop;
-            document.getElementById('lb-title').innerHTML = `<i class="fa-solid fa-trophy"></i> ${t.lbTitle}`;
+            document.getElementById('lb-title').innerHTML = `🏆 ${t.lbTitle}`;
             document.getElementById('lb-best-lbl').innerText = t.lbBest;
             document.getElementById('lb-save-btn').innerText = t.lbSave;
             document.getElementById('player-name-input').placeholder = t.lbNamePlaceholder;
-            document.getElementById('shop-title').innerHTML = `<i class="fa-solid fa-store"></i> ${t.shopTitle}`;
+            document.getElementById('shop-title').innerHTML = `🏪 ${t.shopTitle}`;
             document.getElementById('tab-skins-btn').innerText = t.tabSkins;
             document.getElementById('tab-paddles-btn').innerText = t.tabPaddles;
             document.getElementById('tab-stadiums-btn').innerText = t.tabStadiums;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
             document.getElementById('tab-vip-btn').innerText = t.tabVip;
-            document.getElementById('achieve-title').innerHTML = `<i class="fa-solid fa-medal"></i> ${t.achieveTitle}`;
+            document.getElementById('achieve-title').innerHTML = `🏅 ${t.achieveTitle}`;
             document.getElementById('pause-title').innerText = t.pauseTitle;
             document.getElementById('pause-resume-btn').innerText = t.resumeBtn;
             document.getElementById('pause-menu-btn').innerText = t.pauseMenuBtn;
@@ -900,7 +900,7 @@
 
             const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
             const diffBtn = document.getElementById('diff-btn');
-            diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer min-h-[34px] ' + (
+            diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer min-h-[34px] whitespace-nowrap ' + (
                 difficulty === 'easy'
                     ? 'bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-500/50 text-emerald-300'
                     : difficulty === 'hard'
@@ -1115,7 +1115,7 @@
             document.getElementById('player-name-input').value = playerName;
             document.getElementById('lb-personal-best').innerText = personalBest;
             renderDiffBestsBox();
-            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
             listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm animate-pulse">${lang === 'he' ? 'טוען שיאים מהענן...' : 'Loading scores...'}</div>`;
 
@@ -1213,7 +1213,7 @@
             } catch (e) {
                 listEl.innerHTML = `<div class="text-center text-red-400 py-8 text-sm">${lang === 'he' ? 'שגיאה בטעינת הנתונים' : 'Failed to load leaderboard'}</div>`;
             } finally {
-                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                if (refreshIcon) refreshIcon.classList.remove('animate-spin');
             }
         }
 
@@ -1242,9 +1242,9 @@
         function updateAudioIcon() {
             const icon = document.getElementById('audio-icon');
             if (!icon) return;
-            if (audioLevel <= 0.01) icon.className = 'fa-solid fa-volume-xmark text-red-400';
-            else if (audioLevel < 0.7) icon.className = 'fa-solid fa-volume-low text-amber-300';
-            else icon.className = 'fa-solid fa-volume-high text-amber-400';
+            if (audioLevel <= 0.01) icon.innerText = '🔇';
+            else if (audioLevel < 0.7) icon.innerText = '🔉';
+            else icon.innerText = '🔊';
         }
 
         function playSound(type) {
@@ -1360,7 +1360,7 @@
                     gain.gain.setValueAtTime(peakGain, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
                     osc.connect(gain);
-                    gain.connect(audioCtx.destination);
+                    osc.connect(audioCtx.destination);
                     osc.start(now);
                     osc.stop(now + dur);
                     step++;
@@ -1484,10 +1484,10 @@
             const icon = document.getElementById('pause-icon');
             if (isPaused) {
                 overlay.classList.remove('hidden');
-                if (icon) icon.className = 'fa-solid fa-play';
+                if (icon) icon.innerText = '▶';
             } else {
                 overlay.classList.add('hidden');
-                if (icon) icon.className = 'fa-solid fa-pause';
+                if (icon) icon.innerText = '⏸';
                 lastFrameTime = performance.now();
                 animFrameId = requestAnimationFrame(gameLoop);
             }
@@ -1782,7 +1782,7 @@
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
             const pIcon = document.getElementById('pause-icon');
-            if (pIcon) pIcon.className = 'fa-solid fa-pause';
+            if (pIcon) pIcon.innerText = '⏸';
 
             resizeCanvas();
             player.baseWidth = getBasePlayerWidth();
@@ -2886,7 +2886,7 @@
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center border border-slate-600 shrink-0" style="background:${item.color}"></div>
                                 <div>
                                     <div class="font-bold text-sm">${item.name[lang] || item.name.en}</div>
-                                    <div class="text-xs text-amber-400 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1">🪙 ${item.price}</div>
                                 </div>
                             </div>
                             <div class="shrink-0">
@@ -2911,7 +2911,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <div class="font-bold text-sm truncate">${item.name[lang] || item.name.en}</div>
-                                    <div class="text-xs text-amber-400 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1">🪙 ${item.price}</div>
                                 </div>
                             </div>
                             <div class="shrink-0">
@@ -2932,7 +2932,7 @@
                                 <div class="w-12 h-10 rounded-xl border border-slate-600 shrink-0" style="background:linear-gradient(180deg, ${item.bgTop}, ${item.bgMid})"></div>
                                 <div class="min-w-0">
                                     <div class="font-bold text-sm truncate">${item.name[lang] || item.name.en}</div>
-                                    <div class="text-xs text-amber-400 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1">🪙 ${item.price}</div>
                                 </div>
                             </div>
                             <div class="shrink-0">
@@ -2950,10 +2950,10 @@
                     container.innerHTML += `
                         <div class="bg-slate-800/80 border border-slate-700/80 p-3 rounded-2xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center text-cyan-400 shrink-0"><i class="fa-solid fa-music"></i></div>
+                                <div class="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center text-cyan-400 shrink-0 text-lg">🎵</div>
                                 <div>
                                     <div class="font-bold text-sm">${item.name[lang] || item.name.en}</div>
-                                    <div class="text-xs text-amber-400 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1">🪙 ${item.price}</div>
                                 </div>
                             </div>
                             <div class="shrink-0">
@@ -2977,7 +2977,7 @@
                                         <span class="text-[10px] bg-amber-500/15 text-amber-300 px-1.5 py-0.5 rounded-md font-semibold">${t.oneGameTag}</span>
                                     </div>
                                     <div class="text-[11px] text-slate-400">${item.desc[lang] || item.desc.en}</div>
-                                    <div class="text-xs text-amber-400 flex items-center gap-1 mt-0.5"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1 mt-0.5">🪙 ${item.price}</div>
                                 </div>
                             </div>
                             <div class="shrink-0">
@@ -3199,7 +3199,7 @@
                     <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl flex flex-col gap-2">
                         <div class="flex justify-between items-center gap-2">
                             <div class="font-bold text-sm">${item.title[lang] || item.title.en}</div>
-                            <div class="text-xs text-amber-400 font-bold flex items-center gap-1 shrink-0"><i class="fa-solid fa-coins"></i> +${data.reward}</div>
+                            <div class="text-xs text-amber-400 font-bold flex items-center gap-1 shrink-0">+${data.reward} 🪙</div>
                         </div>
                         <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
                             <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${pct}%"></div>
