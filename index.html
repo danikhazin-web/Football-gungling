@@ -255,7 +255,7 @@
             <div class="p-4 border-b border-slate-800 flex justify-between items-center">
                 <h2 id="lb-title" class="text-lg font-black flex items-center gap-2">🏆 טבלת שיאים עולמית</h2>
                 <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="loadLeaderboard(true)" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-white cursor-pointer" title="רענן">
+                    <button id="lb-refresh-btn" type="button" onclick="loadLeaderboard(true)" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-white cursor-pointer" title="רענן">
                         <span id="lb-refresh-icon">🔄</span>
                     </button>
                     <button type="button" onclick="closeLeaderboardModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
@@ -537,6 +537,11 @@
             medium: Number(diffBests.medium) || 0,
             hard: Number(diffBests.hard) || 0
         };
+        const maxDiffBest = Math.max(diffBests.easy, diffBests.medium, diffBests.hard);
+        if (maxDiffBest > personalBest) {
+            personalBest = maxDiffBest;
+            localStorage.setItem('juggle_personal_best', String(personalBest));
+        }
 
         let difficulty = localStorage.getItem('juggle_difficulty') || 'medium';
         if (!['easy', 'medium', 'hard'].includes(difficulty)) difficulty = 'medium';
@@ -658,6 +663,8 @@
                 lbNamePlaceholder: "הכנס שם לתצוגה...",
                 lbRankPrefix: "הדירוג שלך:",
                 lbSynced: "השיא מסונכרן עם הענן",
+                lbSyncPending: "ממתין לחיבור לענן — לחץ לרענון",
+                lbSyncError: "לא ניתן להתחבר לטבלה כרגע",
                 shopTitle: "חנות",
                 tabSkins: "כדורים",
                 tabPaddles: "פאדלים",
@@ -745,6 +752,8 @@
                 lbNamePlaceholder: "Enter display name...",
                 lbRankPrefix: "Your rank:",
                 lbSynced: "Score synced to cloud",
+                lbSyncPending: "Pending cloud sync — tap refresh",
+                lbSyncError: "Unable to reach leaderboard right now",
                 shopTitle: "Shop",
                 tabSkins: "Balls",
                 tabPaddles: "Paddles",
@@ -832,6 +841,8 @@
                 lbNamePlaceholder: "Введите имя...",
                 lbRankPrefix: "Ваше место:",
                 lbSynced: "Рекорд сохранён в облаке",
+                lbSyncPending: "Ожидает синхронизации — нажмите обновить",
+                lbSyncError: "Не удалось загрузить таблицу",
                 shopTitle: "Магазин",
                 tabSkins: "Мячи",
                 tabPaddles: "Ракетки",
@@ -919,6 +930,8 @@
                 lbNamePlaceholder: "Entrez votre pseudo...",
                 lbRankPrefix: "Votre rang :",
                 lbSynced: "Score synchronisé",
+                lbSyncPending: "En attente de synchro — actualisez",
+                lbSyncError: "Impossible de charger le classement",
                 shopTitle: "Boutique",
                 tabSkins: "Ballons",
                 tabPaddles: "Raquettes",
@@ -1279,6 +1292,7 @@
             if (!gameRunning) {
                 personalBest = Math.max(personalBest, score + pts);
                 saveGameData();
+                syncScoreToFirebase(personalBest);
                 document.getElementById('admin-feedback').innerText = `השיא עודכן ל-${personalBest}`;
                 return;
             }
@@ -1316,11 +1330,21 @@
             location.reload();
         }
 
+        function setSyncStatusMessage(text, isError = false) {
+            const statusEl = document.getElementById('lb-sync-status');
+            if (!statusEl) return;
+            statusEl.innerText = text;
+            statusEl.className = isError
+                ? 'text-[11px] text-amber-300 font-semibold'
+                : 'text-[11px] text-emerald-400 font-semibold';
+            statusEl.classList.remove('hidden');
+        }
+
         async function syncScoreToFirebase(scoreToSync, retries = 3) {
-            const validScore = Math.max(Number(scoreToSync) || 0, personalBest);
+            const validScore = Math.max(Number(scoreToSync) || 0, Number(personalBest) || 0);
             if (validScore <= 0) return false;
 
-            const displayName = playerName.trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
+            const displayName = (playerName || '').trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player');
             const payload = {
                 name: displayName,
                 score: validScore,
@@ -1340,6 +1364,7 @@
                         localStorage.setItem('juggle_last_synced_score', String(validScore));
                         const dot = document.getElementById('sync-dot');
                         if (dot) dot.classList.add('hidden');
+                        setSyncStatusMessage(translations[lang].lbSynced, false);
                         return true;
                     }
                 } catch (e) {
@@ -1348,6 +1373,7 @@
             }
             const dot = document.getElementById('sync-dot');
             if (dot) dot.classList.remove('hidden');
+            setSyncStatusMessage(translations[lang].lbSyncPending, true);
             return false;
         }
 
@@ -1360,7 +1386,9 @@
             const btn = document.getElementById('lb-save-btn');
             btn.disabled = true;
             btn.style.opacity = '0.6';
-            await syncScoreToFirebase(personalBest);
+            if (personalBest > 0) {
+                await syncScoreToFirebase(personalBest);
+            }
             btn.disabled = false;
             btn.style.opacity = '1';
             loadLeaderboard(true);
@@ -1386,50 +1414,58 @@
         async function loadLeaderboard(forceSync = false) {
             const t = translations[lang];
             const listEl = document.getElementById('leaderboard-list');
-            const statusEl = document.getElementById('lb-sync-status');
+            const refreshBtn = document.getElementById('lb-refresh-btn');
             const refreshIcon = document.getElementById('lb-refresh-icon');
 
             document.getElementById('player-name-input').value = playerName;
             document.getElementById('lb-personal-best').innerText = personalBest;
             renderDiffBestsBox();
+            if (refreshBtn) refreshBtn.disabled = true;
             if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
             listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm animate-pulse">${lang === 'he' ? 'טוען שיאים מהענן...' : 'Loading scores...'}</div>`;
 
             try {
                 let res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
                 let data = await res.json();
 
-                const cloudScore = (data && data[playerId]) ? Number(data[playerId].score) || 0 : 0;
+                const cloudEntry = (data && typeof data === 'object' && data[playerId]) ? data[playerId] : null;
+                const cloudScore = cloudEntry ? Number(cloudEntry.score) || 0 : 0;
+
                 if (personalBest > cloudScore || (forceSync && personalBest > 0)) {
                     const synced = await syncScoreToFirebase(personalBest);
                     if (synced) {
-                        res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
-                        data = await res.json();
+                        const refreshRes = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
+                        if (refreshRes.ok) {
+                            data = await refreshRes.json();
+                        }
                     }
                 } else if (cloudScore > personalBest) {
                     personalBest = cloudScore;
                     saveGameData();
                     document.getElementById('lb-personal-best').innerText = personalBest;
+                    setSyncStatusMessage(t.lbSynced, false);
+                } else if (personalBest > 0 && cloudScore >= personalBest) {
+                    const dot = document.getElementById('sync-dot');
+                    if (dot) dot.classList.add('hidden');
+                    setSyncStatusMessage(t.lbSynced, false);
                 }
 
-                if (statusEl && personalBest > 0) {
-                    statusEl.innerText = t.lbSynced;
-                    statusEl.classList.remove('hidden');
-                }
-
-                if (!data) {
+                if (!data || typeof data !== 'object') {
                     listEl.innerHTML = `<div class="text-center text-slate-400 py-8 text-sm">${lang === 'he' ? 'עדיין אין שיאים. היה הראשון!' : 'No scores yet. Be the first!'}</div>`;
                     document.getElementById('lb-your-rank').innerText = `${t.lbRankPrefix} -`;
                     return;
                 }
 
-                const players = Object.keys(data).map(key => ({
-                    id: key,
-                    name: data[key].name || 'Player',
-                    score: Number(data[key].score) || 0,
-                    diff: data[key].difficulty || ''
-                }));
+                const players = Object.keys(data)
+                    .filter(key => data[key] && typeof data[key] === 'object')
+                    .map(key => ({
+                        id: key,
+                        name: String(data[key].name || 'Player'),
+                        score: Number(data[key].score) || 0,
+                        diff: String(data[key].difficulty || '')
+                    }));
 
                 players.sort((a, b) => b.score - a.score);
                 if (players.length > 0) {
@@ -1488,8 +1524,10 @@
                     listEl.appendChild(rowDiv);
                 });
             } catch (e) {
-                listEl.innerHTML = `<div class="text-center text-red-400 py-8 text-sm">${lang === 'he' ? 'שגיאה בטעינת הנתונים' : 'Failed to load leaderboard'}</div>`;
+                listEl.innerHTML = `<div class="text-center text-red-400 py-8 text-sm">${t.lbSyncError}</div>`;
+                setSyncStatusMessage(t.lbSyncPending, true);
             } finally {
+                if (refreshBtn) refreshBtn.disabled = false;
                 if (refreshIcon) refreshIcon.classList.remove('animate-spin');
             }
         }
@@ -1497,7 +1535,7 @@
         function openLeaderboardModal() {
             releaseAllPointers();
             document.getElementById('leaderboard-modal').classList.remove('hidden');
-            loadLeaderboard(false);
+            loadLeaderboard(true);
         }
         function closeLeaderboardModal() {
             document.getElementById('leaderboard-modal').classList.add('hidden');
@@ -1688,7 +1726,7 @@
         let extraSoloBall = null;
 
         let bonusGate = null;
-        let gateCooldown = 480;
+        let gateCooldown = 520;
         let hotMinuteEnd = 0;
         let hotMinuteTriggered = false;
 
@@ -3138,7 +3176,6 @@
                     bestDifficulty = difficulty;
                     isNewRecord = true;
                     topGlobalScore = Math.max(topGlobalScore, personalBest);
-                    syncScoreToFirebase(personalBest);
                 }
             }
 
@@ -3168,6 +3205,10 @@
                 redCardShieldUsed = false;
             }
             saveGameData();
+
+            if (!isPracticeMode() && personalBest > 0) {
+                syncScoreToFirebase(personalBest);
+            }
 
             let headline = t.gameOver;
             if (endReason === 'timeup') headline = t.timeUp;
