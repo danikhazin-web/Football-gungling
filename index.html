@@ -22,6 +22,7 @@
 
     <style>
         * { font-family: 'Rubik', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        html, body { overscroll-behavior: none; }
         input { user-select: text; }
         .glow-text { text-shadow: 0 0 15px rgba(52, 211, 153, 0.6); }
         .btn-glow { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); }
@@ -39,10 +40,10 @@
         </div>
 
         <div class="flex gap-2">
-            <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
+            <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px]">
                 <i class="fa-solid fa-bolt text-amber-400"></i> <span id="diff-text">בינוני</span>
             </button>
-            <button type="button" onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer">
+            <button type="button" onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px]">
                 <i class="fa-solid fa-globe text-cyan-400"></i> <span id="lang-text">עברית</span>
             </button>
         </div>
@@ -62,7 +63,7 @@
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-futbol text-emerald-300"></i></div>
                     <div class="text-right">
                         <div id="btn-solo-title" class="font-bold text-base">שבירת שיא (סולו)</div>
-                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">משימות מתחלפות, מד טעינה ומטרות בונוס</div>
+                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">משימות מתחלפות, טיימר, מד טעינה ומצבי שלב</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
@@ -94,24 +95,27 @@
 
     <!-- Game Arena -->
     <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2 min-h-[430px]">
-        <div class="w-full flex justify-between items-center mb-1 px-1 shrink-0">
-            <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer">
+        <div class="w-full flex justify-between items-center mb-1 px-1 shrink-0 gap-1.5">
+            <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer min-h-[34px]">
                 <i class="fa-solid fa-arrow-right"></i> <span id="lbl-menu">תפריט</span>
             </button>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 flex-wrap justify-center">
                 <div id="level-badge" class="text-xs font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-xl border border-cyan-500/30">
                     שלב 1
+                </div>
+                <div id="timer-badge" class="text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-xl border border-amber-500/30">
+                    ⏱️ 60s
                 </div>
                 <div id="combo-badge" class="hidden text-xs font-black text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-xl border border-orange-500/40 animate-bounce">
                     🔥 x2
                 </div>
-                <div id="game-score-board" class="text-lg font-black text-emerald-400 bg-slate-800/90 px-4 py-1 rounded-xl border border-slate-700 shadow">
+                <div id="game-score-board" class="text-lg font-black text-emerald-400 bg-slate-800/90 px-3.5 py-0.5 rounded-xl border border-slate-700 shadow">
                     0
                 </div>
             </div>
 
-            <button type="button" onclick="toggleAudio()" id="audio-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer">
+            <button type="button" onclick="toggleAudio()" id="audio-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer shrink-0">
                 <i class="fa-solid fa-volume-high"></i>
             </button>
         </div>
@@ -125,9 +129,10 @@
                 </div>
                 <span id="charge-pct" class="text-[11px] font-black text-amber-400 w-9 text-left">0%</span>
             </div>
-            <div id="mission-row" class="flex items-center justify-between text-xs bg-slate-900/80 px-2.5 py-1 rounded-xl border border-cyan-500/20">
+            <div id="mission-row" class="flex items-center justify-between text-xs bg-slate-900/80 px-2.5 py-1 rounded-xl border border-cyan-500/20 gap-2">
                 <span id="mission-text" class="text-cyan-200 font-semibold truncate">🎯 משימה: פגע במטרה 1</span>
-                <span id="mission-progress" class="text-emerald-400 font-black ml-2 shrink-0">0/1</span>
+                <span id="stage-modifier-pill" class="hidden text-[10px] font-black text-fuchsia-300 bg-fuchsia-950/80 border border-fuchsia-500/30 px-2 py-0.5 rounded-lg shrink-0"></span>
+                <span id="mission-progress" class="text-emerald-400 font-black shrink-0">0/1</span>
             </div>
         </div>
 
@@ -141,32 +146,32 @@
 
     <!-- Bottom Navigation -->
     <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
-        <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer relative">
+        <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer relative min-h-[44px] justify-center">
             <i class="fa-solid fa-medal text-base"></i>
             <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
             <span id="daily-ready-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-400"></span>
         </button>
-        <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer relative">
+        <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer relative min-h-[44px] justify-center">
             <i class="fa-solid fa-ranking-star text-base"></i>
             <span id="nav-leaderboard" class="text-[10px] font-bold">טבלת שיאים</span>
             <span id="sync-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         </button>
-        <button type="button" onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer">
+        <button type="button" onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer min-h-[44px] justify-center">
             <i class="fa-solid fa-store text-base"></i>
             <span id="nav-shop" class="text-[10px] font-medium">חנות</span>
         </button>
     </nav>
 
     <!-- Leaderboard Modal -->
-    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeLeaderboardModal()">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col max-h-[88vh]">
             <div class="flex justify-between items-center mb-3">
                 <h2 id="lb-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> טבלת מובילים עולמית</h2>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="loadLeaderboard(true)" title="רענן טבלה" class="text-slate-300 hover:text-emerald-400 text-sm w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer transition">
+                    <button type="button" onclick="loadLeaderboard(true)" title="רענן טבלה" class="text-slate-300 hover:text-emerald-400 text-sm w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer transition">
                         <i id="lb-refresh-icon" class="fa-solid fa-arrows-rotate"></i>
                     </button>
-                    <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
+                    <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -178,8 +183,8 @@
                     <span class="text-emerald-400 font-bold"><span id="lb-best-lbl">השיא שלך:</span> <span id="lb-personal-best">0</span></span>
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="player-name-input" maxlength="16" placeholder="הכנס את שמך לטבלה..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
-                    <button type="button" onclick="savePlayerName()" id="lb-save-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-xl transition cursor-pointer">שמור</button>
+                    <input type="text" id="player-name-input" maxlength="16" placeholder="הכנס את שמך לטבלה..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <button type="button" onclick="savePlayerName()" id="lb-save-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer">שמור</button>
                 </div>
                 <div id="lb-sync-status" class="text-[11px] text-slate-400 text-center hidden"></div>
             </div>
@@ -191,11 +196,11 @@
     </div>
 
     <!-- Shop Modal -->
-    <div id="shop-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div id="shop-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeShopModal()">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="shop-title" class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-store"></i> חנות המשחק</h2>
-                <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
             <div id="shop-tabs-bar" class="grid grid-cols-5 gap-1 mb-4 bg-slate-800/60 p-1 rounded-xl">
@@ -211,29 +216,25 @@
     </div>
 
     <!-- Achievements, Daily Challenge & Career Stats Modal -->
-    <div id="achievements-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div id="achievements-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeAchievementsModal()">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[88vh]">
             <div class="flex justify-between items-center mb-3">
                 <h2 id="achieve-title" class="text-xl font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-medal"></i> מערכת הישגים</h2>
-                <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Daily Challenge & Streak Card -->
             <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-950/60 to-orange-950/60 border border-amber-500/35 rounded-2xl p-3.5 mb-3"></div>
-
-            <!-- Career Stats Grid -->
             <div id="career-stats-box" class="grid grid-cols-4 gap-2 mb-3"></div>
-
             <div id="achievements-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
         </div>
     </div>
 
     <!-- Hidden Creator / Admin Panel Modal -->
-    <div id="admin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeAdminModal()">
         <div class="bg-slate-900 border border-rose-500/40 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-black text-rose-400 flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> פאנל יוצר / מפתח</h2>
-                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p class="text-xs text-slate-400">כלי בדיקה מהירים לאנדרואיד/כרום. השינויים נשמרים ב-`localStorage`.</p>
 
@@ -337,10 +338,8 @@
         let unlockedStadiums = JSON.parse(localStorage.getItem('juggle_unlocked_stadiums')) || ['night_pro'];
         let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
 
-        // VIP / Luxury items are SINGLE-GAME consumables (active for 1 run only)
         let activeRunVip = JSON.parse(localStorage.getItem('juggle_active_run_vip')) || [];
 
-        // Career Stats
         let careerStats = JSON.parse(localStorage.getItem('juggle_career_stats')) || {
             totalJuggles: 0,
             duelWins: 0,
@@ -348,7 +347,6 @@
             bestCombo: 0
         };
 
-        // Daily Challenge & Streak
         function getTodayKey() {
             const d = new Date();
             const y = d.getFullYear();
@@ -448,7 +446,7 @@
         const translations = {
             he: {
                 subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
-                soloTitle: "שבירת שיא (סולו)", soloDesc: "משימות מתחלפות, מד טעינה ומטרות בונוס",
+                soloTitle: "שבירת שיא (סולו)", soloDesc: "משימות מתחלפות, טיימר, מד טעינה ומצבי שלב",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם עד 5 נקודות",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
                 menu: "תפריט", tap: "גרור את השחקן והשג נקודות / משימות 🎯!",
@@ -462,8 +460,10 @@
                 activeOneGame: "מוכן למשחק 1", oneGameTag: "למשחק אחד",
                 claim: "אסוף פרס", claimed: "הושלם", inProgress: "בתהליך",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
-                gameOver: "המשחק נגמר!", tourneyWon: "🏆 אלוף הטורניר!", duelWon: "🎉 ניצחת בדו-קרב!", duelLost: "🤖 הבוט ניצח",
+                gameOver: "המשחק נגמר!", timeUp: "⏱️ נגמר הזמן!",
+                tourneyWon: "🏆 אלוף הטורניר!", duelWon: "🎉 ניצחת בדו-קרב!", duelLost: "🤖 הבוט ניצח",
                 scoreTxt: "תוצאה", bestTxt: "שיא אישי",
+                runJugglesLbl: "הקפצות בריצה", runComboLbl: "קומבו שיא בריצה", dailyProgLbl: "אתגר יומי",
                 retry: "שחק שוב", levelPrefix: "שלב",
                 chargeLbl: "⚡ מד טעינה", overdriveLbl: "🔥 אוברדרייב x2",
                 mJuggles: "הקפץ {n} פעמים", mTargets: "פגע ב-{n} מטרות 🎯", mCombo: "הגע לקומבו {n}",
@@ -471,6 +471,7 @@
                 tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
                 dailyTitle: "📅 אתגר יומי", streakLbl: "רצף ימים",
                 statJuggles: "הקפצות", statDuels: "ניצחונות 1v1", statTrophies: "גביעים", statCombo: "קומבו שיא",
+                modDoubleTargets: "🎯 מטרות כפולות", modCrosswind: "💨 רוח צד",
                 levelUpPhrases: [
                     "וואו! מצוין!",
                     "יפה מאוד!",
@@ -480,7 +481,7 @@
             },
             en: {
                 subtitle: "Fill the charge gauge, complete missions & beat records!",
-                soloTitle: "Solo High Score", soloDesc: "Dynamic missions, charge gauge & bonus targets",
+                soloTitle: "Solo High Score", soloDesc: "Dynamic missions, timer, charge & stage modes",
                 pvpTitle: "1v1 Match", pvpDesc: "Smart AI duel first to 5 points",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final",
                 menu: "Menu", tap: "Drag player & score / hit targets 🎯!",
@@ -494,8 +495,10 @@
                 activeOneGame: "1 Game Ready", oneGameTag: "1 Game",
                 claim: "Claim", claimed: "Completed", inProgress: "In Progress",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
-                gameOver: "Game Over!", tourneyWon: "🏆 Tournament Champion!", duelWon: "🎉 You Won the Duel!", duelLost: "🤖 Bot Won",
+                gameOver: "Game Over!", timeUp: "⏱️ Time's Up!",
+                tourneyWon: "🏆 Tournament Champion!", duelWon: "🎉 You Won the Duel!", duelLost: "🤖 Bot Won",
                 scoreTxt: "Score", bestTxt: "Best",
+                runJugglesLbl: "Run Juggles", runComboLbl: "Run Best Combo", dailyProgLbl: "Daily Quest",
                 retry: "Play Again", levelPrefix: "Lvl",
                 chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
                 mJuggles: "Juggle {n} times", mTargets: "Hit {n} targets 🎯", mCombo: "Reach {n} combo",
@@ -503,6 +506,7 @@
                 tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
                 dailyTitle: "📅 Daily Challenge", streakLbl: "Day Streak",
                 statJuggles: "Juggles", statDuels: "1v1 Wins", statTrophies: "Trophies", statCombo: "Best Combo",
+                modDoubleTargets: "🎯 Double Targets", modCrosswind: "💨 Crosswind",
                 levelUpPhrases: [
                     "WOW! AWESOME!",
                     "GREAT JOB!",
@@ -512,7 +516,7 @@
             },
             ru: {
                 subtitle: "Заряжайте шкалу, выполняйте задания и бейте рекорды!",
-                soloTitle: "Рекорд (Соло)", soloDesc: "Задания, шкала заряда и цели",
+                soloTitle: "Рекорд (Соло)", soloDesc: "Задания, таймер, заряд и режимы уровней",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота до 5 очков",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал",
                 menu: "Меню", tap: "Ведите игрока и побеждайте 🎯!",
@@ -526,8 +530,10 @@
                 activeOneGame: "На 1 игру", oneGameTag: "1 игра",
                 claim: "Забрать", claimed: "Выполнено", inProgress: "В процессе",
                 diffEasy: "Легко", diffMedium: "Средне", diffHard: "Сложно",
-                gameOver: "Игра окончена!", tourneyWon: "🏆 Чемпион Турнира!", duelWon: "🎉 Победа в дуэли!", duelLost: "🤖 Бот победил",
+                gameOver: "Игра окончена!", timeUp: "⏱️ Время вышло!",
+                tourneyWon: "🏆 Чемпион Турнира!", duelWon: "🎉 Победа в дуэли!", duelLost: "🤖 Бот победил",
                 scoreTxt: "Счет", bestTxt: "Рекорд",
+                runJugglesLbl: "Чеканки за игру", runComboLbl: "Макс комбо за игру", dailyProgLbl: "Задание дня",
                 retry: "Ещё раз", levelPrefix: "Ур.",
                 chargeLbl: "⚡ Заряд", overdriveLbl: "🔥 ОВЕРДРАЙВ x2",
                 mJuggles: "Чеканьте {n} раз", mTargets: "Попадите в {n} целей 🎯", mCombo: "Комбо {n}",
@@ -535,6 +541,7 @@
                 tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
                 dailyTitle: "📅 Задание дня", streakLbl: "Серия дней",
                 statJuggles: "Чеканки", statDuels: "Побед 1v1", statTrophies: "Кубки", statCombo: "Макс комбо",
+                modDoubleTargets: "🎯 Двойные цели", modCrosswind: "💨 Боковой ветер",
                 levelUpPhrases: [
                     "ВАУ! ОТЛИЧНО!",
                     "ОЧЕНЬ КРУТО!",
@@ -544,7 +551,7 @@
             },
             fr: {
                 subtitle: "Chargez la jauge, validez des missions et battez des records !",
-                soloTitle: "Record Solo", soloDesc: "Missions dynamiques, jauge et cibles",
+                soloTitle: "Record Solo", soloDesc: "Missions, chrono, charge et modes niveau",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA en 5 points",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Quart, demi et finale",
                 menu: "Menu", tap: "Glissez et marquez 🎯 !",
@@ -558,8 +565,10 @@
                 activeOneGame: "1 Partie Prête", oneGameTag: "1 Partie",
                 claim: "Récupérer", claimed: "Terminé", inProgress: "En cours",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
-                gameOver: "Partie Terminée !", tourneyWon: "🏆 Champion du Tournoi !", duelWon: "🎉 Victoire au Duel !", duelLost: "🤖 Le Bot a Gagné",
+                gameOver: "Partie Terminée !", timeUp: "⏱️ Temps écoulé !",
+                tourneyWon: "🏆 Champion du Tournoi !", duelWon: "🎉 Victoire au Duel !", duelLost: "🤖 Le Bot a Gagné",
                 scoreTxt: "Score", bestTxt: "Meilleur",
+                runJugglesLbl: "Jonglages partie", runComboLbl: "Combo max partie", dailyProgLbl: "Défi du jour",
                 retry: "Rejouer", levelPrefix: "Niv.",
                 chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
                 mJuggles: "Jonglez {n} fois", mTargets: "Touchez {n} cibles 🎯", mCombo: "Combo {n}",
@@ -567,6 +576,7 @@
                 tourneyStages: ["Quart", "Demi-finale", "Finale"],
                 dailyTitle: "📅 Défi du Jour", streakLbl: "Série jours",
                 statJuggles: "Jonglages", statDuels: "Victoires 1v1", statTrophies: "Trophées", statCombo: "Meilleur combo",
+                modDoubleTargets: "🎯 Cibles Doubles", modCrosswind: "💨 Vent Latéral",
                 levelUpPhrases: [
                     "WAOUH ! SUPER !",
                     "TRÈS BIEN !",
@@ -625,7 +635,6 @@
             { id: 'night_derby', name: { he: 'דרבי לילה', en: 'Night Derby', ru: 'Ночное Дерби', fr: 'Derby Nocturne' }, price: 900, wave: 'sawtooth', tempo: 225, notes: [130.8, 155.6, 196, 233.1, 261.6, 196] }
         ];
 
-        // Single-game VIP items (lasts for 1 game/run only)
         const vipItemsData = [
             {
                 id: 'hot_start',
@@ -720,7 +729,7 @@
 
             const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
             const diffBtn = document.getElementById('diff-btn');
-            diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer ' + (
+            diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer min-h-[34px] ' + (
                 difficulty === 'easy'
                     ? 'bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-500/50 text-emerald-300'
                     : difficulty === 'hard'
@@ -732,6 +741,7 @@
             document.getElementById('header-coins').innerText = coins;
             updateDailyBadge();
             updateLevelBadge();
+            updateTimerBadge();
             updateChargeAndMissionUI();
         }
 
@@ -1139,18 +1149,25 @@
         let gameMode = 'solo';
         let gameRunning = false;
         let score = 0;
+        let runJuggles = 0;
+        let runBestCombo = 0;
+        let soloTimeRemaining = 60;
+        let lastFrameTime = 0;
+        let endReason = 'fall'; // 'fall' | 'timeup' | 'duel_win' | 'duel_lose' | 'tourney_next' | 'tourney_win'
+
         let currentLevel = 1;
         let levelUpBanner = null;
         let particles = [];
+        let ballTrail = [];
         let floatingTexts = [];
         let animFrameId = null;
+        let screenShake = 0;
 
         // 1v1 & Tournament state
         let opponentScore = 0;
         let duelGoal = 5;
-        let tournamentRound = 0; // 0 = Quarterfinal, 1 = Semifinal, 2 = Final
+        let tournamentRound = 0;
         let tournamentWins = 0;
-        let endScreenOutcome = 'gameover';
 
         let combo = 0;
         let isFireMode = false;
@@ -1159,7 +1176,7 @@
         let overdriveEnd = 0;
         let currentMission = { kind: 'juggles', target: 18, progress: 0 };
 
-        let bonusTarget = null;
+        let bonusTargets = [];
         let targetCooldown = 0;
         let movingObstacle = null;
         let extraSoloBall = null;
@@ -1170,7 +1187,7 @@
         let slowMoEnd = 0;
 
         let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
-        let player = { x: 0, y: 0, baseWidth: 90, width: 90, height: 26 };
+        let player = { x: 0, y: 0, baseWidth: 90, width: 90, height: 26, recoil: 0 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
         function isSoloMode() {
@@ -1183,6 +1200,42 @@
 
         function isOverdriveActive() {
             return Date.now() < overdriveEnd;
+        }
+
+        function getActiveStageModifier() {
+            if (!isSoloMode() || currentLevel < 3) return 'none';
+            return (currentLevel % 2 === 1) ? 'double_targets' : 'crosswind';
+        }
+
+        function updateStageModifierUI() {
+            const t = translations[lang];
+            const pill = document.getElementById('stage-modifier-pill');
+            if (!pill) return;
+            const mod = getActiveStageModifier();
+            if (mod === 'double_targets') {
+                pill.innerText = t.modDoubleTargets;
+                pill.classList.remove('hidden');
+            } else if (mod === 'crosswind') {
+                pill.innerText = t.modCrosswind;
+                pill.classList.remove('hidden');
+            } else {
+                pill.classList.add('hidden');
+            }
+        }
+
+        function updateTimerBadge() {
+            const timerEl = document.getElementById('timer-badge');
+            if (!timerEl) return;
+            if (!isSoloMode()) {
+                timerEl.classList.add('hidden');
+                return;
+            }
+            timerEl.classList.remove('hidden');
+            const sec = Math.max(0, Math.ceil(soloTimeRemaining));
+            timerEl.innerText = `⏱️ ${sec}s`;
+            timerEl.className = sec <= 10
+                ? 'text-xs font-black text-rose-300 bg-rose-950/90 px-2.5 py-1 rounded-xl border border-rose-500/50 animate-pulse'
+                : 'text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-xl border border-amber-500/30';
         }
 
         function getDifficultyConfig() {
@@ -1257,6 +1310,14 @@
                 duration: 2100
             };
             playSound('levelup');
+            updateStageModifierUI();
+            if (isSoloMode()) {
+                soloTimeRemaining = Math.min(90, soloTimeRemaining + 8);
+                updateTimerBadge();
+                if (getActiveStageModifier() === 'double_targets') {
+                    ensureTargetCount(2);
+                }
+            }
         }
 
         function handleScoreChanged() {
@@ -1320,9 +1381,11 @@
                 const magnetBonus = hasVip('coin_magnet') ? 2 : 0;
                 score += 4;
                 coins += 3 + magnetBonus;
+                soloTimeRemaining = Math.min(90, soloTimeRemaining + 5);
+                updateTimerBadge();
                 saveGameData();
                 handleScoreChanged();
-                addFloatingText(`⭐ +4 | +${3 + magnetBonus} 🪙`, canvas.width / 2, canvas.height * 0.25, '#34d399');
+                addFloatingText(`⭐ +4 | +${3 + magnetBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
                 pickNextMission();
             } else {
                 updateChargeAndMissionUI();
@@ -1366,19 +1429,29 @@
             mProgEl.innerText = `${Math.min(currentMission.progress, currentMission.target)}/${currentMission.target}`;
         }
 
-        function spawnBonusTarget() {
+        function spawnSingleBonusTarget() {
             if (!isSoloMode()) return;
             const cfg = getDifficultyConfig();
             const margin = 48;
             const minY = 75;
             const maxY = Math.max(minY + 40, canvas.height * 0.52);
-            bonusTarget = {
+            bonusTargets.push({
                 x: Math.random() * Math.max(40, canvas.width - margin * 2) + margin,
                 y: Math.random() * (maxY - minY) + minY,
-                radius: 24,
+                radius: 23,
                 vx: (Math.random() > 0.5 ? 1 : -1) * (1.1 + Math.min(2.0, currentLevel * 0.14)) * cfg.speedScale,
-                pulse: 0
-            };
+                pulse: Math.random() * Math.PI * 2
+            });
+        }
+
+        function ensureTargetCount(desiredCount = 1) {
+            if (!isSoloMode()) {
+                bonusTargets = [];
+                return;
+            }
+            while (bonusTargets.length < desiredCount) {
+                spawnSingleBonusTarget();
+            }
         }
 
         function ensureMovingObstacle() {
@@ -1433,6 +1506,7 @@
             resizeCanvas();
             player.baseWidth = getBasePlayerWidth();
             player.width = player.baseWidth;
+            player.recoil = 0;
             bot.width = difficulty === 'hard' ? 96 : difficulty === 'easy' ? 78 : 88;
             resetPositions();
 
@@ -1441,6 +1515,12 @@
                 tournamentWins = 0;
                 score = 0;
             }
+
+            runJuggles = 0;
+            runBestCombo = 0;
+            soloTimeRemaining = 60;
+            lastFrameTime = performance.now();
+            endReason = 'fall';
 
             opponentScore = 0;
             duelGoal = mode === 'tournament' ? 3 + tournamentRound : 5;
@@ -1452,18 +1532,20 @@
             overdriveEnd = 0;
             powerups = [];
             particles = [];
+            ballTrail = [];
             floatingTexts = [];
+            screenShake = 0;
             widePaddleEnd = 0;
             slowMoEnd = 0;
             powerupTimer = 0;
             targetCooldown = 0;
             movingObstacle = null;
             extraSoloBall = null;
+            bonusTargets = [];
 
             if (isSoloMode()) {
-                spawnBonusTarget();
+                ensureTargetCount(1);
             } else {
-                bonusTarget = null;
                 const t = translations[lang];
                 const stageBanner = mode === 'tournament'
                     ? (t.tourneyStages[Math.min(tournamentRound, t.tourneyStages.length - 1)])
@@ -1479,6 +1561,8 @@
             }
 
             pickNextMission();
+            updateStageModifierUI();
+            updateTimerBadge();
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             updateLevelBadge();
@@ -1513,6 +1597,7 @@
             ball.vx = (Math.random() - 0.5) * 3.8 * cfg.speedScale;
             ball.vy = (serveTowardPlayer ? 5.2 : -6.0) * cfg.speedScale;
             ball.rot = 0;
+            ballTrail = [];
 
             player.x = canvas.width / 2 - player.width / 2;
             player.y = canvas.height - 65;
@@ -1556,6 +1641,13 @@
             });
         }
 
+        function finishRun(reason) {
+            gameRunning = false;
+            endReason = reason;
+            if (bgmInterval) clearInterval(bgmInterval);
+            showGameOverScreen();
+        }
+
         function awardDuelPointToPlayer(reasonText = '🎯 +1') {
             const pts = isOverdriveActive() ? 2 : 1;
             score += pts;
@@ -1564,24 +1656,23 @@
 
             if (score >= duelGoal) {
                 playSound('levelup');
-                gameRunning = false;
-                if (bgmInterval) clearInterval(bgmInterval);
                 careerStats.duelWins = (careerStats.duelWins || 0) + 1;
                 updateDailyProgress('duel_win', 1, false);
                 if (gameMode === 'tournament') {
                     tournamentWins++;
                     if (tournamentRound < 2) {
                         tournamentRound++;
-                        endScreenOutcome = 'tourney_next';
+                        saveGameData();
+                        finishRun('tourney_next');
                     } else {
                         careerStats.tourneyTrophies = (careerStats.tourneyTrophies || 0) + 1;
-                        endScreenOutcome = 'tourney_win';
+                        saveGameData();
+                        finishRun('tourney_win');
                     }
                 } else {
-                    endScreenOutcome = 'duel_win';
+                    saveGameData();
+                    finishRun('duel_win');
                 }
-                saveGameData();
-                showGameOverScreen();
                 return true;
             }
             resetPositions(false);
@@ -1596,10 +1687,7 @@
             updateChargeAndMissionUI();
 
             if (opponentScore >= duelGoal) {
-                gameRunning = false;
-                if (bgmInterval) clearInterval(bgmInterval);
-                endScreenOutcome = 'duel_lose';
-                showGameOverScreen();
+                finishRun('duel_lose');
                 return true;
             }
             resetPositions(true);
@@ -1612,12 +1700,16 @@
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.28;
 
+            runJuggles++;
             careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
             updateDailyProgress('juggles', 1, false);
 
             if (isPrimaryBall) {
+                player.recoil = isSweetSpot ? 9 : 6;
+                screenShake = Math.max(screenShake, isFireMode || isOverdriveActive() ? 6 : 2.5);
                 if (isSweetSpot) {
                     combo++;
+                    runBestCombo = Math.max(runBestCombo, combo);
                     careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
                     if (combo >= 5 && !isFireMode) {
                         isFireMode = true;
@@ -1682,7 +1774,6 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Pitch markings & center circle
             ctx.save();
             ctx.strokeStyle = st.line;
             ctx.lineWidth = 2;
@@ -1697,7 +1788,6 @@
 
             ctx.strokeRect(14, 14, canvas.width - 28, canvas.height - 28);
 
-            // Stadium floodlight glow
             const lightGrad = ctx.createRadialGradient(canvas.width / 2, 0, 10, canvas.width / 2, 0, canvas.height * 0.55);
             lightGrad.addColorStop(0, st.glow);
             lightGrad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -1706,13 +1796,32 @@
             ctx.restore();
         }
 
-        function gameLoop() {
+        function gameLoop(nowPerf) {
             if (!gameRunning) return;
             const now = Date.now();
+            const dtSec = Math.min(0.1, Math.max(0.001, ((nowPerf || performance.now()) - lastFrameTime) / 1000));
+            lastFrameTime = nowPerf || performance.now();
             const cfg = getDifficultyConfig();
+
+            if (isSoloMode()) {
+                soloTimeRemaining = Math.max(0, soloTimeRemaining - dtSec);
+                updateTimerBadge();
+                if (soloTimeRemaining <= 0) {
+                    playSound('fail');
+                    finishRun('timeup');
+                    return;
+                }
+            }
 
             if (isOverdriveActive()) {
                 updateChargeAndMissionUI();
+            }
+
+            if (player.recoil > 0) {
+                player.recoil = Math.max(0, player.recoil - 1.1);
+            }
+            if (screenShake > 0) {
+                screenShake = Math.max(0, screenShake - 0.6);
             }
 
             if (levelUpBanner) {
@@ -1740,45 +1849,51 @@
             }
 
             if (isSoloMode()) {
-                if (!bonusTarget) {
+                const wantedTargets = getActiveStageModifier() === 'double_targets' ? 2 : 1;
+                if (bonusTargets.length < wantedTargets) {
                     targetCooldown++;
-                    if (targetCooldown > 150) {
-                        spawnBonusTarget();
+                    if (targetCooldown > (bonusTargets.length === 0 ? 130 : 65)) {
+                        spawnSingleBonusTarget();
                         targetCooldown = 0;
                     }
-                } else {
-                    bonusTarget.pulse += 0.08;
-                    bonusTarget.x += bonusTarget.vx * moveScale;
-                    if (bonusTarget.x - bonusTarget.radius < 12) {
-                        bonusTarget.x = 12 + bonusTarget.radius;
-                        bonusTarget.vx *= -1;
-                    } else if (bonusTarget.x + bonusTarget.radius > canvas.width - 12) {
-                        bonusTarget.x = canvas.width - 12 - bonusTarget.radius;
-                        bonusTarget.vx *= -1;
+                }
+
+                for (let tIdx = bonusTargets.length - 1; tIdx >= 0; tIdx--) {
+                    const bt = bonusTargets[tIdx];
+                    bt.pulse += 0.08;
+                    bt.x += bt.vx * moveScale;
+                    if (bt.x - bt.radius < 12) {
+                        bt.x = 12 + bt.radius;
+                        bt.vx *= -1;
+                    } else if (bt.x + bt.radius > canvas.width - 12) {
+                        bt.x = canvas.width - 12 - bt.radius;
+                        bt.vx *= -1;
                     }
 
-                    const distTarget = Math.hypot(ball.x - bonusTarget.x, ball.y - bonusTarget.y);
-                    if (distTarget < ball.radius + bonusTarget.radius) {
+                    const distTarget = Math.hypot(ball.x - bt.x, ball.y - bt.y);
+                    if (distTarget < ball.radius + bt.radius) {
                         playSound('target');
                         const targetPts = 3 * (isOverdriveActive() ? 2 : 1);
                         score += targetPts;
                         coins += 2;
+                        soloTimeRemaining = Math.min(90, soloTimeRemaining + 2);
+                        updateTimerBadge();
                         addCharge(30);
                         advanceMission('targets', 1, false);
                         saveGameData();
                         handleScoreChanged();
-                        addFloatingText(`🎯 +${targetPts} | +2 🪙`, bonusTarget.x, bonusTarget.y - 10, '#f43f5e');
+                        addFloatingText(`🎯 +${targetPts} | +2 🪙`, bt.x, bt.y - 10, '#f43f5e');
 
                         for (let i = 0; i < 18; i++) {
                             particles.push({
-                                x: bonusTarget.x, y: bonusTarget.y,
+                                x: bt.x, y: bt.y,
                                 vx: (Math.random() - 0.5) * 12,
                                 vy: (Math.random() - 0.5) * 12,
                                 life: 1.0,
                                 color: i % 2 === 0 ? '#f43f5e' : '#fbbf24'
                             });
                         }
-                        bonusTarget = null;
+                        bonusTargets.splice(tIdx, 1);
                         targetCooldown = 0;
                     }
                 }
@@ -1812,11 +1927,28 @@
                 }
             }
 
+            if (isSoloMode() && getActiveStageModifier() === 'crosswind') {
+                ball.vx += Math.sin(now * 0.003) * 0.09 * moveScale;
+            }
+
             ball.vy += 0.42 * gravScale;
             ball.x += ball.vx * moveScale;
             ball.y += ball.vy * moveScale;
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
+
+            const speedMag = Math.hypot(ball.vx, ball.vy);
+            if (speedMag > 6.5 || isFireMode || isOverdriveActive()) {
+                ballTrail.push({
+                    x: ball.x,
+                    y: ball.y,
+                    r: ball.radius * (isOverdriveActive() ? 0.85 : 0.68),
+                    alpha: isOverdriveActive() ? 0.55 : 0.35
+                });
+                if (ballTrail.length > (isOverdriveActive() ? 10 : 6)) {
+                    ballTrail.shift();
+                }
+            }
 
             if (isFireMode || isOverdriveActive()) {
                 particles.push({
@@ -1923,48 +2055,52 @@
                 }
             } else if (ball.y > canvas.height + 40) {
                 playSound('fail');
-                gameRunning = false;
-                if (bgmInterval) clearInterval(bgmInterval);
-                endScreenOutcome = 'gameover';
-                showGameOverScreen();
+                finishRun('fall');
                 return;
+            }
+
+            ctx.save();
+            if (screenShake > 0) {
+                ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
             }
 
             drawStadiumBackground();
 
-            if (isSoloMode() && bonusTarget) {
-                ctx.save();
-                const rOuter = bonusTarget.radius + Math.sin(bonusTarget.pulse) * 3;
-                ctx.beginPath();
-                ctx.arc(bonusTarget.x, bonusTarget.y, rOuter, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(244, 63, 94, 0.18)';
-                ctx.fill();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#f43f5e';
-                ctx.stroke();
+            if (isSoloMode()) {
+                bonusTargets.forEach(bt => {
+                    ctx.save();
+                    const rOuter = bt.radius + Math.sin(bt.pulse) * 3;
+                    ctx.beginPath();
+                    ctx.arc(bt.x, bt.y, rOuter, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(244, 63, 94, 0.18)';
+                    ctx.fill();
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#f43f5e';
+                    ctx.stroke();
 
-                ctx.beginPath();
-                ctx.arc(bonusTarget.x, bonusTarget.y, bonusTarget.radius * 0.52, 0, Math.PI * 2);
-                ctx.strokeStyle = '#fbbf24';
-                ctx.lineWidth = 2.5;
-                ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(bt.x, bt.y, bt.radius * 0.52, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#fbbf24';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
 
-                ctx.font = '15px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('🎯', bonusTarget.x, bonusTarget.y);
-                ctx.restore();
-            }
+                    ctx.font = '15px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('🎯', bt.x, bt.y);
+                    ctx.restore();
+                });
 
-            if (isSoloMode() && movingObstacle) {
-                ctx.save();
-                ctx.fillStyle = '#a855f7';
-                ctx.shadowColor = '#a855f7';
-                ctx.shadowBlur = 10;
-                ctx.beginPath();
-                ctx.roundRect(movingObstacle.x, movingObstacle.y, movingObstacle.width, movingObstacle.height, 8);
-                ctx.fill();
-                ctx.restore();
+                if (movingObstacle) {
+                    ctx.save();
+                    ctx.fillStyle = '#a855f7';
+                    ctx.shadowColor = '#a855f7';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.roundRect(movingObstacle.x, movingObstacle.y, movingObstacle.width, movingObstacle.height, 8);
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
 
             powerups.forEach(pw => {
@@ -2001,25 +2137,39 @@
                 }
             }
 
+            const skinObj = skinsData.find(s => s.id === activeSkin) || skinsData[0];
+            const trailColor = isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color);
+            ballTrail.forEach((tr, idx) => {
+                const ratio = (idx + 1) / ballTrail.length;
+                ctx.save();
+                ctx.globalAlpha = tr.alpha * ratio * 0.65;
+                ctx.fillStyle = trailColor;
+                ctx.beginPath();
+                ctx.arc(tr.x, tr.y, tr.r * ratio, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
             const paddleObj = paddlesData.find(p => p.id === activePaddle) || paddlesData[0];
             const paddleMainColor = (now < widePaddleEnd) ? '#34d399' : paddleObj.color;
+            const drawPlayerY = player.y + player.recoil;
             ctx.fillStyle = paddleMainColor;
             ctx.shadowColor = paddleMainColor;
             ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.roundRect(player.x, player.y, player.width, player.height, 12);
+            ctx.roundRect(player.x, drawPlayerY, player.width, player.height, 12);
             ctx.fill();
             ctx.shadowBlur = 0;
 
             ctx.fillStyle = paddleObj.accent;
             ctx.beginPath();
-            ctx.roundRect(player.x + player.width * 0.3, player.y + 3, player.width * 0.4, 4, 2);
+            ctx.roundRect(player.x + player.width * 0.3, drawPlayerY + 3, player.width * 0.4, 4, 2);
             ctx.fill();
 
             if (hasVip('royal_crown')) {
                 ctx.font = '13px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('👑', player.x + player.width / 2, player.y - 6);
+                ctx.fillText('👑', player.x + player.width / 2, drawPlayerY - 6);
             }
 
             if (isDuelMode()) {
@@ -2049,7 +2199,6 @@
             ctx.save();
             ctx.translate(ball.x, ball.y);
             ctx.rotate(ball.rot);
-            let skinObj = skinsData.find(s => s.id === activeSkin) || skinsData[0];
             ctx.fillStyle = isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color);
             ctx.shadowColor = isOverdriveActive() ? '#fbbf24' : (isFireMode ? '#ef4444' : skinObj.color);
             ctx.shadowBlur = (isOverdriveActive() || isFireMode) ? 28 : 18;
@@ -2104,6 +2253,7 @@
                 ctx.restore();
             }
 
+            ctx.restore();
             animFrameId = requestAnimationFrame(gameLoop);
         }
 
@@ -2118,9 +2268,9 @@
             }
 
             let earnedCoins = Math.floor(score / 4);
-            if (endScreenOutcome === 'duel_win') earnedCoins += 6;
-            if (endScreenOutcome === 'tourney_next') earnedCoins += 5;
-            if (endScreenOutcome === 'tourney_win') earnedCoins += 15;
+            if (endReason === 'duel_win') earnedCoins += 6;
+            if (endReason === 'tourney_next') earnedCoins += 5;
+            if (endReason === 'tourney_win') earnedCoins += 15;
 
             if (hasVip('double_coins_run') && earnedCoins > 0) {
                 earnedCoins *= 2;
@@ -2129,59 +2279,80 @@
                 coins += earnedCoins;
             }
 
-            // Consume all single-game VIP items after the match/run ends
-            if (endScreenOutcome !== 'tourney_next') {
+            if (endReason !== 'tourney_next') {
                 activeRunVip = [];
             }
             saveGameData();
 
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            const cardW = Math.min(canvas.width - 28, 340);
+            const cardH = 260;
+            const cardX = canvas.width / 2 - cardW / 2;
+            const cardY = canvas.height / 2 - cardH / 2;
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.85)';
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(cardX, cardY, cardW, cardH, 22);
+            ctx.fill();
+            ctx.stroke();
+
             let headline = t.gameOver;
-            if (endScreenOutcome === 'duel_win') headline = t.duelWon;
-            else if (endScreenOutcome === 'duel_lose') headline = t.duelLost;
-            else if (endScreenOutcome === 'tourney_win') headline = t.tourneyWon;
-            else if (endScreenOutcome === 'tourney_next') headline = `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]}`;
+            if (endReason === 'timeup') headline = t.timeUp;
+            else if (endReason === 'duel_win') headline = t.duelWon;
+            else if (endReason === 'duel_lose') headline = t.duelLost;
+            else if (endReason === 'tourney_win') headline = t.tourneyWon;
+            else if (endReason === 'tourney_next') headline = `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]}`;
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 26px Rubik, sans-serif';
+            ctx.font = 'bold 24px Rubik, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(headline, canvas.width / 2, canvas.height / 2 - 55);
+            ctx.fillText(headline, canvas.width / 2, cardY + 34);
 
             ctx.fillStyle = '#34d399';
-            ctx.font = 'bold 21px Rubik, sans-serif';
+            ctx.font = 'bold 20px Rubik, sans-serif';
             const scoreSummary = isDuelMode()
                 ? `${score} - ${opponentScore}`
                 : `${t.scoreTxt}: ${score}`;
-            ctx.fillText(scoreSummary, canvas.width / 2, canvas.height / 2 - 15);
+            ctx.fillText(scoreSummary, canvas.width / 2, cardY + 66);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = 'bold 13px Rubik, sans-serif';
+            ctx.fillText(`${t.runJugglesLbl}: ${runJuggles}  •  ${t.runComboLbl}: ${runBestCombo}`, canvas.width / 2, cardY + 94);
+
+            const dailyCur = Math.min(dailyChallenge.target, dailyChallenge.progress || 0);
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 13px Rubik, sans-serif';
+            ctx.fillText(`${t.dailyProgLbl}: ${dailyCur}/${dailyChallenge.target}`, canvas.width / 2, cardY + 118);
 
             ctx.fillStyle = isNewRecord ? '#fbbf24' : '#94a3b8';
-            ctx.font = 'bold 15px Rubik, sans-serif';
-            ctx.fillText(isNewRecord ? `🏆 ${t.bestTxt}: ${personalBest}` : `${t.bestTxt}: ${personalBest}`, canvas.width / 2, canvas.height / 2 + 15);
+            ctx.font = 'bold 14px Rubik, sans-serif';
+            ctx.fillText(isNewRecord ? `🏆 ${t.bestTxt}: ${personalBest}` : `${t.bestTxt}: ${personalBest}`, canvas.width / 2, cardY + 144);
 
             if (earnedCoins > 0) {
                 ctx.fillStyle = '#fbbf24';
-                ctx.font = '15px Rubik, sans-serif';
-                ctx.fillText(`+${earnedCoins} 🪙`, canvas.width / 2, canvas.height / 2 + 42);
+                ctx.font = 'bold 15px Rubik, sans-serif';
+                ctx.fillText(`+${earnedCoins} 🪙`, canvas.width / 2, cardY + 168);
             }
 
-            const btnLabel = endScreenOutcome === 'tourney_next'
+            const btnLabel = endReason === 'tourney_next'
                 ? (t.tourneyStages[Math.min(tournamentRound, 2)])
                 : t.retry;
 
             ctx.fillStyle = '#10b981';
             ctx.beginPath();
-            ctx.roundRect(canvas.width / 2 - 95, canvas.height / 2 + 65, 190, 45, 12);
+            ctx.roundRect(canvas.width / 2 - 95, cardY + 190, 190, 44, 12);
             ctx.fill();
 
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 16px Rubik, sans-serif';
-            ctx.fillText(btnLabel, canvas.width / 2, canvas.height / 2 + 93);
+            ctx.fillText(btnLabel, canvas.width / 2, cardY + 218);
 
             canvas.onclick = function() {
                 canvas.onclick = null;
-                if (endScreenOutcome === 'tourney_next') {
+                if (endReason === 'tourney_next') {
                     startGame('tournament', true);
                 } else {
                     startGame(gameMode, false);
