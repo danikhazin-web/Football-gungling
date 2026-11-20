@@ -1,682 +1,987 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl" id="html-root">
+<html id="html-root" lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מלך ההקפצות - משחק כדורגל</title>
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="מלך ההקפצות">
     <meta name="theme-color" content="#0f172a">
-    <link id="dynamic-manifest" rel="manifest" href="manifest.json">
-
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
-
+    <title>מלך ההקפצות — משחק כדורגל</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Rubik', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        html, body { overscroll-behavior: none; }
-        input { user-select: text; }
-        .glow-text { text-shadow: 0 0 15px rgba(52, 211, 153, 0.6); }
-        .btn-glow { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); }
-        canvas { touch-action: none; display: block; }
+        body {
+            font-family: 'Rubik', sans-serif;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: #ffffff;
+        }
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-dvh flex flex-col items-center justify-between p-2">
-
-    <!-- Top Bar -->
-    <header class="w-full max-w-lg flex justify-between items-center bg-slate-800/90 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0 gap-2">
-        <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-emerald-500/30 shrink-0">
-            <span class="text-base leading-none">🪙</span>
-            <span id="header-coins" class="font-bold text-amber-400 text-base">75</span>
-            <span id="streak-pill" onclick="openAchievementsModal()" class="hidden text-[11px] font-black text-orange-300 bg-orange-500/15 border border-orange-400/30 px-2 py-0.5 rounded-lg cursor-pointer whitespace-nowrap shrink-0">🔥 1</span>
-        </div>
-
-        <div class="flex gap-1.5 sm:gap-2 shrink-0">
-            <button type="button" onclick="triggerInstallPrompt()" id="install-pwa-btn" class="px-2.5 py-1 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1 transition border border-emerald-500/40 cursor-pointer min-h-[34px] whitespace-nowrap">
-                <span>⬇️</span> <span id="install-btn-text">התקן</span>
-            </button>
-            <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px] whitespace-nowrap">
-                <span>⚡</span> <span id="diff-text">בינוני</span>
-            </button>
-            <button type="button" onclick="toggleLang()" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px] whitespace-nowrap">
-                <span>🌐</span> <span id="lang-text">עברית</span>
-            </button>
-        </div>
-    </header>
+<body class="h-screen w-screen flex flex-col bg-slate-900 text-white">
 
     <!-- Main Menu -->
-    <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-3 z-20 px-2">
-        <div class="text-center mb-3">
-            <span id="menu-badge" onclick="registerSecretAdminTap()" class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest cursor-pointer inline-block">מד טעינה + משימות מתחלפות ⚡🎯</span>
-            <h1 id="main-game-title" onclick="registerSecretAdminTap()" class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text cursor-pointer">מלך ההקפצות</h1>
-            <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">מלא את מד האנרגיה, השלם משימות ושבור שיאים!</p>
-            <div id="menu-records-strip" class="mt-2 inline-flex items-center gap-3 text-[11px] bg-slate-800/85 border border-slate-700/70 px-3 py-1 rounded-full text-slate-300">
-                <span><span id="menu-my-best-lbl">השיא שלי:</span> <strong id="menu-my-best-val" class="text-emerald-400">0</strong></span>
-                <span class="text-slate-600">|</span>
-                <span><span id="menu-top1-lbl">שיא ראשון:</span> <strong id="menu-top1-val" class="text-amber-400">--</strong></span>
+    <div id="main-menu" class="flex-1 flex flex-col justify-between p-4 max-w-md w-full mx-auto overflow-y-auto no-scrollbar">
+        <div>
+            <!-- Top Bar -->
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pt-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onclick="toggleLang()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-700 cursor-pointer min-h-[34px] whitespace-nowrap">
+                        <span>🌐</span>
+                        <span id="lang-text">עברית</span>
+                    </button>
+                    <button id="diff-btn" type="button" onclick="changeDifficulty()" class="bg-slate-700/85 hover:bg-slate-700 border border-slate-600 text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer min-h-[34px] whitespace-nowrap">
+                        <span>⚡</span>
+                        <span id="diff-text">בינוני</span>
+                    </button>
+                    <button id="install-pwa-btn" type="button" onclick="installPWA()" class="hidden bg-emerald-900/70 hover:bg-emerald-800/80 border border-emerald-500/40 text-emerald-200 px-2.5 py-1 rounded-xl text-xs font-semibold items-center gap-1 transition cursor-pointer min-h-[34px] whitespace-nowrap">
+                        <span>⬇️</span>
+                        <span id="install-btn-text">התקן</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 bg-slate-800/90 px-3 py-1.5 rounded-2xl border border-slate-700/80 shrink-0">
+                    <span id="streak-pill" class="hidden text-xs font-black text-orange-300 bg-orange-500/15 px-2 py-0.5 rounded-lg">🔥 1</span>
+                    <span id="header-coins" class="font-bold text-amber-400 text-sm">0</span>
+                    <span class="text-amber-400 text-base">🪙</span>
+                </div>
+            </div>
+
+            <!-- Hero Title -->
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center gap-1.5 bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                    <span>⚡ בעיטת פצצה • שער בונוס • דרגות</span>
+                </div>
+                <h1 onclick="registerSecretAdminTap()" class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 mb-1 cursor-pointer select-none">
+                    מלך ההקפצות
+                </h1>
+                <p id="menu-subtitle" class="text-slate-400 text-xs font-medium mb-3">
+                    מלא את מד האנרגיה, השלם משימות ושבור שיאים!
+                </p>
+
+                <div class="inline-flex items-center gap-3 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3.5 py-1.5 text-xs">
+                    <span id="menu-rank-badge" class="font-black text-cyan-300">🏅 חובב</span>
+                    <span class="text-slate-600">|</span>
+                    <div>
+                        <span id="menu-my-best-lbl" class="text-slate-400">השיא שלי: </span>
+                        <span id="menu-my-best-val" class="font-black text-emerald-400">0</span>
+                    </div>
+                    <span class="text-slate-600">|</span>
+                    <div>
+                        <span id="menu-top1-lbl" class="text-slate-400">שיא ראשון: </span>
+                        <span id="menu-top1-val" class="font-black text-amber-400">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Modes -->
+            <div class="space-y-2.5 mb-4">
+                <button type="button" onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl shadow-lg shadow-emerald-950/50 flex items-center justify-between transition transform active:scale-98 cursor-pointer border border-emerald-400/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">⚽</div>
+                        <div class="text-right">
+                            <div id="btn-solo-title" class="font-extrabold text-base">שבירת שיא (סולו)</div>
+                            <div id="btn-solo-desc" class="text-emerald-100/80 text-xs">משימות מתחלפות, טיימר, מד טעינה ומצבי שלב</div>
+                        </div>
+                    </div>
+                    <span class="text-white/80 text-lg">›</span>
+                </button>
+
+                <button type="button" onclick="startGame('practice')" class="w-full bg-gradient-to-r from-teal-700 to-cyan-700 hover:from-teal-600 hover:to-cyan-600 p-3.5 rounded-2xl shadow-lg shadow-cyan-950/50 flex items-center justify-between transition transform active:scale-98 cursor-pointer border border-cyan-400/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🏋️</div>
+                        <div class="text-right">
+                            <div id="btn-practice-title" class="font-extrabold text-base">אימון חופשי</div>
+                            <div id="btn-practice-desc" class="text-cyan-100/80 text-xs">תרגול קומבואים וטכניקות בלי שעון לחוץ</div>
+                        </div>
+                    </div>
+                    <span class="text-white/80 text-lg">›</span>
+                </button>
+
+                <button type="button" onclick="startGame('pvp')" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-3.5 rounded-2xl shadow-lg shadow-indigo-950/50 flex items-center justify-between transition transform active:scale-98 cursor-pointer border border-indigo-400/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🤖</div>
+                        <div class="text-right">
+                            <div id="btn-pvp-title" class="font-extrabold text-base">תחרות 1 נגד 1</div>
+                            <div id="btn-pvp-desc" class="text-indigo-100/80 text-xs">דו-קרב מול יריבים בעלי סגנון משחק שונה</div>
+                        </div>
+                    </div>
+                    <span class="text-white/80 text-lg">›</span>
+                </button>
+
+                <button type="button" onclick="startGame('tournament')" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-3.5 rounded-2xl shadow-lg shadow-orange-950/50 flex items-center justify-between transition transform active:scale-98 cursor-pointer border border-amber-400/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🏆</div>
+                        <div class="text-right">
+                            <div id="btn-tourney-title" class="font-extrabold text-base">טורניר אלופים</div>
+                            <div id="btn-tourney-desc" class="text-amber-100/80 text-xs">רבע גמר, חצי גמר וגמר עד הגביע</div>
+                        </div>
+                    </div>
+                    <span class="text-white/80 text-lg">›</span>
+                </button>
             </div>
         </div>
 
-        <div class="w-full space-y-2.5">
-            <button type="button" onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl flex items-center justify-between btn-glow transition transform active:scale-95 border border-emerald-400/30 cursor-pointer">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">⚽</div>
-                    <div class="text-right">
-                        <div id="btn-solo-title" class="font-bold text-base">שבירת שיא (סולו)</div>
-                        <div id="btn-solo-desc" class="text-xs text-emerald-200/80">משימות מתחלפות, טיימר, מד טעינה ומצבי שלב</div>
-                    </div>
-                </div>
-                <span class="text-white/70 text-lg font-black px-1">‹</span>
+        <!-- Bottom Nav -->
+        <div class="grid grid-cols-3 gap-2.5 pt-2 border-t border-slate-800/80">
+            <button type="button" onclick="openAchievementsModal()" class="relative bg-slate-800/90 hover:bg-slate-700/90 py-3 px-2 rounded-2xl flex flex-col items-center gap-1 border border-slate-700/70 transition cursor-pointer">
+                <span id="daily-ready-dot" class="hidden absolute top-2 right-3 w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+                <span class="text-xl">🏅</span>
+                <span id="nav-achieve" class="text-xs font-bold text-slate-200">הישגים</span>
             </button>
-
-            <button type="button" onclick="startGame('practice')" class="w-full bg-gradient-to-r from-teal-700 to-cyan-700 hover:from-teal-600 hover:to-cyan-600 p-3 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-cyan-400/30 cursor-pointer">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center text-xl shrink-0">🏋️</div>
-                    <div class="text-right">
-                        <div id="btn-practice-title" class="font-bold text-sm">אימון חופשי</div>
-                        <div id="btn-practice-desc" class="text-[11px] text-cyan-100/80">תרגול קומבואים וטכניקות בלי שעון לחוץ</div>
-                    </div>
-                </div>
-                <span class="text-white/70 text-lg font-black px-1">‹</span>
+            <button type="button" onclick="openLeaderboardModal()" class="relative bg-slate-800/90 hover:bg-slate-700/90 py-3 px-2 rounded-2xl flex flex-col items-center gap-1 border border-slate-700/70 transition cursor-pointer">
+                <span id="sync-dot" class="hidden absolute top-2 right-3 w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <span class="text-xl">🏆</span>
+                <span id="nav-leaderboard" class="text-xs font-bold text-slate-200">טבלת שיאים</span>
             </button>
-
-            <button type="button" onclick="startGame('pvp')" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-indigo-400/30 cursor-pointer">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🤖</div>
-                    <div class="text-right">
-                        <div id="btn-pvp-title" class="font-bold text-base">תחרות 1 נגד 1</div>
-                        <div id="btn-pvp-desc" class="text-xs text-indigo-200/80">דו-קרב מול בוט חכם עד 5 נקודות</div>
-                    </div>
-                </div>
-                <span class="text-white/70 text-lg font-black px-1">‹</span>
-            </button>
-
-            <button type="button" onclick="startGame('tournament')" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 p-3.5 rounded-2xl flex items-center justify-between shadow-lg transition transform active:scale-95 border border-amber-400/30 cursor-pointer">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🏆</div>
-                    <div class="text-right">
-                        <div id="btn-tourney-title" class="font-bold text-base">טורניר אלופים</div>
-                        <div id="btn-tourney-desc" class="text-xs text-amber-200/80">רבע גמר, חצי גמר וגמר עד הגביע</div>
-                    </div>
-                </div>
-                <span class="text-white/70 text-lg font-black px-1">‹</span>
+            <button type="button" onclick="openShopModal()" class="bg-slate-800/90 hover:bg-slate-700/90 py-3 px-2 rounded-2xl flex flex-col items-center gap-1 border border-slate-700/70 transition cursor-pointer">
+                <span class="text-xl">🏪</span>
+                <span id="nav-shop" class="text-xs font-bold text-slate-200">חנות</span>
             </button>
         </div>
     </div>
 
-    <!-- Game Arena -->
-    <div id="game-container" class="hidden w-full max-w-lg flex-1 flex flex-col items-center relative z-20 my-2 min-h-[430px]">
-        <div class="w-full flex justify-between items-center mb-1 px-1 shrink-0 gap-1.5">
-            <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1 cursor-pointer min-h-[34px]">
-                <span>›</span> <span id="lbl-menu">תפריט</span>
+    <!-- Active Game Screen -->
+    <div id="game-container" class="hidden flex-1 flex flex-col relative w-full h-full">
+        <!-- Top Game Bar -->
+        <div class="bg-slate-900/90 backdrop-blur-md px-3 py-2 flex justify-between items-center border-b border-slate-800 z-10 gap-1.5">
+            <button type="button" onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border border-slate-700 cursor-pointer shrink-0">
+                <span>›</span>
+                <span id="lbl-menu">תפריט</span>
             </button>
 
             <div class="flex items-center gap-1.5 flex-wrap justify-center">
-                <div id="level-badge" class="text-xs font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-xl border border-cyan-500/30">
+                <div id="level-badge" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-xl text-xs font-extrabold">
                     שלב 1
                 </div>
                 <div id="timer-badge" class="text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-xl border border-amber-500/30">
                     ⏱️ 65s
                 </div>
-                <div id="combo-badge" class="hidden text-xs font-black text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-xl border border-orange-500/40 animate-bounce">
+                <div id="hot-minute-badge" class="hidden text-xs font-black text-orange-200 bg-orange-600/30 px-2.5 py-1 rounded-xl border border-orange-400/50">
+                    🔥 דקה חמה
+                </div>
+                <div id="stage-modifier-pill" class="hidden text-[11px] font-bold text-cyan-200 bg-cyan-950/80 px-2 py-0.5 rounded-xl border border-cyan-500/30"></div>
+                <div id="combo-badge" class="hidden bg-orange-500/20 text-orange-400 border border-orange-500/40 px-2 py-1 rounded-xl text-xs font-black animate-pulse">
                     🔥 x2
                 </div>
-                <div id="game-score-board" class="text-lg font-black text-emerald-400 bg-slate-800/90 px-3.5 py-0.5 rounded-xl border border-slate-700 shadow">
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" onclick="togglePauseGame()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 cursor-pointer text-xs font-bold" aria-label="Pause">
+                    <span id="pause-icon">⏸</span>
+                </button>
+                <button type="button" onclick="cycleAudioLevel()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-xl flex items-center justify-center border border-slate-700 cursor-pointer text-sm" aria-label="Audio">
+                    <span id="audio-icon">🔊</span>
+                </button>
+                <div class="bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 font-black text-base text-emerald-400 min-w-[40px] text-center" id="game-score-board">
                     0
                 </div>
             </div>
+        </div>
 
-            <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="togglePauseGame()" id="pause-toggle-btn" title="השהיה" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer text-sm font-black">
-                    <span id="pause-icon">⏸</span>
+        <!-- Charge & Mission HUD -->
+        <div id="hud-panel" class="bg-slate-900/80 px-3 py-1.5 border-b border-slate-800/80 z-10 flex flex-col gap-1">
+            <div class="flex items-center justify-between gap-2 text-[11px]">
+                <span id="charge-label" class="font-bold text-amber-300 shrink-0">מד טעינה</span>
+                <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/80">
+                    <div id="charge-bar-fill" class="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 transition-all duration-150" style="width: 0%"></div>
+                </div>
+                <span id="charge-pct" class="font-black text-amber-300 w-9 text-left">0%</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-300">
+                <span id="mission-text" class="font-semibold truncate">משימה: 16 הקפצות</span>
+                <span id="mission-progress" class="font-black text-emerald-400 shrink-0">0/16</span>
+            </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="flex-1 relative w-full overflow-hidden">
+            <canvas id="gameCanvas" class="w-full h-full"></canvas>
+            <div id="tap-instruction" class="pointer-events-none absolute bottom-24 left-0 right-0 text-center text-slate-400/50 text-xs font-medium">
+                גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר
+            </div>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div id="pause-overlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl space-y-4">
+                <div class="text-4xl">⏸️</div>
+                <h3 id="pause-title" class="text-2xl font-black text-white">המשחק מושהה</h3>
+                <button id="pause-resume-btn" type="button" onclick="togglePauseGame()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-2xl transition cursor-pointer">
+                    המשך משחק
                 </button>
-                <button type="button" onclick="cycleAudioLevel()" id="audio-toggle-btn" title="שמע" class="bg-slate-800 hover:bg-slate-700 text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center border border-slate-700 transition cursor-pointer text-sm">
-                    <span id="audio-icon">🔊</span>
+                <button id="pause-menu-btn" type="button" onclick="returnToMenu()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-2xl border border-slate-700 transition cursor-pointer">
+                    חזרה לתפריט
                 </button>
             </div>
         </div>
 
-        <!-- Charge Gauge + Active Mission / Duel HUD -->
-        <div id="hud-panel" class="w-full bg-slate-800/85 border border-slate-700/70 rounded-2xl px-3 py-1.5 mb-1.5 flex flex-col gap-1.5 shrink-0">
-            <div class="flex items-center justify-between gap-2">
-                <span id="charge-label" class="text-[11px] font-bold text-amber-300 whitespace-nowrap">⚡ מד טעינה</span>
-                <div class="flex-1 h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-700/80">
-                    <div id="charge-bar-fill" class="h-full w-0 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 transition-all duration-150"></div>
-                </div>
-                <span id="charge-pct" class="text-[11px] font-black text-amber-400 w-9 text-left">0%</span>
-            </div>
-            <div id="mission-row" class="flex items-center justify-between text-xs bg-slate-900/80 px-2.5 py-1 rounded-xl border border-cyan-500/20 gap-2">
-                <span id="mission-text" class="text-cyan-200 font-semibold truncate">🎯 משימה: פגע במטרה 1</span>
-                <span id="stage-modifier-pill" class="hidden text-[10px] font-black text-fuchsia-300 bg-fuchsia-950/80 border border-fuchsia-500/30 px-2 py-0.5 rounded-lg shrink-0"></span>
-                <span id="mission-progress" class="text-emerald-400 font-black shrink-0">0/1</span>
-            </div>
-        </div>
-
-        <div class="relative w-full flex-1 min-h-[340px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
-            <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
-            <div id="tap-instruction" class="absolute bottom-3 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/85 px-4 py-1 rounded-full border border-slate-700/80 pointer-events-none">
-                גרור את השחקן והשג נקודות / משימות 🎯!
-            </div>
-
-            <!-- Pause Overlay -->
-            <div id="pause-overlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-20 flex flex-col items-center justify-center gap-3 p-4">
-                <div id="pause-title" class="text-2xl font-black text-cyan-300">⏸️ המשחק מושהה</div>
-                <button type="button" onclick="togglePauseGame()" id="pause-resume-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-2xl cursor-pointer transition">המשך משחק</button>
-                <button type="button" onclick="returnToMenu()" id="pause-menu-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-5 py-2 rounded-2xl border border-slate-700 cursor-pointer transition text-sm">חזרה לתפריט</button>
-            </div>
-
-            <!-- Game Over Overlay -->
-            <div id="game-over-overlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4">
-                <div class="w-full max-w-[330px] bg-slate-800/95 border border-slate-600/50 rounded-3xl p-5 text-center shadow-2xl flex flex-col gap-2">
-                    <div id="go-headline" class="text-2xl font-black text-white">המשחק נגמר!</div>
-                    <div id="go-score" class="text-xl font-black text-emerald-400">תוצאה: 0</div>
-                    <div id="go-run-stats" class="text-xs font-bold text-slate-300">הקפצות בריצה: 0 • קומבו שיא בריצה: 0</div>
-                    <div id="go-daily" class="text-xs font-bold text-cyan-300">אתגר יומי: 0/0</div>
-                    <div id="go-best" class="text-sm font-bold text-amber-400">שיא אישי: 0</div>
-                    <div id="go-coins" class="text-sm font-black text-amber-300 min-h-[20px]"></div>
-                    <div id="go-copied" class="text-xs font-bold text-emerald-400 min-h-[16px]"></div>
-
-                    <div class="flex items-center gap-2 mt-2">
-                        <button type="button" id="go-retry-btn" onclick="handleGameOverRetry()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-4 rounded-xl text-sm cursor-pointer transition">שחק שוב</button>
-                        <button type="button" id="go-share-btn" onclick="handleGameOverShare()" class="bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-2.5 px-3.5 rounded-xl text-xs cursor-pointer transition">שתף תוצאה</button>
-                    </div>
-                </div>
+        <!-- Game Over Overlay -->
+        <div id="game-over-overlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl">
+                <div class="text-4xl mb-2">⚽</div>
+                <h3 id="go-headline" class="text-2xl font-black text-white mb-1">המשחק נגמר!</h3>
+                <p id="go-score" class="text-3xl font-black text-emerald-400 mb-1">0</p>
+                <p id="go-run-stats" class="text-xs text-slate-300 mb-1"></p>
+                <p id="go-daily" class="text-xs text-cyan-300 font-semibold mb-1"></p>
+                <p id="go-best" class="text-sm text-slate-400 mb-2">השיא שלי: 0</p>
+                <div id="go-coins" class="text-amber-400 font-bold text-sm mb-3"></div>
+                <button id="go-retry-btn" type="button" onclick="handleGameOverRetry()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-2xl transition cursor-pointer mb-2">
+                    שחק שוב
+                </button>
+                <button id="go-share-btn" type="button" onclick="handleGameOverShare()" class="w-full bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold py-2 rounded-2xl border border-slate-700 transition cursor-pointer text-xs">
+                    שתף תוצאה
+                </button>
+                <div id="go-copied" class="text-[11px] text-emerald-400 font-semibold mt-1 h-4"></div>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
-        <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer relative min-h-[44px] justify-center">
-            <span class="text-base leading-none">🏅</span>
-            <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
-            <span id="daily-ready-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-400"></span>
-        </button>
-        <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer relative min-h-[44px] justify-center">
-            <span class="text-base leading-none">🏆</span>
-            <span id="nav-leaderboard" class="text-[10px] font-bold">טבלת שיאים</span>
-            <span id="sync-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        </button>
-        <button type="button" onclick="openShopModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-cyan-400 transition py-1 px-4 rounded-xl cursor-pointer min-h-[44px] justify-center">
-            <span class="text-base leading-none">🏪</span>
-            <span id="nav-shop" class="text-[10px] font-medium">חנות</span>
-        </button>
-    </nav>
-
     <!-- Leaderboard Modal -->
-    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeLeaderboardModal()">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col max-h-[88vh]">
-            <div class="flex justify-between items-center mb-3">
-                <h2 id="lb-title" class="text-xl font-bold text-amber-400 flex items-center gap-2">🏆 טבלת מובילים עולמית</h2>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="loadLeaderboard(true)" title="רענן טבלה" class="text-slate-300 hover:text-emerald-400 text-sm w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer transition">
+    <div id="leaderboard-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <h2 id="lb-title" class="text-lg font-black flex items-center gap-2">🏆 טבלת שיאים עולמית</h2>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="loadLeaderboard(true)" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-white cursor-pointer" title="רענן">
                         <span id="lb-refresh-icon">🔄</span>
                     </button>
-                    <button type="button" onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
-                        ✕
-                    </button>
+                    <button type="button" onclick="closeLeaderboardModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
                 </div>
             </div>
 
-            <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 mb-3 flex flex-col gap-2">
-                <div class="flex justify-between items-center text-xs">
-                    <span id="lb-your-rank" class="text-cyan-400 font-bold">--</span>
-                    <span class="text-emerald-400 font-bold"><span id="lb-best-lbl">השיא שלך:</span> <span id="lb-personal-best">0</span></span>
+            <div class="p-3.5 bg-slate-800/50 border-b border-slate-800 space-y-2.5">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400"><span id="lb-best-lbl">השיא האישי שלך:</span> <strong id="lb-personal-best" class="text-emerald-400 text-sm">0</strong></span>
+                    <span id="lb-your-rank" class="text-amber-400 font-bold">הדירוג שלך: -</span>
                 </div>
                 <div id="lb-diff-bests" class="grid grid-cols-3 gap-1.5 text-[11px]"></div>
                 <div class="flex gap-2">
-                    <input type="text" id="player-name-input" maxlength="16" placeholder="הכנס את שמך לטבלה..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
-                    <button type="button" onclick="savePlayerName()" id="lb-save-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer">שמור</button>
+                    <input id="player-name-input" type="text" maxlength="16" placeholder="הכנס שם לתצוגה..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <button id="lb-save-btn" type="button" onclick="savePlayerName()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shrink-0">
+                        שמור שם
+                    </button>
                 </div>
-                <div id="lb-sync-status" class="text-[11px] text-slate-400 text-center hidden"></div>
+                <div id="lb-sync-status" class="text-[11px] text-emerald-400/90 hidden"></div>
             </div>
 
-            <div id="leaderboard-list" class="overflow-y-auto space-y-2 pr-1 flex-1">
-                <div class="text-center text-slate-400 py-8 text-sm">טוען נתונים מהשרת...</div>
-            </div>
+            <div id="leaderboard-list" class="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar"></div>
         </div>
     </div>
 
     <!-- Shop Modal -->
-    <div id="shop-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeShopModal()">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="shop-title" class="text-xl font-bold text-amber-400 flex items-center gap-2">🏪 חנות המשחק</h2>
-                <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">✕</button>
+    <div id="shop-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <h2 id="shop-title" class="text-lg font-black flex items-center gap-2">🏪 חנות</h2>
+                <button type="button" onclick="closeShopModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
 
-            <div id="shop-tabs-bar" class="grid grid-cols-5 gap-1 mb-4 bg-slate-800/60 p-1 rounded-xl">
-                <button type="button" onclick="switchShopTab('skins')" id="tab-skins-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדור</button>
-                <button type="button" onclick="switchShopTab('paddles')" id="tab-paddles-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדל</button>
-                <button type="button" onclick="switchShopTab('stadiums')" id="tab-stadiums-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיון</button>
-                <button type="button" onclick="switchShopTab('songs')" id="tab-songs-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
-                <button type="button" onclick="switchShopTab('vip')" id="tab-vip-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">יוקרה 👑</button>
+            <div class="grid grid-cols-5 gap-1 p-2 bg-slate-950/50 border-b border-slate-800">
+                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדורים</button>
+                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
+                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
+                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
+                <button id="tab-vip-btn" type="button" onclick="switchShopTab('vip')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">יוקרה</button>
             </div>
 
-            <div id="shop-items-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
+            <div id="shop-items-container" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
         </div>
     </div>
 
-    <!-- Achievements Modal -->
-    <div id="achievements-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeAchievementsModal()">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[88vh]">
-            <div class="flex justify-between items-center mb-3">
-                <h2 id="achieve-title" class="text-xl font-bold text-emerald-400 flex items-center gap-2">🏅 מערכת הישגים</h2>
-                <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">✕</button>
+    <!-- Achievements & Daily Modal -->
+    <div id="achievements-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <h2 id="achieve-title" class="text-lg font-black flex items-center gap-2">🏅 הישגים</h2>
+                <button type="button" onclick="closeAchievementsModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
 
-            <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-950/60 to-orange-950/60 border border-amber-500/35 rounded-2xl p-3.5 mb-3"></div>
-            <div id="career-stats-box" class="grid grid-cols-4 gap-2 mb-3"></div>
-            <div id="achievements-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
-            <div id="recent-runs-box" class="mt-3 pt-3 border-t border-slate-800 max-h-36 overflow-y-auto space-y-1.5"></div>
+            <div class="p-3.5 border-b border-slate-800 bg-slate-950/40 space-y-2.5 overflow-y-auto max-h-[46vh] no-scrollbar">
+                <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-400/35 rounded-2xl p-3"></div>
+                <div id="series-quest-box" class="bg-gradient-to-r from-cyan-500/15 to-indigo-500/15 border border-cyan-400/35 rounded-2xl p-3"></div>
+                <div id="career-stats-box" class="grid grid-cols-4 gap-1.5"></div>
+                <div id="recent-runs-box" class="space-y-1"></div>
+            </div>
+
+            <div id="achievements-container" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
         </div>
     </div>
 
-    <!-- Hidden Creator / Admin Panel Modal -->
-    <div id="admin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeAdminModal()">
-        <div class="bg-slate-900 border border-rose-500/40 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col gap-3">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-black text-rose-400 flex items-center gap-2">🛠️ פאנל יוצר / מפתח</h2>
-                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-lg w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">✕</button>
+    <!-- Creator Admin Modal -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/40 rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                <h3 class="font-black text-amber-300 text-base">🛠️ כלי מפתח (יוצר המשחק)</h3>
+                <button type="button" onclick="closeAdminModal()" class="bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full text-xs text-slate-300 cursor-pointer">✕</button>
             </div>
-            <p class="text-xs text-slate-400">כלי בדיקה מהירים לאנדרואיד/כרום. השינויים נשמרים ב-localStorage.</p>
-
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="adminAddCoins(500)" class="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">+500 מטבעות 🪙</button>
-                <button type="button" onclick="adminBoostScore(25)" class="bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">+25 נקודות (שלב) ⚡</button>
-                <button type="button" onclick="adminGrantAllVip()" class="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">הפעל כל פריטי היוקרה 👑</button>
-                <button type="button" onclick="adminCompleteDaily()" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">השלם אתגר יומי 🎯</button>
+            <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                <button type="button" onclick="adminAddCoins(500)" class="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 py-2.5 rounded-xl cursor-pointer">+500 🪙</button>
+                <button type="button" onclick="adminBoostScore(25)" class="bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 py-2.5 rounded-xl cursor-pointer">+25 נקודות</button>
+                <button type="button" onclick="adminGrantAllVip()" class="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-200 py-2.5 rounded-xl cursor-pointer">כל היוקרה לריצה</button>
+                <button type="button" onclick="adminCompleteDaily()" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 py-2.5 rounded-xl cursor-pointer">השלם אתגר יומי</button>
             </div>
-
-            <button type="button" onclick="adminResetAllData()" class="bg-rose-600/25 hover:bg-rose-600/40 border border-rose-500/50 text-rose-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer mt-1">
-                איפוס מלא של כל ההתקדמות והנתונים
+            <button type="button" onclick="adminResetAllData()" class="w-full bg-rose-950/70 hover:bg-rose-900/70 border border-rose-500/40 text-rose-200 py-2 rounded-xl text-xs font-bold cursor-pointer">
+                איפוס נתונים מקומיים
             </button>
-            <div id="admin-feedback" class="text-xs text-emerald-400 text-center min-h-[18px]"></div>
+            <div id="admin-feedback" class="text-xs text-emerald-300 font-semibold text-center min-h-[16px]"></div>
         </div>
     </div>
 
     <script>
-        let deferredInstallPrompt = null;
+        const FIREBASE_DB_URL = 'https://juggle-king-db-default-rtdb.europe-west1.firebasedatabase.app';
 
+        let deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            deferredInstallPrompt = e;
+            deferredPrompt = e;
+            const btn = document.getElementById('install-pwa-btn');
+            if (btn) {
+                btn.classList.remove('hidden');
+                btn.classList.add('flex');
+            }
         });
 
-        async function triggerInstallPrompt() {
-            if (deferredInstallPrompt) {
-                try {
-                    deferredInstallPrompt.prompt();
-                    await deferredInstallPrompt.userChoice;
-                    deferredInstallPrompt = null;
-                    return;
-                } catch (e) {}
+        async function installPWA() {
+            if (!deferredPrompt) {
+                alert(lang === 'he'
+                    ? 'להתקנה בכרום: פתח את תפריט הדפדפן (⋮) ובחר "הוסף למסך הבית" או "התקן אפליקציה".'
+                    : 'To install in Chrome: open browser menu (⋮) and select "Add to Home screen" or "Install app".');
+                return;
             }
-            const msg = lang === 'he'
-                ? 'בכרום באנדרואיד: פתח את תפריט שלוש הנקודות (⋮) ובחר "התקן אפליקציה" או "הוסף למסך הבית".'
-                : 'In Chrome on Android: open menu (⋮) and tap "Install app" or "Add to Home screen".';
-            alert(msg);
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            const btn = document.getElementById('install-pwa-btn');
+            if (btn) {
+                btn.classList.add('hidden');
+                btn.classList.remove('flex');
+            }
         }
 
-        (async function initPWAAndCleanCache() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    for (const reg of registrations) {
-                        await reg.unregister();
-                    }
-                } catch (e) {}
+        window.addEventListener('appinstalled', () => {
+            const btn = document.getElementById('install-pwa-btn');
+            if (btn) {
+                btn.classList.add('hidden');
+                btn.classList.remove('flex');
             }
-            if ('caches' in window) {
-                try {
-                    const keys = await caches.keys();
-                    for (const key of keys) {
-                        await caches.delete(key);
-                    }
-                } catch (e) {}
-            }
+        });
 
-            try {
-                const iconCanvas = document.createElement('canvas');
-                iconCanvas.width = 512;
-                iconCanvas.height = 512;
-                const ictx = iconCanvas.getContext('2d');
-                ictx.fillStyle = '#0f172a';
-                ictx.fillRect(0, 0, 512, 512);
-                ictx.beginPath();
-                ictx.arc(256, 256, 175, 0, Math.PI * 2);
-                ictx.fillStyle = '#10b981';
-                ictx.fill();
-                ictx.beginPath();
-                ictx.arc(256, 256, 135, 0, Math.PI * 2);
-                ictx.fillStyle = '#ffffff';
-                ictx.fill();
-                ictx.fillStyle = '#0f172a';
-                ictx.beginPath();
-                ictx.arc(256, 256, 42, 0, Math.PI * 2);
-                ictx.fill();
-
-                const iconDataUrl = iconCanvas.toDataURL('image/png');
-                const manifestObj = {
-                    name: 'מלך ההקפצות - משחק כדורגל',
-                    short_name: 'הקפצות',
-                    start_url: './',
-                    scope: './',
-                    display: 'standalone',
-                    background_color: '#0f172a',
-                    theme_color: '#0f172a',
-                    orientation: 'portrait',
-                    icons: [
-                        { src: iconDataUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-                        { src: iconDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-                    ]
-                };
-                const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-                const manifestUrl = URL.createObjectURL(blob);
-                const linkEl = document.getElementById('dynamic-manifest');
-                if (linkEl) linkEl.href = manifestUrl;
-            } catch (e) {}
-        })();
-
-        const FIREBASE_DB_URL = "https://football-juggling-default-rtdb.firebaseio.com";
         let playerId = localStorage.getItem('juggle_player_id');
         if (!playerId) {
-            playerId = 'player_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+            playerId = 'p_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36);
             localStorage.setItem('juggle_player_id', playerId);
         }
-        let playerName = localStorage.getItem('juggle_player_name') || '';
-        let personalBest = parseInt(localStorage.getItem('juggle_personal_best')) || 0;
-        let topGlobalScore = parseInt(localStorage.getItem('juggle_top_global_score')) || 0;
-        let bestDifficulty = localStorage.getItem('juggle_best_diff') || 'medium';
-        let diffBests = JSON.parse(localStorage.getItem('juggle_diff_bests')) || { easy: 0, medium: 0, hard: 0 };
-        let recentRuns = JSON.parse(localStorage.getItem('juggle_recent_runs')) || [];
 
-        let lang = localStorage.getItem('juggle_lang') || 'he';
-        const savedDiff = localStorage.getItem('juggle_difficulty');
-        let difficulty = ['easy', 'medium', 'hard'].includes(savedDiff) ? savedDiff : 'medium';
-        let coins = parseInt(localStorage.getItem('juggle_coins')) || 75;
+        let playerName = localStorage.getItem('juggle_player_name') || '';
+
+        function safeParseJSON(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                return JSON.parse(raw);
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        let coins = Math.max(0, Number(localStorage.getItem('juggle_coins')) || 0);
         let activeSkin = localStorage.getItem('juggle_active_skin') || 'classic';
         let activePaddle = localStorage.getItem('juggle_active_paddle') || 'emerald_classic';
         let activeStadium = localStorage.getItem('juggle_active_stadium') || 'night_pro';
         let activeSong = localStorage.getItem('juggle_active_song') || 'none';
-        let unlockedSkins = JSON.parse(localStorage.getItem('juggle_unlocked_skins')) || ['classic'];
-        let unlockedPaddles = JSON.parse(localStorage.getItem('juggle_unlocked_paddles')) || ['emerald_classic'];
-        let unlockedStadiums = JSON.parse(localStorage.getItem('juggle_unlocked_stadiums')) || ['night_pro'];
-        let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
 
-        let activeRunVip = JSON.parse(localStorage.getItem('juggle_active_run_vip')) || [];
+        let unlockedSkins = safeParseJSON('juggle_unlocked_skins', ['classic']);
+        if (!Array.isArray(unlockedSkins) || !unlockedSkins.includes('classic')) unlockedSkins = ['classic'];
+
+        let unlockedPaddles = safeParseJSON('juggle_unlocked_paddles', ['emerald_classic']);
+        if (!Array.isArray(unlockedPaddles) || !unlockedPaddles.includes('emerald_classic')) unlockedPaddles = ['emerald_classic'];
+
+        let unlockedStadiums = safeParseJSON('juggle_unlocked_stadiums', ['night_pro']);
+        if (!Array.isArray(unlockedStadiums) || !unlockedStadiums.includes('night_pro')) unlockedStadiums = ['night_pro'];
+
+        let unlockedSongs = safeParseJSON('juggle_unlocked_songs', ['none']);
+        if (!Array.isArray(unlockedSongs) || !unlockedSongs.includes('none')) unlockedSongs = ['none'];
+
+        let activeRunVip = safeParseJSON('juggle_active_run_vip', []);
+        if (!Array.isArray(activeRunVip)) activeRunVip = [];
         let redCardShieldUsed = false;
 
-        let careerStats = JSON.parse(localStorage.getItem('juggle_career_stats')) || {
+        let careerStats = safeParseJSON('juggle_career_stats', {
             totalJuggles: 0,
             duelWins: 0,
             tourneyTrophies: 0,
             bestCombo: 0
+        });
+        careerStats = {
+            totalJuggles: Number(careerStats.totalJuggles) || 0,
+            duelWins: Number(careerStats.duelWins) || 0,
+            tourneyTrophies: Number(careerStats.tourneyTrophies) || 0,
+            bestCombo: Number(careerStats.bestCombo) || 0
         };
+
+        let seriesQuest = safeParseJSON('juggle_series_quest', {
+            step: 0,
+            progress: 0,
+            claimedSteps: [false, false, false]
+        });
+        seriesQuest = {
+            step: Math.min(2, Math.max(0, Number(seriesQuest.step) || 0)),
+            progress: Number(seriesQuest.progress) || 0,
+            claimedSteps: Array.isArray(seriesQuest.claimedSteps)
+                ? [Boolean(seriesQuest.claimedSteps[0]), Boolean(seriesQuest.claimedSteps[1]), Boolean(seriesQuest.claimedSteps[2])]
+                : [false, false, false]
+        };
+
+        let recentRuns = safeParseJSON('juggle_recent_runs', []);
+        if (!Array.isArray(recentRuns)) recentRuns = [];
+
+        let streakData = safeParseJSON('juggle_streak_data', { count: 1, lastDate: '' });
+        let dailyChallenge = safeParseJSON('juggle_daily_challenge', null);
 
         function getTodayKey() {
             const d = new Date();
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${y}-${m}-${day}`;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
 
         function getYesterdayKey() {
             const d = new Date(Date.now() - 86400000);
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${y}-${m}-${day}`;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
 
-        function createDailyChallengeForDate(dateKey) {
+        function buildDailyForDate(dateKey) {
             const templates = [
-                { kind: 'score', target: 35, reward: 65, label: { he: 'השג 35 נקודות בריצה אחת', en: 'Score 35 pts in a run', ru: 'Наберите 35 очков за игру', fr: 'Marquez 35 pts en 1 partie' } },
-                { kind: 'duel_win', target: 1, reward: 70, label: { he: 'נצח משחק 1 נגד 1 או טורניר', en: 'Win a 1v1 or Tournament match', ru: 'Выиграйте дуэль или турнир', fr: 'Gagnez un match 1v1 ou tournoi' } },
-                { kind: 'juggles', target: 45, reward: 60, label: { he: 'בצע 45 הקפצות סך הכל', en: 'Complete 45 total juggles', ru: 'Сделайте 45 чеканок', fr: 'Faites 45 jonglages au total' } }
+                { type: 'juggles', target: 30, reward: 45, label: { he: 'בצע 30 הקפצות היום', en: 'Do 30 juggles today', ru: 'Сделай 30 набиваний', fr: 'Fais 30 jonglages' } },
+                { type: 'score', target: 40, reward: 55, label: { he: 'הגע ל-40 נקודות בריצת סולו', en: 'Reach 40 score in Solo', ru: 'Набери 40 очков в соло', fr: 'Atteins 40 pts en solo' } },
+                { type: 'duel_win', target: 1, reward: 50, label: { he: 'נצח קרב אחד (1 נגד 1 או טורניר)', en: 'Win 1 duel or tournament match', ru: 'Выиграй 1 дуэль', fr: 'Gagne 1 duel' } }
             ];
             let hash = 0;
-            for (let i = 0; i < dateKey.length; i++) {
-                hash = ((hash << 5) - hash) + dateKey.charCodeAt(i);
-                hash |= 0;
-            }
-            const tpl = templates[Math.abs(hash) % templates.length];
+            for (let i = 0; i < dateKey.length; i++) hash = (hash * 31 + dateKey.charCodeAt(i)) % 10000;
+            const tpl = templates[hash % templates.length];
             return {
                 dateKey,
-                kind: tpl.kind,
+                type: tpl.type,
                 target: tpl.target,
-                progress: 0,
                 reward: tpl.reward,
+                progress: 0,
                 claimed: false,
                 label: tpl.label
             };
         }
 
-        let dailyChallenge = JSON.parse(localStorage.getItem('juggle_daily_challenge'));
-        let streakData = JSON.parse(localStorage.getItem('juggle_streak_data')) || { count: 1, lastDate: getTodayKey() };
-
         function syncDailyAndStreak() {
             const today = getTodayKey();
             const yesterday = getYesterdayKey();
-
-            if (!streakData || !streakData.lastDate) {
+            if (!streakData || typeof streakData !== 'object') {
                 streakData = { count: 1, lastDate: today };
-            } else if (streakData.lastDate === today) {
-                streakData.count = Math.max(1, Number(streakData.count) || 1);
-            } else if (streakData.lastDate === yesterday) {
-                streakData.count = (Number(streakData.count) || 1) + 1;
-                streakData.lastDate = today;
-            } else {
-                streakData.count = 1;
+            } else if (streakData.lastDate !== today) {
+                if (streakData.lastDate === yesterday) streakData.count = (Number(streakData.count) || 1) + 1;
+                else streakData.count = 1;
                 streakData.lastDate = today;
             }
-
             if (!dailyChallenge || dailyChallenge.dateKey !== today) {
-                dailyChallenge = createDailyChallengeForDate(today);
+                dailyChallenge = buildDailyForDate(today);
             }
         }
-        syncDailyAndStreak();
 
-        function updateDailyProgress(kind, value, isAbsolute = false) {
+        function updateDailyProgress(type, amountOrVal, isAbsolute = false) {
             syncDailyAndStreak();
-            if (!dailyChallenge || dailyChallenge.kind !== kind) return;
+            if (!dailyChallenge || dailyChallenge.type !== type || dailyChallenge.claimed) return;
             if (isAbsolute) {
-                dailyChallenge.progress = Math.min(dailyChallenge.target, Math.max(dailyChallenge.progress, value));
+                dailyChallenge.progress = Math.max(Number(dailyChallenge.progress) || 0, Number(amountOrVal) || 0);
             } else {
-                dailyChallenge.progress = Math.min(dailyChallenge.target, dailyChallenge.progress + value);
+                dailyChallenge.progress = (Number(dailyChallenge.progress) || 0) + (Number(amountOrVal) || 0);
             }
-            saveGameData();
         }
 
-        let achievements = JSON.parse(localStorage.getItem('juggle_achievements')) || {
-            juggles_50: { progress: 0, target: 50, reward: 35, claimed: false },
-            shop_2: { progress: 0, target: 2, reward: 55, claimed: false },
-            score_100: { progress: 0, target: 100, reward: 110, claimed: false }
-        };
-        let totalPurchasesCount = parseInt(localStorage.getItem('juggle_total_purchases')) || 0;
+        let totalPurchasesCount = Math.max(0, Number(localStorage.getItem('juggle_total_purchases')) || 0);
 
-        const POINTS_PER_LEVEL = 25;
-
-        function computeLevelFromScore(val) {
-            return Math.max(1, Math.floor(Math.max(0, val) / POINTS_PER_LEVEL) + 1);
-        }
+        let achievements = safeParseJSON('juggle_achievements', {
+            juggles_50: { progress: 0, target: 50, reward: 20, claimed: false },
+            shop_2: { progress: 0, target: 2, reward: 25, claimed: false },
+            score_100: { progress: 0, target: 100, reward: 40, claimed: false }
+        });
 
         function syncAchievementProgress() {
-            const unlockedCount = unlockedSkins.length + unlockedPaddles.length + unlockedStadiums.length + unlockedSongs.length - 4;
-            achievements.shop_2.progress = Math.max(achievements.shop_2.progress, totalPurchasesCount, unlockedCount);
-            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, personalBest, careerStats.totalJuggles);
-            achievements.score_100.progress = Math.max(achievements.score_100.progress, personalBest);
+            const derivedPurchases = Math.max(
+                totalPurchasesCount,
+                Math.max(0, unlockedSkins.length - 1) +
+                Math.max(0, unlockedPaddles.length - 1) +
+                Math.max(0, unlockedStadiums.length - 1) +
+                Math.max(0, unlockedSongs.length - 1)
+            );
+            totalPurchasesCount = Math.max(totalPurchasesCount, derivedPurchases);
+            achievements.shop_2.progress = Math.max(Number(achievements.shop_2.progress) || 0, totalPurchasesCount);
+            achievements.juggles_50.progress = Math.max(Number(achievements.juggles_50.progress) || 0, careerStats.totalJuggles);
+            achievements.score_100.progress = Math.max(Number(achievements.score_100.progress) || 0, personalBest);
         }
-        syncAchievementProgress();
+
+        let personalBest = Math.max(0, Number(localStorage.getItem('juggle_personal_best')) || 0);
+        let topGlobalScore = Math.max(0, Number(localStorage.getItem('juggle_top_global_score')) || 0);
+        let bestDifficulty = localStorage.getItem('juggle_best_diff') || 'medium';
+        let diffBests = safeParseJSON('juggle_diff_bests', { easy: 0, medium: 0, hard: 0 });
+        diffBests = {
+            easy: Number(diffBests.easy) || 0,
+            medium: Number(diffBests.medium) || 0,
+            hard: Number(diffBests.hard) || 0
+        };
+
+        let difficulty = localStorage.getItem('juggle_difficulty') || 'medium';
+        if (!['easy', 'medium', 'hard'].includes(difficulty)) difficulty = 'medium';
+
+        let lang = localStorage.getItem('juggle_lang') || 'he';
+        if (!['he', 'en', 'ru', 'fr'].includes(lang)) lang = 'he';
+
+        function computeLevelFromScore(pts) {
+            return Math.max(1, Math.floor((Number(pts) || 0) / 25) + 1);
+        }
+
+        function getPlayerRankInfo() {
+            const best = Number(personalBest) || 0;
+            const trophies = Number(careerStats && careerStats.tourneyTrophies) || 0;
+            const scorePower = best + trophies * 35;
+
+            if (lang === 'he') {
+                if (scorePower >= 250) return 'אגדה';
+                if (scorePower >= 130) return 'מקצוען';
+                if (scorePower >= 55) return 'ליגה';
+                return 'חובב';
+            }
+            if (scorePower >= 250) return 'Legend';
+            if (scorePower >= 130) return 'Pro';
+            if (scorePower >= 55) return 'League';
+            return 'Amateur';
+        }
+
+        function getSeriesStepDefinition(stepIdx) {
+            const steps = [
+                {
+                    target: 35,
+                    reward: 35,
+                    label: {
+                        he: 'שלב 1: צבור 35 הקפצות בקריירה',
+                        en: 'Step 1: Reach 35 career juggles',
+                        ru: 'Шаг 1: 35 набиваний всего',
+                        fr: 'Étape 1 : 35 jonglages au total'
+                    }
+                },
+                {
+                    target: 2,
+                    reward: 60,
+                    label: {
+                        he: 'שלב 2: נצח 2 קרבות (1 נגד 1 או טורניר)',
+                        en: 'Step 2: Win 2 duels / tournament matches',
+                        ru: 'Шаг 2: Выиграй 2 дуэли',
+                        fr: 'Étape 2 : Gagne 2 duels'
+                    }
+                },
+                {
+                    target: 7,
+                    reward: 100,
+                    label: {
+                        he: 'שלב 3: הגע לקומבו 7 בריצה',
+                        en: 'Step 3: Reach a 7x combo in a run',
+                        ru: 'Шаг 3: Комбо 7x за забег',
+                        fr: 'Étape 3 : Combo 7x en une partie'
+                    }
+                }
+            ];
+            return steps[Math.min(2, Math.max(0, Number(stepIdx) || 0))];
+        }
+
+        function syncSeriesQuestProgress() {
+            if (!seriesQuest || typeof seriesQuest !== 'object') {
+                seriesQuest = { step: 0, progress: 0, claimedSteps: [false, false, false] };
+            }
+            if (!Array.isArray(seriesQuest.claimedSteps)) {
+                seriesQuest.claimedSteps = [false, false, false];
+            }
+            const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
+            if (sIdx === 0) {
+                seriesQuest.progress = Number(careerStats && careerStats.totalJuggles) || 0;
+            } else if (sIdx === 1) {
+                seriesQuest.progress = Number(careerStats && careerStats.duelWins) || 0;
+            } else {
+                seriesQuest.progress = Number(careerStats && careerStats.bestCombo) || 0;
+            }
+        }
+
+        function claimSeriesStep() {
+            syncSeriesQuestProgress();
+            const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
+            const sDef = getSeriesStepDefinition(sIdx);
+            if (seriesQuest.claimedSteps[sIdx]) return;
+            if ((Number(seriesQuest.progress) || 0) < sDef.target) return;
+
+            seriesQuest.claimedSteps[sIdx] = true;
+            coins += Number(sDef.reward) || 0;
+            if (sIdx < 2) {
+                seriesQuest.step = sIdx + 1;
+                syncSeriesQuestProgress();
+            }
+            saveGameData();
+            renderDailyAndStats();
+        }
 
         const translations = {
             he: {
                 subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
-                myBestLbl: "השיא שלי:", top1Lbl: "שיא ראשון:",
-                soloTitle: "שבירת שיא (סולו)", soloDesc: "משימות מתחלפות, טיימר, מד טעינה ומצבי שלב",
-                practiceTitle: "אימון חופשי", practiceDesc: "תרגול קומבואים וטכניקות בלי שעון לחוץ",
-                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם עד 5 נקודות",
-                tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
-                menu: "תפריט", tap: "גרור את השחקן והשג נקודות / משימות 🎯!",
+                soloTitle: "שבירת שיא (סולו)",
+                soloDesc: "משימות מתחלפות, טיימר, מד טעינה ומצבי שלב",
+                practiceTitle: "אימון חופשי",
+                practiceDesc: "תרגול קומבואים וטכניקות בלי שעון לחוץ",
+                pvpTitle: "תחרות 1 נגד 1",
+                pvpDesc: "דו-קרב מול יריבים בעלי סגנון משחק שונה",
+                tourneyTitle: "טורניר אלופים",
+                tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
+                menu: "תפריט",
+                tap: "גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר",
                 installBtn: "התקן",
-                navAchieve: "הישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
-                lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
-                lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
-                lbSynced: "✓ השיא מסונכרן לענן",
-                shopTitle: "חנות המשחק", tabSkins: "כדור", tabPaddles: "פאדל", tabStadiums: "אצטדיון", tabSongs: "מוזיקה", tabVip: "יוקרה 👑",
-                achieveTitle: "הישגים, אתגר יומי, קריירה והיסטוריה",
-                recentRunsTitle: "📜 ריצות אחרונות", noRecentRuns: "עדיין אין ריצות שמורות",
-                buy: "קנה", equip: "השתמש", equipped: "בשימוש", owned: "בבעלותך",
-                activeOneGame: "מוכן למשחק 1", oneGameTag: "למשחק אחד",
-                claim: "אסוף פרס", claimed: "הושלם", inProgress: "בתהליך",
-                diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
-                gameOver: "המשחק נגמר!", timeUp: "⏱️ נגמר הזמן!",
-                tourneyWon: "🏆 אלוף הטורניר!", duelWon: "🎉 ניצחת בדו-קרב!", duelLost: "🤖 הבוט ניצח",
-                scoreTxt: "תוצאה", bestTxt: "שיא אישי",
-                runJugglesLbl: "הקפצות בריצה", runComboLbl: "קומבו שיא בריצה", dailyProgLbl: "אתגר יומי",
-                retry: "שחק שוב", shareBtn: "שתף תוצאה", sharedCopied: "✓ הועתק ללוח",
-                levelPrefix: "שלב", practiceBadge: "🏋️ אימון",
-                pauseTitle: "⏸️ המשחק מושהה", resumeBtn: "המשך משחק", pauseMenuBtn: "חזרה לתפריט",
-                chargeLbl: "⚡ מד טעינה", overdriveLbl: "🔥 אוברדרייב x2",
-                mJuggles: "הקפץ {n} פעמים", mTargets: "פגע ב-{n} מטרות 🎯", mCombo: "הגע לקומבו {n}",
-                duelMission: "⚔️ יעד ניצחון: {p} - {b} (יעד: {goal})",
+                navAchieve: "הישגים",
+                navLeaderboard: "טבלת שיאים",
+                navShop: "חנות",
+                lbTitle: "טבלת שיאים עולמית",
+                lbBest: "השיא האישי שלך:",
+                lbSave: "שמור שם",
+                lbNamePlaceholder: "הכנס שם לתצוגה...",
+                lbRankPrefix: "הדירוג שלך:",
+                lbSynced: "השיא מסונכרן עם הענן",
+                shopTitle: "חנות",
+                tabSkins: "כדורים",
+                tabPaddles: "פאדלים",
+                tabStadiums: "אצטדיונים",
+                tabSongs: "מוזיקה",
+                tabVip: "יוקרה",
+                achieveTitle: "הישגים",
+                gameOver: "המשחק נגמר!",
+                timeUp: "הזמן נגמר!",
+                duelWon: "ניצחת בדו-קרב!",
+                duelLost: "היריב ניצח!",
+                tourneyWon: "אלוף הטורניר!",
                 tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
-                dailyTitle: "📅 אתגר יומי", streakLbl: "רצף ימים",
-                statJuggles: "הקפצות", statDuels: "ניצחונות 1v1", statTrophies: "גביעים", statCombo: "קומבו שיא",
-                modDoubleTargets: "🎯 מטרות כפולות", modCrosswind: "💨 רוח צד",
+                scoreTxt: "נקודות",
+                bestTxt: "השיא שלי",
+                myBestLbl: "השיא שלי: ",
+                top1Lbl: "שיא ראשון: ",
+                retry: "שחק שוב",
+                shareBtn: "שתף תוצאה",
+                sharedCopied: "התוצאה הועתקה ללוח",
+                buy: "קנה",
+                equip: "בחר",
+                equipped: "נבחר",
+                oneGameTag: "למשחק אחד",
+                activeOneGame: "פעיל למשחק 1",
+                claim: "אסוף פרס",
+                claimed: "נאסף ✓",
+                inProgress: "בתהליך",
+                diffEasy: "קל",
+                diffMedium: "בינוני",
+                diffHard: "קשה",
+                levelPrefix: "שלב",
+                practiceBadge: "🏋️ אימון",
+                chargeLbl: "מד טעינה",
+                overdriveLbl: "🔥 אוברדרייב",
+                hotMinuteLbl: "🔥 דקה חמה",
+                modDoubleTargets: "🎯 2 מטרות",
+                modCrosswind: "💨 רוח צד",
+                mJuggles: "השלם {n} הקפצות",
+                mTargets: "פגע ב-{n} מטרות",
+                mCombo: "הגע לקומבו x{n}",
+                duelMission: "{style} • {p}-{b} (יעד {goal})",
+                botStyles: { technical: "טכני", aggressive: "אגרסיבי", guardian: "שומר" },
+                dailyTitle: "אתגר יומי",
+                seriesTitle: "סדרת משימות",
+                streakLbl: "רצף",
+                dailyProgLbl: "אתגר יומי",
+                runJugglesLbl: "הקפצות",
+                runComboLbl: "קומבו שיא",
+                statJuggles: "הקפצות",
+                statDuels: "ניצחונות",
+                statTrophies: "גביעים",
+                statCombo: "קומבו שיא",
+                recentRunsTitle: "ריצות אחרונות",
+                noRecentRuns: "אין עדיין ריצות שמורות",
+                pauseTitle: "המשחק מושהה",
+                resumeBtn: "המשך משחק",
+                pauseMenuBtn: "חזרה לתפריט",
                 levelUpPhrases: [
-                    "וואו! מצוין!",
-                    "יפה מאוד!",
-                    "מטורף! שלב {lvl}!",
-                    "אלוף! עלית לשלב {lvl}!"
+                    "עלייה לשלב {lvl}!",
+                    "קצב עולה! שלב {lvl}",
+                    "הצגה! שלב {lvl}",
+                    "שליטה מלאה! שלב {lvl}"
                 ]
             },
             en: {
-                subtitle: "Fill the charge gauge, complete missions & beat records!",
-                myBestLbl: "My Best:", top1Lbl: "Top #1:",
-                soloTitle: "Solo High Score", soloDesc: "Dynamic missions, timer, charge & stage modes",
-                practiceTitle: "Free Practice", practiceDesc: "Train combos & techniques with no timer",
-                pvpTitle: "1v1 Match", pvpDesc: "Smart AI duel first to 5 points",
-                tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final",
-                menu: "Menu", tap: "Drag player & score / hit targets 🎯!",
+                subtitle: "Charge up, complete missions, and break records!",
+                soloTitle: "High Score (Solo)",
+                soloDesc: "Rotating missions, timer, charge meter & stage twists",
+                practiceTitle: "Free Practice",
+                practiceDesc: "Practice combos and control without timer pressure",
+                pvpTitle: "1v1 Duel",
+                pvpDesc: "Face rivals with distinct playstyles",
+                tourneyTitle: "Champions Tournament",
+                tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
+                menu: "Menu",
+                tap: "Drag player to juggle • Center hits charge faster",
                 installBtn: "Install",
-                navAchieve: "Achievements", navLeaderboard: "Leaderboard", navShop: "Shop",
-                lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
-                lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
-                lbSynced: "✓ Score synced to cloud",
-                shopTitle: "Game Shop", tabSkins: "Ball", tabPaddles: "Paddle", tabStadiums: "Stadium", tabSongs: "Music", tabVip: "VIP 👑",
-                achieveTitle: "Achievements, Daily, Career & History",
-                recentRunsTitle: "📜 Recent Runs", noRecentRuns: "No runs recorded yet",
-                buy: "Buy", equip: "Equip", equipped: "Equipped", owned: "Owned",
-                activeOneGame: "1 Game Ready", oneGameTag: "1 Game",
-                claim: "Claim", claimed: "Completed", inProgress: "In Progress",
-                diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
-                gameOver: "Game Over!", timeUp: "⏱️ Time's Up!",
-                tourneyWon: "🏆 Tournament Champion!", duelWon: "🎉 You Won the Duel!", duelLost: "🤖 Bot Won",
-                scoreTxt: "Score", bestTxt: "Best",
-                runJugglesLbl: "Run Juggles", runComboLbl: "Run Best Combo", dailyProgLbl: "Daily Quest",
-                retry: "Play Again", shareBtn: "Share Score", sharedCopied: "✓ Copied",
-                levelPrefix: "Lvl", practiceBadge: "🏋️ Practice",
-                pauseTitle: "⏸️ Game Paused", resumeBtn: "Resume", pauseMenuBtn: "Back to Menu",
-                chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
-                mJuggles: "Juggle {n} times", mTargets: "Hit {n} targets 🎯", mCombo: "Reach {n} combo",
-                duelMission: "⚔️ Score {p} - {b} (First to {goal})",
+                navAchieve: "Achievements",
+                navLeaderboard: "Leaderboard",
+                navShop: "Shop",
+                lbTitle: "Global Leaderboard",
+                lbBest: "Your personal best:",
+                lbSave: "Save Name",
+                lbNamePlaceholder: "Enter display name...",
+                lbRankPrefix: "Your rank:",
+                lbSynced: "Score synced to cloud",
+                shopTitle: "Shop",
+                tabSkins: "Balls",
+                tabPaddles: "Paddles",
+                tabStadiums: "Stadiums",
+                tabSongs: "Music",
+                tabVip: "VIP",
+                achieveTitle: "Achievements",
+                gameOver: "Game Over!",
+                timeUp: "Time's Up!",
+                duelWon: "Duel Victory!",
+                duelLost: "Rival Won!",
+                tourneyWon: "Tournament Champion!",
                 tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
-                dailyTitle: "📅 Daily Challenge", streakLbl: "Day Streak",
-                statJuggles: "Juggles", statDuels: "1v1 Wins", statTrophies: "Trophies", statCombo: "Best Combo",
-                modDoubleTargets: "🎯 Double Targets", modCrosswind: "💨 Crosswind",
+                scoreTxt: "Score",
+                bestTxt: "Best",
+                myBestLbl: "My Best: ",
+                top1Lbl: "Top #1: ",
+                retry: "Play Again",
+                shareBtn: "Share Score",
+                sharedCopied: "Score copied to clipboard",
+                buy: "Buy",
+                equip: "Equip",
+                equipped: "Equipped",
+                oneGameTag: "1 Game Only",
+                activeOneGame: "Active (1 Game)",
+                claim: "Claim",
+                claimed: "Claimed ✓",
+                inProgress: "In Progress",
+                diffEasy: "Easy",
+                diffMedium: "Medium",
+                diffHard: "Hard",
+                levelPrefix: "Stage",
+                practiceBadge: "🏋️ Practice",
+                chargeLbl: "Charge",
+                overdriveLbl: "🔥 OVERDRIVE",
+                hotMinuteLbl: "🔥 Hot Rush",
+                modDoubleTargets: "🎯 2 Targets",
+                modCrosswind: "💨 Crosswind",
+                mJuggles: "Do {n} juggles",
+                mTargets: "Hit {n} targets",
+                mCombo: "Reach x{n} combo",
+                duelMission: "{style} • {p}-{b} (Goal {goal})",
+                botStyles: { technical: "Technical", aggressive: "Aggressive", guardian: "Guardian" },
+                dailyTitle: "Daily Challenge",
+                seriesTitle: "Quest Series",
+                streakLbl: "Streak",
+                dailyProgLbl: "Daily",
+                runJugglesLbl: "Juggles",
+                runComboLbl: "Best Combo",
+                statJuggles: "Juggles",
+                statDuels: "Duel Wins",
+                statTrophies: "Trophies",
+                statCombo: "Max Combo",
+                recentRunsTitle: "Recent Runs",
+                noRecentRuns: "No recent runs yet",
+                pauseTitle: "Game Paused",
+                resumeBtn: "Resume",
+                pauseMenuBtn: "Main Menu",
                 levelUpPhrases: [
-                    "WOW! AWESOME!",
-                    "GREAT JOB!",
-                    "INSANE! LEVEL {lvl}!",
-                    "CHAMPION! LEVEL {lvl}!"
+                    "Stage {lvl} Unlocked!",
+                    "Pace Up! Stage {lvl}",
+                    "Pure Class! Stage {lvl}",
+                    "In Control! Stage {lvl}"
                 ]
             },
             ru: {
-                subtitle: "Заряжайте шкалу, выполняйте задания и бейте рекорды!",
-                myBestLbl: "Рекорд:", top1Lbl: "Топ #1:",
-                soloTitle: "Рекорд (Соло)", soloDesc: "Задания, таймер, заряд и режимы уровней",
-                practiceTitle: "Свободная тренировка", practiceDesc: "Тренировка комбо и ударов без таймера",
-                pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота до 5 очков",
-                tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал",
-                menu: "Меню", tap: "Ведите игрока и побеждайте 🎯!",
-                installBtn: "Скачать",
-                navAchieve: "Достижения", navLeaderboard: "Рейтинг", navShop: "Магазин",
-                lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
-                lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
-                lbSynced: "✓ Рекорд сохранён",
-                shopTitle: "Магазин", tabSkins: "Мяч", tabPaddles: "Падл", tabStadiums: "Арена", tabSongs: "Музыка", tabVip: "VIP 👑",
-                achieveTitle: "Достижения, день, карьера и история",
-                recentRunsTitle: "📜 Последние игры", noRecentRuns: "Пока нет сохранённых игр",
-                buy: "Купить", equip: "Выбрать", equipped: "Активно", owned: "Куплено",
-                activeOneGame: "На 1 игру", oneGameTag: "1 игра",
-                claim: "Забрать", claimed: "Выполнено", inProgress: "В процессе",
-                diffEasy: "Легко", diffMedium: "Средне", diffHard: "Сложно",
-                gameOver: "Игра окончена!", timeUp: "⏱️ Время вышло!",
-                tourneyWon: "🏆 Чемпион Турнира!", duelWon: "🎉 Победа в дуэли!", duelLost: "🤖 Бот победил",
-                scoreTxt: "Счет", bestTxt: "Рекорд",
-                runJugglesLbl: "Чеканки за игру", runComboLbl: "Макс комбо за игру", dailyProgLbl: "Задание дня",
-                retry: "Ещё раз", shareBtn: "Поделиться", sharedCopied: "✓ Скопировано",
-                levelPrefix: "Ур.", practiceBadge: "🏋️ Тренировка",
-                pauseTitle: "⏸️ Пауза", resumeBtn: "Продолжить", pauseMenuBtn: "В меню",
-                chargeLbl: "⚡ Заряд", overdriveLbl: "🔥 ОВЕРДРАЙВ x2",
-                mJuggles: "Чеканьте {n} раз", mTargets: "Попадите в {n} целей 🎯", mCombo: "Комбо {n}",
-                duelMission: "⚔️ Счёт {p} - {b} (До {goal})",
+                subtitle: "Заряжай шкалу, выполняй миссии и бей рекорды!",
+                soloTitle: "Рекорд (Соло)",
+                soloDesc: "Миссии, таймер, шкала заряда и этапы",
+                practiceTitle: "Свободная тренировка",
+                practiceDesc: "Тренируй комбо без таймера и давления",
+                pvpTitle: "Дуэль 1 на 1",
+                pvpDesc: "Соперники с разными стилями игры",
+                tourneyTitle: "Турнир чемпионов",
+                tourneyDesc: "Четвертьфинал, полуфинал и финал за кубок",
+                menu: "Меню",
+                tap: "Веди игрока • Удары по центру заряжают быстрее",
+                installBtn: "Установить",
+                navAchieve: "Награды",
+                navLeaderboard: "Рекорды",
+                navShop: "Магазин",
+                lbTitle: "Мировой рейтинг",
+                lbBest: "Ваш лучший результат:",
+                lbSave: "Сохранить",
+                lbNamePlaceholder: "Введите имя...",
+                lbRankPrefix: "Ваше место:",
+                lbSynced: "Рекорд сохранён в облаке",
+                shopTitle: "Магазин",
+                tabSkins: "Мячи",
+                tabPaddles: "Ракетки",
+                tabStadiums: "Стадионы",
+                tabSongs: "Музыка",
+                tabVip: "VIP",
+                achieveTitle: "Награды",
+                gameOver: "Игра окончена!",
+                timeUp: "Время вышло!",
+                duelWon: "Победа в дуэли!",
+                duelLost: "Соперник победил!",
+                tourneyWon: "Чемпион турнира!",
                 tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
-                dailyTitle: "📅 Задание дня", streakLbl: "Серия дней",
-                statJuggles: "Чеканки", statDuels: "Побед 1v1", statTrophies: "Кубки", statCombo: "Макс комбо",
-                modDoubleTargets: "🎯 Двойные цели", modCrosswind: "💨 Боковой ветер",
+                scoreTxt: "Очки",
+                bestTxt: "Рекорд",
+                myBestLbl: "Мой рекорд: ",
+                top1Lbl: "Топ #1: ",
+                retry: "Играть снова",
+                shareBtn: "Поделиться",
+                sharedCopied: "Результат скопирован",
+                buy: "Купить",
+                equip: "Выбрать",
+                equipped: "Выбрано",
+                oneGameTag: "На 1 игру",
+                activeOneGame: "Активно (1 игра)",
+                claim: "Забрать",
+                claimed: "Получено ✓",
+                inProgress: "В процессе",
+                diffEasy: "Лёгкий",
+                diffMedium: "Средний",
+                diffHard: "Сложный",
+                levelPrefix: "Этап",
+                practiceBadge: "🏋️ Тренировка",
+                chargeLbl: "Заряд",
+                overdriveLbl: "🔥 ОВЕРДРАЙВ",
+                hotMinuteLbl: "🔥 Жаркий рывок",
+                modDoubleTargets: "🎯 2 цели",
+                modCrosswind: "💨 Боковой ветер",
+                mJuggles: "Сделай {n} набиваний",
+                mTargets: "Попади в {n} целей",
+                mCombo: "Комбо x{n}",
+                duelMission: "{style} • {p}-{b} (Цель {goal})",
+                botStyles: { technical: "Техничный", aggressive: "Агрессивный", guardian: "Защитник" },
+                dailyTitle: "Задание дня",
+                seriesTitle: "Серия заданий",
+                streakLbl: "Серия",
+                dailyProgLbl: "День",
+                runJugglesLbl: "Набиваний",
+                runComboLbl: "Макс. комбо",
+                statJuggles: "Набиваний",
+                statDuels: "Побед",
+                statTrophies: "Кубков",
+                statCombo: "Макс. комбо",
+                recentRunsTitle: "Последние игры",
+                noRecentRuns: "Пока нет сохранённых игр",
+                pauseTitle: "Пауза",
+                resumeBtn: "Продолжить",
+                pauseMenuBtn: "В меню",
                 levelUpPhrases: [
-                    "ВАУ! ОТЛИЧНО!",
-                    "ОЧЕНЬ КРУТО!",
-                    "НЕВЕРОЯТНО! УРОВЕНЬ {lvl}!",
-                    "ЧЕМПИОН! УРОВЕНЬ {lvl}!"
+                    "Этап {lvl}!",
+                    "Темп растёт! Этап {lvl}",
+                    "Красиво! Этап {lvl}",
+                    "Полный контроль! Этап {lvl}"
                 ]
             },
             fr: {
-                subtitle: "Chargez la jauge, validez des missions et battez des records !",
-                myBestLbl: "Mon record :", top1Lbl: "Top #1 :",
-                soloTitle: "Record Solo", soloDesc: "Missions, chrono, charge et modes niveau",
-                practiceTitle: "Entraînement Libre", practiceDesc: "Enchaînez les combos sans chrono",
-                pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA en 5 points",
-                tourneyTitle: "Tournoi des Champions", tourneyDesc: "Quart, demi et finale",
-                menu: "Menu", tap: "Glissez et marquez 🎯 !",
+                subtitle: "Charge la jauge, réussis les missions et bats des records !",
+                soloTitle: "Record (Solo)",
+                soloDesc: "Missions, chrono, jauge de charge et variantes",
+                practiceTitle: "Entraînement libre",
+                practiceDesc: "Enchaîne les combos sans pression du chrono",
+                pvpTitle: "Duel 1v1",
+                pvpDesc: "Affronte des rivaux aux styles variés",
+                tourneyTitle: "Tournoi des champions",
+                tourneyDesc: "Quart, demi-finale et finale pour le trophée",
+                menu: "Menu",
+                tap: "Glisse le joueur • Le centre charge plus vite",
                 installBtn: "Installer",
-                navAchieve: "Succès", navLeaderboard: "Classement", navShop: "Boutique",
-                lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
-                lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
-                lbSynced: "✓ Score synchronisé",
-                shopTitle: "Boutique", tabSkins: "Ballon", tabPaddles: "Raquette", tabStadiums: "Stade", tabSongs: "Musique", tabVip: "VIP 👑",
-                achieveTitle: "Succès, défi, carrière & historique",
-                recentRunsTitle: "📜 Parties Récentes", noRecentRuns: "Aucune partie enregistrée",
-                buy: "Acheter", equip: "Équiper", equipped: "Équipé", owned: "Possédé",
-                activeOneGame: "1 Partie Prête", oneGameTag: "1 Partie",
-                claim: "Récupérer", claimed: "Terminé", inProgress: "En cours",
-                diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
-                gameOver: "Partie Terminée !", timeUp: "⏱️ Temps écoulé !",
-                tourneyWon: "🏆 Champion du Tournoi !", duelWon: "🎉 Victoire au Duel !", duelLost: "🤖 Le Bot a Gagné",
-                scoreTxt: "Score", bestTxt: "Meilleur",
-                runJugglesLbl: "Jonglages partie", runComboLbl: "Combo max partie", dailyProgLbl: "Défi du jour",
-                retry: "Rejouer", shareBtn: "Partager", sharedCopied: "✓ Copié",
-                levelPrefix: "Niv.", practiceBadge: "🏋️ Entraînement",
-                pauseTitle: "⏸️ Jeu en Pause", resumeBtn: "Reprendre", pauseMenuBtn: "Menu",
-                chargeLbl: "⚡ Charge", overdriveLbl: "🔥 OVERDRIVE x2",
-                mJuggles: "Jonglez {n} fois", mTargets: "Touchez {n} cibles 🎯", mCombo: "Combo {n}",
-                duelMission: "⚔️ Score {p} - {b} (Premier à {goal})",
+                navAchieve: "Succès",
+                navLeaderboard: "Classement",
+                navShop: "Boutique",
+                lbTitle: "Classement mondial",
+                lbBest: "Votre meilleur score :",
+                lbSave: "Enregistrer",
+                lbNamePlaceholder: "Entrez votre pseudo...",
+                lbRankPrefix: "Votre rang :",
+                lbSynced: "Score synchronisé",
+                shopTitle: "Boutique",
+                tabSkins: "Ballons",
+                tabPaddles: "Raquettes",
+                tabStadiums: "Stades",
+                tabSongs: "Musique",
+                tabVip: "VIP",
+                achieveTitle: "Succès",
+                gameOver: "Partie terminée !",
+                timeUp: "Temps écoulé !",
+                duelWon: "Victoire en duel !",
+                duelLost: "Le rival a gagné !",
+                tourneyWon: "Champion du tournoi !",
                 tourneyStages: ["Quart", "Demi-finale", "Finale"],
-                dailyTitle: "📅 Défi du Jour", streakLbl: "Série jours",
-                statJuggles: "Jonglages", statDuels: "Victoires 1v1", statTrophies: "Trophées", statCombo: "Meilleur combo",
-                modDoubleTargets: "🎯 Cibles Doubles", modCrosswind: "💨 Vent Latéral",
+                scoreTxt: "Score",
+                bestTxt: "Record",
+                myBestLbl: "Mon record : ",
+                top1Lbl: "Top #1 : ",
+                retry: "Rejouer",
+                shareBtn: "Partager",
+                sharedCopied: "Score copié",
+                buy: "Acheter",
+                equip: "Équiper",
+                equipped: "Équipé",
+                oneGameTag: "1 partie",
+                activeOneGame: "Actif (1 partie)",
+                claim: "Réclamer",
+                claimed: "Réclamé ✓",
+                inProgress: "En cours",
+                diffEasy: "Facile",
+                diffMedium: "Moyen",
+                diffHard: "Difficile",
+                levelPrefix: "Niveau",
+                practiceBadge: "🏋️ Entraînement",
+                chargeLbl: "Charge",
+                overdriveLbl: "🔥 OVERDRIVE",
+                hotMinuteLbl: "🔥 Rush Chaud",
+                modDoubleTargets: "🎯 2 Cibles",
+                modCrosswind: "💨 Vent Latéral",
+                mJuggles: "Fais {n} jonglages",
+                mTargets: "Touche {n} cibles",
+                mCombo: "Combo x{n}",
+                duelMission: "{style} • {p}-{b} (But {goal})",
+                botStyles: { technical: "Technique", aggressive: "Agressif", guardian: "Gardien" },
+                dailyTitle: "Défi du jour",
+                seriesTitle: "Série de quêtes",
+                streakLbl: "Série",
+                dailyProgLbl: "Jour",
+                runJugglesLbl: "Jonglages",
+                runComboLbl: "Combo max",
+                statJuggles: "Jonglages",
+                statDuels: "Victoires",
+                statTrophies: "Trophées",
+                statCombo: "Combo max",
+                recentRunsTitle: "Parties récentes",
+                noRecentRuns: "Aucune partie récente",
+                pauseTitle: "Pause",
+                resumeBtn: "Reprendre",
+                pauseMenuBtn: "Menu principal",
                 levelUpPhrases: [
-                    "WAOUH ! SUPER !",
-                    "TRÈS BIEN !",
-                    "INCROYABLE ! NIVEAU {lvl} !",
-                    "CHAMPION ! NIVEAU {lvl} !"
+                    "Niveau {lvl} !",
+                    "Rythme en hausse ! Niveau {lvl}",
+                    "Superbe ! Niveau {lvl}",
+                    "Maîtrise totale ! Niveau {lvl}"
                 ]
             }
         };
@@ -684,46 +989,23 @@
         const skinsData = [
             { id: 'classic', name: { he: 'כדור קלאסי', en: 'Classic Ball', ru: 'Классический', fr: 'Classique' }, price: 0, color: '#ffffff' },
             { id: 'gold', name: { he: 'כדור זהב', en: 'Golden Ball', ru: 'Золотой', fr: 'Or' }, price: 50, color: '#fbbf24' },
-            { id: 'neon', name: { he: 'ניאון כחול', en: 'Neon Ball', ru: 'Неоновый', fr: 'Néon' }, price: 100, color: '#38bdf8' },
+            { id: 'neon', name: { he: 'כדור ניאון', en: 'Neon Ball', ru: 'Неоновый', fr: 'Néon' }, price: 100, color: '#38bdf8' },
             { id: 'fire', name: { he: 'כדור להבה', en: 'Fire Ball', ru: 'Огненный', fr: 'Feu' }, price: 150, color: '#f97316' },
             { id: 'rainbow', name: { he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel' }, price: 200, color: '#ec4899' },
             { id: 'steel', name: { he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier' }, price: 250, color: '#64748b' },
             { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' },
-            { id: 'mint_pulse', name: { he: 'פולס מנטה', en: 'Mint Pulse', ru: 'Мятный Импульс', fr: 'Pulse Menthe' }, price: 360, color: '#2dd4bf' },
-            { id: 'emerald_pro', name: { he: 'אמרלד אלופים', en: 'Emerald Pro', ru: 'Изумруд Про', fr: 'Émeraude Pro' }, price: 420, color: '#10b981' },
-            { id: 'crimson_lord', name: { he: 'ארגמן מלכותי', en: 'Crimson Royal', ru: 'Багровый', fr: 'Cramoisi Royal' }, price: 550, color: '#e11d48' },
-            { id: 'violet_storm', name: { he: 'סערת סגול', en: 'Violet Storm', ru: 'Фиолетовый Шторм', fr: 'Orage Violet' }, price: 680, color: '#8b5cf6' },
             { id: 'diamond', name: { he: 'יהלום קריסטל', en: 'Crystal Diamond', ru: 'Алмаз', fr: 'Diamant' }, price: 750, color: '#67e8f9' },
             { id: 'magma_king', name: { he: 'מלך הלבה', en: 'Magma King', ru: 'Король Лавы', fr: 'Roi de Magma' }, price: 1000, color: '#ea580c' },
-            { id: 'titanium_x', name: { he: 'טיטניום X', en: 'Titanium X', ru: 'Титан X', fr: 'Titane X' }, price: 1250, color: '#cbd5e1' },
-            { id: 'phantom_void', name: { he: 'צללים נדירים', en: 'Phantom Void', ru: 'Тень Бездны', fr: 'Ombre Royale' }, price: 1500, color: '#a855f7' },
-            { id: 'solar_flare', name: { he: 'התפרצות שמש', en: 'Solar Flare', ru: 'Солнечный', fr: 'Éruption Solaire' }, price: 1800, color: '#facc15' },
-            { id: 'aurora_star', name: { he: 'כוכב זוהר', en: 'Aurora Star', ru: 'Северная Звезда', fr: 'Étoile Aurore' }, price: 2100, color: '#4ade80' },
-            { id: 'cyber_plasma', name: { he: 'פלאזמה סייבר', en: 'Cyber Plasma', ru: 'Кибер Плазма', fr: 'Plasma Cyber' }, price: 2450, color: '#f43f5e' },
-            { id: 'zenith_crown', name: { he: 'כדור הזניט', en: 'Zenith Orb', ru: 'Сфера Зенита', fr: 'Orbe Zénith' }, price: 2900, color: '#38bdf8' },
-            { id: 'cyber_ice', name: { he: 'קרח סייבר', en: 'Cyber Frost', ru: 'Кибер Лёд', fr: 'Givre Cyber' }, price: 3250, color: '#22d3ee' },
-            { id: 'platinum_gold', name: { he: 'זהב פלטינה', en: 'Platinum Gold', ru: 'Платиновое Золото', fr: 'Or Platine' }, price: 3650, color: '#fde047' },
-            { id: 'nebula_core', name: { he: 'ליבת נבולה', en: 'Nebula Core', ru: 'Ядро Туманности', fr: 'Cœur Nébuleuse' }, price: 4100, color: '#d946ef' }
+            { id: 'platinum_gold', name: { he: 'זהב פלטינה', en: 'Platinum Gold', ru: 'Платиновое Золото', fr: 'Or Platine' }, price: 3650, color: '#fde047' }
         ];
 
         const paddlesData = [
             { id: 'emerald_classic', name: { he: 'פאדל ירוק קלאסי', en: 'Classic Emerald', ru: 'Изумрудный', fr: 'Émeraude Classique' }, price: 0, color: '#10b981', accent: '#fbbf24' },
             { id: 'cobalt_pro', name: { he: 'פאדל כחול קובלט', en: 'Cobalt Pro', ru: 'Кобальт Про', fr: 'Cobalt Pro' }, price: 65, color: '#2563eb', accent: '#38bdf8' },
             { id: 'sunset_blaze', name: { he: 'פאדל להבת שקיעה', en: 'Sunset Blaze', ru: 'Закат', fr: 'Lueur Couchant' }, price: 130, color: '#ea580c', accent: '#fde047' },
-            { id: 'lime_turbo', name: { he: 'פאדל ליים טורבו', en: 'Lime Turbo', ru: 'Лайм Турбо', fr: 'Citron Turbo' }, price: 170, color: '#65a30d', accent: '#ecfccb' },
-            { id: 'cyber_mint', name: { he: 'פאדל סייבר מנטה', en: 'Cyber Mint', ru: 'Кибер Мята', fr: 'Menthe Cyber' }, price: 210, color: '#14b8a6', accent: '#f472b6' },
             { id: 'royal_amethyst', name: { he: 'פאדל אמטיסט מלכותי', en: 'Royal Amethyst', ru: 'Аметист', fr: 'Améthyste Royal' }, price: 310, color: '#9333ea', accent: '#facc15' },
-            { id: 'crimson_striker', name: { he: 'פאדל חלוץ אדום', en: 'Crimson Striker', ru: 'Багровый Удар', fr: 'Attaquant Rouge' }, price: 450, color: '#e11d48', accent: '#ffffff' },
-            { id: 'copper_vortex', name: { he: 'פאדל נחושת וורטקס', en: 'Copper Vortex', ru: 'Медный Вихрь', fr: 'Vortex Cuivre' }, price: 540, color: '#c2410c', accent: '#fdba74' },
-            { id: 'arctic_ice', name: { he: 'פאדל קרח ארקטי', en: 'Arctic Ice', ru: 'Арктический Лёд', fr: 'Glace Arctique' }, price: 620, color: '#06b6d4', accent: '#e0f2fe' },
             { id: 'gold_bullion', name: { he: 'פאדל מטילי זהב', en: 'Gold Bullion', ru: 'Золотой Слиток', fr: 'Lingot d’Or' }, price: 850, color: '#eab308', accent: '#fef08a' },
-            { id: 'obsidian_stealth', name: { he: 'פאדל אובסידיאן שחור', en: 'Obsidian Stealth', ru: 'Обсидиан', fr: 'Obsidienne' }, price: 1100, color: '#334155', accent: '#34d399' },
-            { id: 'hyper_nova', name: { he: 'פאדל היפר נובה', en: 'Hyper Nova', ru: 'Гипер Нова', fr: 'Hyper Nova' }, price: 1400, color: '#ec4899', accent: '#38bdf8' },
-            { id: 'galaxy_edge', name: { he: 'פאדל קצה הגלקסיה', en: 'Galaxy Edge', ru: 'Край Галактики', fr: 'Bord Galactique' }, price: 1650, color: '#4338ca', accent: '#c084fc' },
-            { id: 'titanium_strike', name: { he: 'פאדל טיטניום סטרייק', en: 'Titanium Strike', ru: 'Титан Удар', fr: 'Frappe Titane' }, price: 1950, color: '#94a3b8', accent: '#facc15' },
-            { id: 'mythic_dragon', name: { he: 'פאדל דרקון מיתולוגי', en: 'Mythic Dragon', ru: 'Мифический Дракон', fr: 'Dragon Mythique' }, price: 2400, color: '#dc2626', accent: '#fde047' },
-            { id: 'flame_torch', name: { he: 'פאדל לפיד אש', en: 'Flame Torch', ru: 'Факел Пламени', fr: 'Torche Flamme' }, price: 2750, color: '#f97316', accent: '#fef08a' },
-            { id: 'silver_star', name: { he: 'פאדל כוכב כסף', en: 'Silver Star', ru: 'Серебряная Звезда', fr: 'Étoile Argent' }, price: 3200, color: '#e2e8f0', accent: '#38bdf8' }
+            { id: 'obsidian_stealth', name: { he: 'פאדל אובסידיאן שחור', en: 'Obsidian Stealth', ru: 'Обсидиан', fr: 'Obsidienne' }, price: 1100, color: '#334155', accent: '#34d399' }
         ];
 
         const stadiumsData = [
@@ -731,28 +1013,14 @@
             { id: 'emerald_pitch', name: { he: 'דשא אצטדיון ירוק', en: 'Emerald Pitch', ru: 'Изумрудное поле', fr: 'Pelouse Émeraude' }, price: 90, bgTop: '#052e16', bgMid: '#14532d', bgBot: '#052e16', line: 'rgba(255,255,255,0.14)', glow: 'rgba(52,211,153,0.12)' },
             { id: 'sunset_arena', name: { he: 'אצטדיון שקיעה', en: 'Sunset Arena', ru: 'Арена закат', fr: 'Arène Crépuscule' }, price: 180, bgTop: '#270b1b', bgMid: '#4c1d24', bgBot: '#1e1b4b', line: 'rgba(253,224,71,0.13)', glow: 'rgba(251,146,60,0.14)' },
             { id: 'cyber_dome', name: { he: 'כיפת ניאון סייבר', en: 'Cyber Neon Dome', ru: 'Неоновый купол', fr: 'Dôme Néon' }, price: 320, bgTop: '#041322', bgMid: '#0c2744', bgBot: '#130b2e', line: 'rgba(34,211,238,0.16)', glow: 'rgba(168,85,247,0.14)' },
-            { id: 'royal_derby', name: { he: 'דרבי זהב מלכותי', en: 'Royal Gold Derby', ru: 'Золотое дерби', fr: 'Derby Royal' }, price: 500, bgTop: '#1c1917', bgMid: '#292524', bgBot: '#0c0a09', line: 'rgba(251,191,36,0.16)', glow: 'rgba(250,204,21,0.14)' },
-            { id: 'glacier_bowl', name: { he: 'זירת קרח כחולה', en: 'Glacier Bowl', ru: 'Ледовая Арена', fr: 'Arène Glacier' }, price: 680, bgTop: '#082f49', bgMid: '#0c4a6e', bgBot: '#042f2e', line: 'rgba(186,230,253,0.16)', glow: 'rgba(56,189,248,0.18)' },
-            { id: 'volcano_pit', name: { he: 'מכתש להבות', en: 'Volcano Pit', ru: 'Вулканическая Арена', fr: 'Cratère Volcan' }, price: 950, bgTop: '#2a0808', bgMid: '#450a0a', bgBot: '#18181b', line: 'rgba(251,146,60,0.18)', glow: 'rgba(239,68,68,0.18)' },
-            { id: 'starlight_cup', name: { he: 'גביע אור כוכבים', en: 'Starlight Cup', ru: 'Кубок Звёзд', fr: 'Coupe Étoilée' }, price: 1300, bgTop: '#17153b', bgMid: '#2e236c', bgBot: '#09071a', line: 'rgba(192,132,252,0.18)', glow: 'rgba(250,204,21,0.18)' },
-            { id: 'purple_cosmos', name: { he: 'קוסמוס סגול', en: 'Purple Cosmos', ru: 'Фиолетовый Космос', fr: 'Cosmos Violet' }, price: 1650, bgTop: '#1e0b36', bgMid: '#3b0764', bgBot: '#090514', line: 'rgba(216,180,254,0.18)', glow: 'rgba(192,132,252,0.22)' }
+            { id: 'royal_derby', name: { he: 'דרבי זהב מלכותי', en: 'Royal Gold Derby', ru: 'Золотое дерби', fr: 'Derby Royal' }, price: 500, bgTop: '#1c1917', bgMid: '#292524', bgBot: '#0c0a09', line: 'rgba(251,191,36,0.16)', glow: 'rgba(250,204,21,0.14)' }
         ];
 
         const songsData = [
             { id: 'none', name: { he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique' }, price: 0, wave: 'sine', tempo: 500, notes: [] },
             { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40, wave: 'sine', tempo: 380, notes: [196, 261.6, 329.6, 392] },
             { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80, wave: 'sawtooth', tempo: 260, notes: [146.8, 174.6, 220, 293.7, 220, 174.6] },
-            { id: 'rock', name: { he: 'רוק אצטדיונים', en: 'Stadium Rock', ru: 'Стадионный рок', fr: 'Rock de stade' }, price: 120, wave: 'square', tempo: 240, notes: [164.8, 164.8, 196, 220, 246.9, 220] },
-            { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180, wave: 'sawtooth', tempo: 185, notes: [261.6, 311.1, 392, 523.2, 392, 311.1] },
-            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] },
-            { id: 'cyber_cup', name: { he: 'סייבר קאפ', en: 'Cyber Cup', ru: 'Кибер Кубок', fr: 'Cyber Coupe' }, price: 450, wave: 'square', tempo: 210, notes: [220, 277.2, 330, 440, 370, 330] },
-            { id: 'samba_pulse', name: { he: 'קצב סמבה מהיר', en: 'Samba Pulse', ru: 'Самба Импульс', fr: 'Pulse Samba' }, price: 520, wave: 'triangle', tempo: 195, notes: [246.9, 293.7, 329.6, 392, 440, 329.6] },
-            { id: 'hall_of_fame', name: { he: 'היכל התהילה', en: 'Hall of Fame', ru: 'Зал Славы', fr: 'Panthéon' }, price: 750, wave: 'triangle', tempo: 350, notes: [293.7, 369.9, 440, 587.3, 493.9, 440] },
-            { id: 'night_derby', name: { he: 'דרבי לילה', en: 'Night Derby', ru: 'Ночное Дерби', fr: 'Derby Nocturne' }, price: 900, wave: 'sawtooth', tempo: 225, notes: [130.8, 155.6, 196, 233.1, 261.6, 196] },
-            { id: 'champions_march', name: { he: 'מארש אלופים', en: 'Champions March', ru: 'Марш Чемпионов', fr: 'Marche Champions' }, price: 1100, wave: 'square', tempo: 270, notes: [196, 246.9, 293.7, 392, 329.6, 293.7] },
-            { id: 'victory_fanfare', name: { he: 'פאנפרת ניצחון', en: 'Victory Fanfare', ru: 'Фанфары Победы', fr: 'Fanfare Victoire' }, price: 1350, wave: 'triangle', tempo: 230, notes: [329.6, 392, 523.2, 659.2, 587.3, 523.2] },
-            { id: 'club_pulse', name: { he: 'פעימת מועדון', en: 'Club Pulse', ru: 'Клубный Пульс', fr: 'Pulse Club' }, price: 1550, wave: 'sawtooth', tempo: 175, notes: [220, 261.6, 329.6, 440, 392, 329.6] },
-            { id: 'champions_hymn', name: { he: 'המנון אלופים', en: 'Champions Hymn', ru: 'Гимн Чемпионов', fr: 'Hymne Champions' }, price: 1850, wave: 'triangle', tempo: 295, notes: [261.6, 392, 523.2, 659.2, 523.2, 392] }
+            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] }
         ];
 
         const vipItemsData = [
@@ -839,6 +1107,7 @@
             const myVal = document.getElementById('menu-my-best-val');
             const topLbl = document.getElementById('menu-top1-lbl');
             const topVal = document.getElementById('menu-top1-val');
+            const rankBadge = document.getElementById('menu-rank-badge');
             if (myLbl) myLbl.innerText = t.myBestLbl;
             if (myVal) myVal.innerText = String(personalBest);
             if (topLbl) topLbl.innerText = t.top1Lbl;
@@ -846,10 +1115,12 @@
                 const effectiveTop = Math.max(personalBest, topGlobalScore);
                 topVal.innerText = effectiveTop > 0 ? String(effectiveTop) : '--';
             }
+            if (rankBadge) rankBadge.innerText = `🏅 ${getPlayerRankInfo()}`;
         }
 
         function updateDailyBadge() {
             syncDailyAndStreak();
+            syncSeriesQuestProgress();
             const streakPill = document.getElementById('streak-pill');
             const dot = document.getElementById('daily-ready-dot');
             if (streakPill) {
@@ -857,8 +1128,11 @@
                 streakPill.innerText = `🔥 ${streakData.count || 1}`;
             }
             if (dot) {
-                const readyToClaim = dailyChallenge && !dailyChallenge.claimed && dailyChallenge.progress >= dailyChallenge.target;
-                dot.classList.toggle('hidden', !readyToClaim);
+                const dailyReady = dailyChallenge && !dailyChallenge.claimed && dailyChallenge.progress >= dailyChallenge.target;
+                const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
+                const sDef = getSeriesStepDefinition(sIdx);
+                const seriesReady = !seriesQuest.claimedSteps[sIdx] && seriesQuest.progress >= sDef.target;
+                dot.classList.toggle('hidden', !(dailyReady || seriesReady));
             }
         }
 
@@ -897,6 +1171,8 @@
             document.getElementById('pause-menu-btn').innerText = t.pauseMenuBtn;
             document.getElementById('go-retry-btn').innerText = t.retry;
             document.getElementById('go-share-btn').innerText = t.shareBtn;
+            const hotBadge = document.getElementById('hot-minute-badge');
+            if (hotBadge) hotBadge.innerText = t.hotMinuteLbl;
 
             const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
             const diffBtn = document.getElementById('diff-btn');
@@ -948,6 +1224,7 @@
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
             localStorage.setItem('juggle_active_run_vip', JSON.stringify(activeRunVip));
             localStorage.setItem('juggle_career_stats', JSON.stringify(careerStats));
+            localStorage.setItem('juggle_series_quest', JSON.stringify(seriesQuest));
             localStorage.setItem('juggle_daily_challenge', JSON.stringify(dailyChallenge));
             localStorage.setItem('juggle_streak_data', JSON.stringify(streakData));
             localStorage.setItem('juggle_total_purchases', String(totalPurchasesCount));
@@ -1030,7 +1307,7 @@
                 'juggle_coins', 'juggle_active_skin', 'juggle_active_paddle', 'juggle_active_stadium',
                 'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
                 'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_active_run_vip',
-                'juggle_career_stats', 'juggle_daily_challenge', 'juggle_streak_data',
+                'juggle_career_stats', 'juggle_series_quest', 'juggle_daily_challenge', 'juggle_streak_data',
                 'juggle_total_purchases', 'juggle_achievements', 'juggle_personal_best',
                 'juggle_top_global_score', 'juggle_best_diff', 'juggle_last_synced_score',
                 'juggle_diff_bests', 'juggle_recent_runs'
@@ -1393,6 +1670,7 @@
         let duelGoal = 5;
         let tournamentRound = 0;
         let tournamentWins = 0;
+        let currentBotStyle = 'technical';
 
         let combo = 0;
         let isFireMode = false;
@@ -1409,6 +1687,11 @@
         let movingObstacle = null;
         let extraSoloBall = null;
 
+        let bonusGate = null;
+        let gateCooldown = 480;
+        let hotMinuteEnd = 0;
+        let hotMinuteTriggered = false;
+
         let powerups = [];
         let powerupTimer = 0;
         let widePaddleEnd = 0;
@@ -1417,7 +1700,7 @@
         let activePointerId = null;
         let dragOffsetX = 0;
 
-        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
+        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, powerShot: false };
         let player = { x: 0, y: 0, baseWidth: 92, width: 92, height: 26, recoil: 0 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
@@ -1433,6 +1716,7 @@
         function isPracticeMode() { return gameMode === 'practice'; }
         function isDuelMode() { return gameMode === 'pvp' || gameMode === 'tournament'; }
         function isOverdriveActive() { return Date.now() < overdriveEnd; }
+        function isHotMinuteActive() { return isSoloMode() && Date.now() < hotMinuteEnd; }
 
         function getActiveStageModifier() {
             if (!isSoloMode() || currentLevel < 3) return 'none';
@@ -1457,6 +1741,16 @@
 
         function updateTimerBadge() {
             const timerEl = document.getElementById('timer-badge');
+            const hotEl = document.getElementById('hot-minute-badge');
+            if (hotEl) {
+                if (isHotMinuteActive()) {
+                    const hSec = Math.max(1, Math.ceil((hotMinuteEnd - Date.now()) / 1000));
+                    hotEl.innerText = `${translations[lang].hotMinuteLbl} ${hSec}s`;
+                    hotEl.classList.remove('hidden');
+                } else {
+                    hotEl.classList.add('hidden');
+                }
+            }
             if (!timerEl) return;
             if (!isSoloMode()) {
                 if (isPracticeMode()) {
@@ -1552,6 +1846,11 @@
             updateStageModifierUI();
             if (isSoloMode()) {
                 soloTimeRemaining = Math.min(90, soloTimeRemaining + 8);
+                if (!hotMinuteTriggered && currentLevel >= 4) {
+                    hotMinuteTriggered = true;
+                    hotMinuteEnd = Date.now() + 10000;
+                    addFloatingText(`🔥 ${t.hotMinuteLbl}!`, canvas.width / 2, canvas.height * 0.28, '#fb923c');
+                }
                 updateTimerBadge();
                 if (getActiveStageModifier() === 'double_targets') {
                     ensureTargetCount(2);
@@ -1620,13 +1919,14 @@
             }
             if (currentMission.progress >= currentMission.target) {
                 const magnetBonus = hasVip('coin_magnet') ? 2 : 0;
+                const hotBonus = isHotMinuteActive() ? 2 : 0;
                 score += 4;
-                coins += 4 + magnetBonus;
+                coins += 4 + magnetBonus + hotBonus;
                 soloTimeRemaining = Math.min(90, soloTimeRemaining + 5);
                 updateTimerBadge();
                 saveGameData();
                 handleScoreChanged();
-                addFloatingText(`⭐ +4 | +${4 + magnetBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
+                addFloatingText(`⭐ +4 | +${4 + magnetBonus + hotBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
                 pickNextMission();
             } else {
                 updateChargeAndMissionUI();
@@ -1653,7 +1953,9 @@
             }
 
             if (isDuelMode()) {
+                const styleName = (t.botStyles && t.botStyles[currentBotStyle]) || currentBotStyle;
                 mTextEl.innerText = t.duelMission
+                    .replace('{style}', styleName)
                     .replace('{p}', String(score))
                     .replace('{b}', String(opponentScore))
                     .replace('{goal}', String(duelGoal));
@@ -1699,6 +2001,19 @@
             while (bonusTargets.length < desiredCount) {
                 spawnSingleBonusTarget();
             }
+        }
+
+        function spawnBonusGate() {
+            if (!isSoloMode() || bonusGate) return;
+            const cfg = getDifficultyConfig();
+            bonusGate = {
+                x: canvas.width / 2 - 44,
+                y: canvas.height * 0.30,
+                width: 88,
+                height: 22,
+                vx: (Math.random() > 0.5 ? 1 : -1) * 1.35 * cfg.speedScale,
+                life: 480
+            };
         }
 
         function spawnGoldenTarget() {
@@ -1797,6 +2112,11 @@
                 score = 0;
             }
 
+            const styleOrder = ['technical', 'aggressive', 'guardian'];
+            currentBotStyle = mode === 'tournament'
+                ? styleOrder[Math.min(tournamentRound, 2)]
+                : styleOrder[Math.floor(Math.random() * styleOrder.length)];
+
             runJuggles = 0;
             runBestCombo = 0;
             soloTimeRemaining = 65 + (isSoloMode() && hasVip('extra_time_start') ? 12 : 0);
@@ -1809,8 +2129,13 @@
             levelUpBanner = null;
             combo = 0;
             isFireMode = false;
+            ball.powerShot = false;
             chargeMeter = hasVip('hot_start') ? 50 : 0;
             overdriveEnd = 0;
+            hotMinuteEnd = 0;
+            hotMinuteTriggered = false;
+            bonusGate = null;
+            gateCooldown = 520;
             powerups = [];
             particles = [];
             ballTrail = [];
@@ -1835,9 +2160,10 @@
                 const stageBanner = mode === 'tournament'
                     ? (t.tourneyStages[Math.min(tournamentRound, t.tourneyStages.length - 1)])
                     : t.pvpTitle;
+                const styleName = (t.botStyles && t.botStyles[currentBotStyle]) || currentBotStyle;
                 levelUpBanner = {
                     phrase: `⚔️ ${stageBanner}`,
-                    sub: `${t.duelMission.replace('{p}', '0').replace('{b}', '0').replace('{goal}', String(duelGoal))}`,
+                    sub: `${styleName} • ${t.duelMission.replace('{style}', styleName).replace('{p}', '0').replace('{b}', '0').replace('{goal}', String(duelGoal))}`,
                     alpha: 1.0,
                     scale: 0.9,
                     createdAt: Date.now(),
@@ -1885,6 +2211,7 @@
             ballTrail = [];
             floatingTexts = [];
             bonusTargets = [];
+            bonusGate = null;
             goldenTarget = null;
             hazardCard = null;
             movingObstacle = null;
@@ -1904,6 +2231,7 @@
             ball.vx = (Math.random() - 0.5) * 3.2 * cfg.speedScale;
             ball.vy = (serveTowardPlayer ? 4.8 : -5.4) * cfg.speedScale;
             ball.rot = 0;
+            ball.powerShot = false;
             ballTrail = [];
 
             player.x = canvas.width / 2 - player.width / 2;
@@ -1989,7 +2317,7 @@
         }
 
         function awardDuelPointToPlayer(reasonText = '🎯 +1') {
-            const pts = isOverdriveActive() ? 2 : 1;
+            const pts = (isOverdriveActive() || ball.powerShot) ? 2 : 1;
             score += pts;
             addFloatingText(`${reasonText} (+${pts})`, canvas.width / 2, canvas.height * 0.36, '#34d399');
             handleScoreChanged();
@@ -2040,19 +2368,24 @@
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.29;
             const isHeelSpin = distFromCenter >= player.width * 0.38;
+            const triggerPowerShot = isPrimaryBall && (isOverdriveActive() || combo >= 7) && isSweetSpot;
 
             runJuggles++;
             careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
             updateDailyProgress('juggles', 1, false);
 
             if (isPrimaryBall) {
-                player.recoil = isSweetSpot || isHeelSpin ? 10 : 6;
-                screenShake = Math.max(screenShake, isFireMode || isOverdriveActive() ? 6.0 : 2.2);
-                if (isFireMode || isOverdriveActive() || isHeelSpin) {
+                targetBall.powerShot = triggerPowerShot;
+                player.recoil = isSweetSpot || isHeelSpin || triggerPowerShot ? 11 : 6;
+                screenShake = Math.max(screenShake, triggerPowerShot ? 7.5 : (isFireMode || isOverdriveActive() ? 6.0 : 2.2));
+                if (triggerPowerShot || isFireMode || isOverdriveActive() || isHeelSpin) {
                     hitstopFrames = 1;
                 }
 
-                if (isHeelSpin) {
+                if (triggerPowerShot) {
+                    addFloatingText('💥 POWER SHOT!', targetBall.x, targetBall.y - 38, '#fb7185');
+                    playSound('firekick');
+                } else if (isHeelSpin) {
                     combo++;
                     runBestCombo = Math.max(runBestCombo, combo);
                     careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
@@ -2090,28 +2423,29 @@
 
             if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 75 : 40); } catch (e) {}
 
-            const pCount = isFireMode ? 22 : 14;
+            const pCount = (isFireMode || triggerPowerShot) ? 24 : 14;
             for (let i = 0; i < pCount; i++) {
                 particles.push({
                     x: targetBall.x, y: targetBall.y,
-                    vx: (Math.random() - 0.5) * (isFireMode ? 15 : 11),
-                    vy: (Math.random() - 0.5) * (isFireMode ? 15 : 11),
+                    vx: (Math.random() - 0.5) * (triggerPowerShot ? 17 : 12),
+                    vy: (Math.random() - 0.5) * (triggerPowerShot ? 17 : 12),
                     life: 1.0,
-                    color: isFireMode ? (Math.random() > 0.5 ? '#f97316' : '#ef4444') :
-                        (activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff')
+                    color: triggerPowerShot ? '#fb7185' : (isFireMode ? (Math.random() > 0.5 ? '#f97316' : '#ef4444') :
+                        (activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff'))
                 });
             }
 
             const escalation = getEscalationFactor();
             const offsetRatio = Math.max(-1, Math.min(1, (targetBall.x - paddleCenter) / (player.width / 2)));
-            const superShotBoost = (isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin ? 1.2 : 0);
+            const superShotBoost = triggerPowerShot ? 3.4 : ((isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin ? 1.2 : 0));
             const baseKick = cfg.kickPower + superShotBoost;
-            targetBall.vy = -baseKick * Math.min(1.16, escalation);
+            targetBall.vy = -baseKick * Math.min(1.18, escalation);
             targetBall.y = player.y - targetBall.radius - 1;
-            targetBall.vx = offsetRatio * (isHeelSpin ? 10.2 : 8.0) * cfg.speedScale * Math.min(1.18, escalation);
+            targetBall.vx = offsetRatio * (triggerPowerShot ? 11.5 : (isHeelSpin ? 10.2 : 8.0)) * cfg.speedScale * Math.min(1.18, escalation);
 
             if (isSoloMode() || isPracticeMode()) {
-                const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1);
+                const hotMult = isHotMinuteActive() ? 2 : 1;
+                const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1) * hotMult;
                 score += mult;
                 advanceMission('juggles', 1, false);
                 handleScoreChanged();
@@ -2207,15 +2541,50 @@
             const gravScale = slowFactor * cfg.gravityScale * Math.min(1.16, escalation);
 
             powerupTimer++;
-            if (powerupTimer > 450 && powerups.length < 2) {
+            if (powerupTimer > 540 && powerups.length < 1) {
                 spawnPowerup();
                 powerupTimer = 0;
             }
 
             if (isSoloMode()) {
                 hazardTimer++;
-                if (currentLevel >= 2 && !goldenTarget && hazardTimer % 420 === 0) spawnGoldenTarget();
-                if (currentLevel >= 2 && !hazardCard && hazardTimer % 560 === 280) spawnHazardCard();
+                if (currentLevel >= 2 && !goldenTarget && hazardTimer % 540 === 0) spawnGoldenTarget();
+                if (currentLevel >= 2 && !hazardCard && hazardTimer % 680 === 340) spawnHazardCard();
+                if (!bonusGate) {
+                    gateCooldown--;
+                    if (gateCooldown <= 0) {
+                        spawnBonusGate();
+                        gateCooldown = 780;
+                    }
+                } else {
+                    bonusGate.life--;
+                    bonusGate.x += bonusGate.vx * moveScale;
+                    if (bonusGate.x < 16) {
+                        bonusGate.x = 16;
+                        bonusGate.vx = Math.abs(bonusGate.vx);
+                    } else if (bonusGate.x + bonusGate.width > canvas.width - 16) {
+                        bonusGate.x = canvas.width - 16 - bonusGate.width;
+                        bonusGate.vx = -Math.abs(bonusGate.vx);
+                    }
+
+                    const withinX = ball.x > bonusGate.x && ball.x < bonusGate.x + bonusGate.width;
+                    const crossedGate = (ball.prevY >= bonusGate.y && ball.y <= bonusGate.y + bonusGate.height) ||
+                        (ball.prevY <= bonusGate.y + bonusGate.height && ball.y >= bonusGate.y);
+                    if (withinX && crossedGate) {
+                        playSound('powerup');
+                        const gPts = isHotMinuteActive() ? 5 : 3;
+                        const gCoins = isHotMinuteActive() ? 5 : 3;
+                        score += gPts;
+                        coins += gCoins;
+                        addCharge(25);
+                        saveGameData();
+                        handleScoreChanged();
+                        addFloatingText(`🥅 +${gPts} | +${gCoins} 🪙`, bonusGate.x + bonusGate.width / 2, bonusGate.y - 10, '#34d399');
+                        bonusGate = null;
+                    } else if (bonusGate && bonusGate.life <= 0) {
+                        bonusGate = null;
+                    }
+                }
             }
 
             if (isSoloMode() || isPracticeMode()) {
@@ -2242,9 +2611,10 @@
 
                     if (Math.hypot(ball.x - bt.x, ball.y - bt.y) < ball.radius + bt.radius) {
                         playSound('target');
-                        const targetPts = 3 * (isOverdriveActive() ? 2 : 1);
+                        const hotMult = isHotMinuteActive() ? 2 : 1;
+                        const targetPts = 3 * (isOverdriveActive() ? 2 : 1) * hotMult;
                         const auraCoins = hasVip('golden_aura') ? 2 : 0;
-                        const totalTargetCoins = 2 + auraCoins;
+                        const totalTargetCoins = (2 + auraCoins) * hotMult;
                         score += targetPts;
                         coins += totalTargetCoins;
                         if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + 2);
@@ -2355,26 +2725,26 @@
             ball.rot += ball.vx * 0.05;
 
             const speedMag = Math.hypot(ball.vx, ball.vy);
-            if (speedMag > 6.5 || isFireMode || isOverdriveActive()) {
+            if (speedMag > 6.5 || isFireMode || isOverdriveActive() || ball.powerShot) {
                 ballTrail.push({
                     x: ball.x,
                     y: ball.y,
-                    r: ball.radius * (isOverdriveActive() ? 0.85 : 0.68),
-                    alpha: isOverdriveActive() ? 0.55 : 0.35
+                    r: ball.radius * (ball.powerShot || isOverdriveActive() ? 0.92 : 0.68),
+                    alpha: ball.powerShot || isOverdriveActive() ? 0.65 : 0.35
                 });
-                if (ballTrail.length > (isOverdriveActive() ? 10 : 6)) {
+                if (ballTrail.length > (ball.powerShot || isOverdriveActive() ? 10 : 6)) {
                     ballTrail.shift();
                 }
             }
 
-            if (isFireMode || isOverdriveActive()) {
+            if (isFireMode || isOverdriveActive() || ball.powerShot) {
                 particles.push({
                     x: ball.x + (Math.random() - 0.5) * 12,
                     y: ball.y + (Math.random() - 0.5) * 12,
                     vx: (Math.random() - 0.5) * 2,
                     vy: (Math.random() - 0.5) * 2,
                     life: 0.7,
-                    color: isOverdriveActive() ? '#f43f5e' : (Math.random() > 0.4 ? '#f97316' : '#fbbf24')
+                    color: ball.powerShot ? '#fb7185' : (isOverdriveActive() ? '#f43f5e' : (Math.random() > 0.4 ? '#f97316' : '#fbbf24'))
                 });
             }
 
@@ -2440,9 +2810,12 @@
             if (isDuelMode()) {
                 bot.y = 35;
                 const roundFactor = gameMode === 'tournament' ? 1 + tournamentRound * 0.12 : 1;
+                const styleTrackMult = currentBotStyle === 'technical' ? 1.2 : currentBotStyle === 'guardian' ? 1.05 : 0.95;
+                const styleCapMult = currentBotStyle === 'aggressive' ? 1.22 : currentBotStyle === 'guardian' ? 0.92 : 1.05;
                 const desiredX = ball.x - bot.width / 2;
                 const deltaX = desiredX - bot.x;
-                const stepX = Math.max(-cfg.botSpeedCap * roundFactor, Math.min(cfg.botSpeedCap * roundFactor, deltaX * cfg.botTrack * roundFactor));
+                const cap = cfg.botSpeedCap * roundFactor * styleCapMult;
+                const stepX = Math.max(-cap, Math.min(cap, deltaX * cfg.botTrack * roundFactor * styleTrackMult));
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x + stepX));
 
                 if (ball.y - ball.radius <= bot.y + bot.height + 16 && ball.vy < 0) {
@@ -2459,9 +2832,11 @@
                         });
                     }
 
-                    const aimSpread = difficulty === 'hard' ? 1.1 : difficulty === 'easy' ? 1.55 : 1.35;
+                    const aimSpread = currentBotStyle === 'technical' ? 1.55 : (difficulty === 'hard' ? 1.1 : difficulty === 'easy' ? 1.55 : 1.35);
                     const botAngle = (Math.random() - 0.5) * aimSpread;
-                    ball.vy = cfg.kickPower * Math.min(1.15, 1 + tournamentRound * 0.04);
+                    const powerBoost = currentBotStyle === 'aggressive' ? 1.15 : 1.0;
+                    ball.powerShot = false;
+                    ball.vy = cfg.kickPower * powerBoost * Math.min(1.15, 1 + tournamentRound * 0.04);
                     ball.y = bot.y + bot.height + ball.radius + 1;
                     ball.vx = botAngle * 7.2 * cfg.speedScale;
                 }
@@ -2475,6 +2850,7 @@
                 if (isPracticeMode()) {
                     combo = 0;
                     isFireMode = false;
+                    ball.powerShot = false;
                     document.getElementById('combo-badge').classList.add('hidden');
                     resetPositions(false);
                     addFloatingText('🏋️ המשך אימון!', canvas.width / 2, canvas.height * 0.45, '#2dd4bf');
@@ -2499,6 +2875,22 @@
                 ctx.font = 'bold 13px Rubik, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText(windDir, canvas.width / 2, 34);
+                ctx.restore();
+            }
+
+            if (bonusGate) {
+                ctx.save();
+                ctx.strokeStyle = '#34d399';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([6, 4]);
+                ctx.strokeRect(bonusGate.x, bonusGate.y, bonusGate.width, bonusGate.height);
+                ctx.setLineDash([]);
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
+                ctx.fillRect(bonusGate.x, bonusGate.y, bonusGate.width, bonusGate.height);
+                ctx.fillStyle = '#a7f3d0';
+                ctx.font = 'bold 11px Rubik, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🥅 שער בונוס', bonusGate.x + bonusGate.width / 2, bonusGate.y - 5);
                 ctx.restore();
             }
 
@@ -2607,7 +2999,7 @@
             }
 
             const skinObj = skinsData.find(s => s.id === activeSkin) || skinsData[0];
-            const trailColor = isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color);
+            const trailColor = ball.powerShot ? '#fb7185' : (isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color));
             ballTrail.forEach((tr, idx) => {
                 const ratio = (idx + 1) / ballTrail.length;
                 ctx.save();
@@ -2678,9 +3070,9 @@
             ctx.save();
             ctx.translate(ball.x, ball.y);
             ctx.rotate(ball.rot);
-            ctx.fillStyle = isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color);
-            ctx.shadowColor = isOverdriveActive() ? '#fbbf24' : (isFireMode ? '#ef4444' : skinObj.color);
-            ctx.shadowBlur = (isOverdriveActive() || isFireMode) ? 28 : 18;
+            ctx.fillStyle = ball.powerShot ? '#fb7185' : (isOverdriveActive() ? '#f43f5e' : (isFireMode ? '#f97316' : skinObj.color));
+            ctx.shadowColor = ball.powerShot ? '#fb7185' : (isOverdriveActive() ? '#fbbf24' : (isFireMode ? '#ef4444' : skinObj.color));
+            ctx.shadowBlur = (ball.powerShot || isOverdriveActive() || isFireMode) ? 28 : 18;
             ctx.beginPath();
             ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
             ctx.fill();
@@ -3087,8 +3479,10 @@
 
         function renderDailyAndStats() {
             syncDailyAndStreak();
+            syncSeriesQuestProgress();
             const t = translations[lang];
             const dailyBox = document.getElementById('daily-challenge-box');
+            const seriesBox = document.getElementById('series-quest-box');
             const statsBox = document.getElementById('career-stats-box');
             const runsBox = document.getElementById('recent-runs-box');
 
@@ -3116,6 +3510,31 @@
                     }
                 </div>
             `;
+
+            if (seriesBox) {
+                const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
+                const sDef = getSeriesStepDefinition(sIdx);
+                const sProg = Math.min(sDef.target, Number(seriesQuest.progress) || 0);
+                const sClaimedAll = Boolean(seriesQuest.claimedSteps[2]);
+                const sClaimedCur = Boolean(seriesQuest.claimedSteps[sIdx]);
+                const sReady = !sClaimedCur && sProg >= sDef.target;
+                seriesBox.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-black text-cyan-300">${t.seriesTitle}</span>
+                        <span class="text-xs font-black text-amber-400">+${sDef.reward} 🪙</span>
+                    </div>
+                    <div class="text-xs text-white font-semibold mb-1.5">${sDef.label[lang] || sDef.label.en}</div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-300 font-bold">${sProg} / ${sDef.target}</span>
+                        ${sClaimedAll
+                            ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>`
+                            : sReady
+                                ? `<button type="button" onclick="claimSeriesStep()" class="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black px-3 py-1 rounded-xl cursor-pointer transition">${t.claim}</button>`
+                                : `<span class="text-slate-400">${t.inProgress}</span>`
+                        }
+                    </div>
+                `;
+            }
 
             statsBox.innerHTML = `
                 <div class="bg-slate-800/80 border border-slate-700/70 rounded-xl p-2 text-center">
