@@ -39,7 +39,10 @@
             <span id="streak-pill" onclick="openAchievementsModal()" class="hidden text-[11px] font-black text-orange-300 bg-orange-500/15 border border-orange-400/30 px-2 py-0.5 rounded-lg cursor-pointer">🔥 1</span>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex gap-1.5 sm:gap-2">
+            <button type="button" onclick="triggerInstallPrompt()" id="install-pwa-btn" class="px-2.5 py-1 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1 transition border border-emerald-500/40 cursor-pointer min-h-[34px]">
+                <i class="fa-solid fa-download"></i> <span id="install-btn-text">התקן</span>
+            </button>
             <button type="button" onclick="changeDifficulty()" id="diff-btn" class="px-3 py-1 bg-slate-700/85 hover:bg-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 cursor-pointer min-h-[34px]">
                 <i class="fa-solid fa-bolt text-amber-400"></i> <span id="diff-text">בינוני</span>
             </button>
@@ -51,10 +54,15 @@
 
     <!-- Main Menu -->
     <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-3 z-20 px-2">
-        <div class="text-center mb-4">
+        <div class="text-center mb-3">
             <span id="menu-badge" onclick="registerSecretAdminTap()" class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest cursor-pointer inline-block">מד טעינה + משימות מתחלפות ⚡🎯</span>
             <h1 id="main-game-title" onclick="registerSecretAdminTap()" class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text cursor-pointer">מלך ההקפצות</h1>
             <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">מלא את מד האנרגיה, השלם משימות ושבור שיאים!</p>
+            <div id="menu-records-strip" class="mt-2 inline-flex items-center gap-3 text-[11px] bg-slate-800/85 border border-slate-700/70 px-3 py-1 rounded-full text-slate-300">
+                <span><span id="menu-my-best-lbl">השיא שלי:</span> <strong id="menu-my-best-val" class="text-emerald-400">0</strong></span>
+                <span class="text-slate-600">|</span>
+                <span><span id="menu-top1-lbl">שיא ראשון:</span> <strong id="menu-top1-val" class="text-amber-400">--</strong></span>
+            </div>
         </div>
 
         <div class="w-full space-y-2.5">
@@ -116,7 +124,7 @@
                     שלב 1
                 </div>
                 <div id="timer-badge" class="text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-xl border border-amber-500/30">
-                    ⏱️ 60s
+                    ⏱️ 65s
                 </div>
                 <div id="combo-badge" class="hidden text-xs font-black text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-xl border border-orange-500/40 animate-bounce">
                     🔥 x2
@@ -278,7 +286,29 @@
     </div>
 
     <script>
-        // --- Cleanup Old Service Workers & Cache + Setup Standalone PWA Manifest ---
+        // --- Cleanup Old Service Workers & Cache + Setup Standalone PWA Manifest + Install Prompt ---
+        let deferredInstallPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+        });
+
+        async function triggerInstallPrompt() {
+            if (deferredInstallPrompt) {
+                try {
+                    deferredInstallPrompt.prompt();
+                    await deferredInstallPrompt.userChoice;
+                    deferredInstallPrompt = null;
+                    return;
+                } catch (e) {}
+            }
+            const msg = lang === 'he'
+                ? 'בכרום באנדרואיד: פתח את תפריט שלוש הנקודות (⋮) ובחר "התקן אפליקציה" או "הוסף למסך הבית".'
+                : 'In Chrome on Android: open menu (⋮) and tap "Install app" or "Add to Home screen".';
+            alert(msg);
+        }
+
         (async function initPWAAndCleanCache() {
             if ('serviceWorker' in navigator) {
                 try {
@@ -348,6 +378,7 @@
         }
         let playerName = localStorage.getItem('juggle_player_name') || '';
         let personalBest = parseInt(localStorage.getItem('juggle_personal_best')) || 0;
+        let topGlobalScore = parseInt(localStorage.getItem('juggle_top_global_score')) || 0;
         let bestDifficulty = localStorage.getItem('juggle_best_diff') || 'medium';
         let diffBests = JSON.parse(localStorage.getItem('juggle_diff_bests')) || { easy: 0, medium: 0, hard: 0 };
         let recentRuns = JSON.parse(localStorage.getItem('juggle_recent_runs')) || [];
@@ -366,6 +397,7 @@
         let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
 
         let activeRunVip = JSON.parse(localStorage.getItem('juggle_active_run_vip')) || [];
+        let redCardShieldUsed = false;
 
         let careerStats = JSON.parse(localStorage.getItem('juggle_career_stats')) || {
             totalJuggles: 0,
@@ -392,9 +424,9 @@
 
         function createDailyChallengeForDate(dateKey) {
             const templates = [
-                { kind: 'score', target: 35, reward: 60, label: { he: 'השג 35 נקודות בריצה אחת', en: 'Score 35 pts in a run', ru: 'Наберите 35 очков за игру', fr: 'Marquez 35 pts en 1 partie' } },
-                { kind: 'duel_win', target: 1, reward: 65, label: { he: 'נצח משחק 1 נגד 1 או טורניר', en: 'Win a 1v1 or Tournament match', ru: 'Выиграйте дуэль или турнир', fr: 'Gagnez un match 1v1 ou tournoi' } },
-                { kind: 'juggles', target: 45, reward: 55, label: { he: 'בצע 45 הקפצות סך הכל', en: 'Complete 45 total juggles', ru: 'Сделайте 45 чеканок', fr: 'Faites 45 jonglages au total' } }
+                { kind: 'score', target: 35, reward: 65, label: { he: 'השג 35 נקודות בריצה אחת', en: 'Score 35 pts in a run', ru: 'Наберите 35 очков за игру', fr: 'Marquez 35 pts en 1 partie' } },
+                { kind: 'duel_win', target: 1, reward: 70, label: { he: 'נצח משחק 1 נגד 1 או טורניר', en: 'Win a 1v1 or Tournament match', ru: 'Выиграйте дуэль или турнир', fr: 'Gagnez un match 1v1 ou tournoi' } },
+                { kind: 'juggles', target: 45, reward: 60, label: { he: 'בצע 45 הקפצות סך הכל', en: 'Complete 45 total juggles', ru: 'Сделайте 45 чеканок', fr: 'Faites 45 jonglages au total' } }
             ];
             let hash = 0;
             for (let i = 0; i < dateKey.length; i++) {
@@ -450,9 +482,9 @@
         }
 
         let achievements = JSON.parse(localStorage.getItem('juggle_achievements')) || {
-            juggles_50: { progress: 0, target: 50, reward: 30, claimed: false },
-            shop_2: { progress: 0, target: 2, reward: 50, claimed: false },
-            score_100: { progress: 0, target: 100, reward: 100, claimed: false }
+            juggles_50: { progress: 0, target: 50, reward: 35, claimed: false },
+            shop_2: { progress: 0, target: 2, reward: 55, claimed: false },
+            score_100: { progress: 0, target: 100, reward: 110, claimed: false }
         };
         let totalPurchasesCount = parseInt(localStorage.getItem('juggle_total_purchases')) || 0;
 
@@ -473,11 +505,13 @@
         const translations = {
             he: {
                 subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
+                myBestLbl: "השיא שלי:", top1Lbl: "שיא ראשון:",
                 soloTitle: "שבירת שיא (סולו)", soloDesc: "משימות מתחלפות, טיימר, מד טעינה ומצבי שלב",
                 practiceTitle: "אימון חופשי", practiceDesc: "תרגול קומבואים וטכניקות בלי שעון לחוץ",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול בוט חכם עד 5 נקודות",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
                 menu: "תפריט", tap: "גרור את השחקן והשג נקודות / משימות 🎯!",
+                installBtn: "התקן",
                 navAchieve: "הישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
                 lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
@@ -512,11 +546,13 @@
             },
             en: {
                 subtitle: "Fill the charge gauge, complete missions & beat records!",
+                myBestLbl: "My Best:", top1Lbl: "Top #1:",
                 soloTitle: "Solo High Score", soloDesc: "Dynamic missions, timer, charge & stage modes",
                 practiceTitle: "Free Practice", practiceDesc: "Train combos & techniques with no timer",
                 pvpTitle: "1v1 Match", pvpDesc: "Smart AI duel first to 5 points",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final",
                 menu: "Menu", tap: "Drag player & score / hit targets 🎯!",
+                installBtn: "Install",
                 navAchieve: "Achievements", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
                 lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
@@ -551,11 +587,13 @@
             },
             ru: {
                 subtitle: "Заряжайте шкалу, выполняйте задания и бейте рекорды!",
+                myBestLbl: "Рекорд:", top1Lbl: "Топ #1:",
                 soloTitle: "Рекорд (Соло)", soloDesc: "Задания, таймер, заряд и режимы уровней",
                 practiceTitle: "Свободная тренировка", practiceDesc: "Тренировка комбо и ударов без таймера",
                 pvpTitle: "Матч 1 на 1", pvpDesc: "Дуэль против умного бота до 5 очков",
                 tourneyTitle: "Турнир Чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал",
                 menu: "Меню", tap: "Ведите игрока и побеждайте 🎯!",
+                installBtn: "Скачать",
                 navAchieve: "Достижения", navLeaderboard: "Рейтинг", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
                 lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
@@ -590,11 +628,13 @@
             },
             fr: {
                 subtitle: "Chargez la jauge, validez des missions et battez des records !",
+                myBestLbl: "Mon record :", top1Lbl: "Top #1 :",
                 soloTitle: "Record Solo", soloDesc: "Missions, chrono, charge et modes niveau",
                 practiceTitle: "Entraînement Libre", practiceDesc: "Enchaînez les combos sans chrono",
                 pvpTitle: "Match 1v1", pvpDesc: "Duel contre l'IA en 5 points",
                 tourneyTitle: "Tournoi des Champions", tourneyDesc: "Quart, demi et finale",
                 menu: "Menu", tap: "Glissez et marquez 🎯 !",
+                installBtn: "Installer",
                 navAchieve: "Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
                 lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
@@ -637,32 +677,41 @@
             { id: 'rainbow', name: { he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel' }, price: 200, color: '#ec4899' },
             { id: 'steel', name: { he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier' }, price: 250, color: '#64748b' },
             { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' },
+            { id: 'mint_pulse', name: { he: 'פולס מנטה', en: 'Mint Pulse', ru: 'Мятный Импульс', fr: 'Pulse Menthe' }, price: 360, color: '#2dd4bf' },
             { id: 'emerald_pro', name: { he: 'אמרלד אלופים', en: 'Emerald Pro', ru: 'Изумруд Про', fr: 'Émeraude Pro' }, price: 420, color: '#10b981' },
             { id: 'crimson_lord', name: { he: 'ארגמן מלכותי', en: 'Crimson Royal', ru: 'Багровый', fr: 'Cramoisi Royal' }, price: 550, color: '#e11d48' },
+            { id: 'violet_storm', name: { he: 'סערת סגול', en: 'Violet Storm', ru: 'Фиолетовый Шторм', fr: 'Orage Violet' }, price: 680, color: '#8b5cf6' },
             { id: 'diamond', name: { he: 'יהלום קריסטל', en: 'Crystal Diamond', ru: 'Алмаз', fr: 'Diamant' }, price: 750, color: '#67e8f9' },
             { id: 'magma_king', name: { he: 'מלך הלבה', en: 'Magma King', ru: 'Король Лавы', fr: 'Roi de Magma' }, price: 1000, color: '#ea580c' },
+            { id: 'titanium_x', name: { he: 'טיטניום X', en: 'Titanium X', ru: 'Титан X', fr: 'Titane X' }, price: 1250, color: '#cbd5e1' },
             { id: 'phantom_void', name: { he: 'צללים נדירים', en: 'Phantom Void', ru: 'Тень Бездны', fr: 'Ombre Royale' }, price: 1500, color: '#a855f7' },
             { id: 'solar_flare', name: { he: 'התפרצות שמש', en: 'Solar Flare', ru: 'Солнечный', fr: 'Éruption Solaire' }, price: 1800, color: '#facc15' },
-            { id: 'mint_pulse', name: { he: 'פולס מנטה', en: 'Mint Pulse', ru: 'Мятный Импульс', fr: 'Pulse Menthe' }, price: 360, color: '#2dd4bf' },
-            { id: 'violet_storm', name: { he: 'סערת סגול', en: 'Violet Storm', ru: 'Фиолетовый Шторм', fr: 'Orage Violet' }, price: 680, color: '#8b5cf6' },
-            { id: 'titanium_x', name: { he: 'טיטניום X', en: 'Titanium X', ru: 'Титан X', fr: 'Titane X' }, price: 1250, color: '#cbd5e1' },
-            { id: 'aurora_star', name: { he: 'כוכב זוהר', en: 'Aurora Star', ru: 'Северная Звезда', fr: 'Étoile Aurore' }, price: 2100, color: '#4ade80' }
+            { id: 'aurora_star', name: { he: 'כוכב זוהר', en: 'Aurora Star', ru: 'Северная Звезда', fr: 'Étoile Aurore' }, price: 2100, color: '#4ade80' },
+            { id: 'cyber_plasma', name: { he: 'פלאזמה סייבר', en: 'Cyber Plasma', ru: 'Кибер Плазма', fr: 'Plasma Cyber' }, price: 2450, color: '#f43f5e' },
+            { id: 'zenith_crown', name: { he: 'כדור הזניט', en: 'Zenith Orb', ru: 'Сфера Зенита', fr: 'Orbe Zénith' }, price: 2900, color: '#38bdf8' },
+            { id: 'cyber_ice', name: { he: 'קרח סייבר', en: 'Cyber Frost', ru: 'Кибер Лёд', fr: 'Givre Cyber' }, price: 3250, color: '#22d3ee' },
+            { id: 'platinum_gold', name: { he: 'זהב פלטינה', en: 'Platinum Gold', ru: 'Платиновое Золото', fr: 'Or Platine' }, price: 3650, color: '#fde047' },
+            { id: 'nebula_core', name: { he: 'ליבת נבולה', en: 'Nebula Core', ru: 'Ядро Туманности', fr: 'Cœur Nébuleuse' }, price: 4100, color: '#d946ef' }
         ];
 
         const paddlesData = [
             { id: 'emerald_classic', name: { he: 'פאדל ירוק קלאסי', en: 'Classic Emerald', ru: 'Изумрудный', fr: 'Émeraude Classique' }, price: 0, color: '#10b981', accent: '#fbbf24' },
             { id: 'cobalt_pro', name: { he: 'פאדל כחול קובלט', en: 'Cobalt Pro', ru: 'Кобальт Про', fr: 'Cobalt Pro' }, price: 65, color: '#2563eb', accent: '#38bdf8' },
             { id: 'sunset_blaze', name: { he: 'פאדל להבת שקיעה', en: 'Sunset Blaze', ru: 'Закат', fr: 'Lueur Couchant' }, price: 130, color: '#ea580c', accent: '#fde047' },
+            { id: 'lime_turbo', name: { he: 'פאדל ליים טורבו', en: 'Lime Turbo', ru: 'Лайм Турбо', fr: 'Citron Turbo' }, price: 170, color: '#65a30d', accent: '#ecfccb' },
             { id: 'cyber_mint', name: { he: 'פאדל סייבר מנטה', en: 'Cyber Mint', ru: 'Кибер Мята', fr: 'Menthe Cyber' }, price: 210, color: '#14b8a6', accent: '#f472b6' },
             { id: 'royal_amethyst', name: { he: 'פאדל אמטיסט מלכותי', en: 'Royal Amethyst', ru: 'Аметист', fr: 'Améthyste Royal' }, price: 310, color: '#9333ea', accent: '#facc15' },
             { id: 'crimson_striker', name: { he: 'פאדל חלוץ אדום', en: 'Crimson Striker', ru: 'Багровый Удар', fr: 'Attaquant Rouge' }, price: 450, color: '#e11d48', accent: '#ffffff' },
+            { id: 'copper_vortex', name: { he: 'פאדל נחושת וורטקס', en: 'Copper Vortex', ru: 'Медный Вихрь', fr: 'Vortex Cuivre' }, price: 540, color: '#c2410c', accent: '#fdba74' },
             { id: 'arctic_ice', name: { he: 'פאדל קרח ארקטי', en: 'Arctic Ice', ru: 'Арктический Лёд', fr: 'Glace Arctique' }, price: 620, color: '#06b6d4', accent: '#e0f2fe' },
             { id: 'gold_bullion', name: { he: 'פאדל מטילי זהב', en: 'Gold Bullion', ru: 'Золотой Слиток', fr: 'Lingot d’Or' }, price: 850, color: '#eab308', accent: '#fef08a' },
             { id: 'obsidian_stealth', name: { he: 'פאדל אובסידיאן שחור', en: 'Obsidian Stealth', ru: 'Обсидиан', fr: 'Obsidienne' }, price: 1100, color: '#334155', accent: '#34d399' },
             { id: 'hyper_nova', name: { he: 'פאדל היפר נובה', en: 'Hyper Nova', ru: 'Гипер Нова', fr: 'Hyper Nova' }, price: 1400, color: '#ec4899', accent: '#38bdf8' },
-            { id: 'lime_turbo', name: { he: 'פאדל ליים טורבו', en: 'Lime Turbo', ru: 'Лайм Турбо', fr: 'Citron Turbo' }, price: 170, color: '#65a30d', accent: '#ecfccb' },
-            { id: 'copper_vortex', name: { he: 'פאדל נחושת וורטקס', en: 'Copper Vortex', ru: 'Медный Вихрь', fr: 'Vortex Cuivre' }, price: 540, color: '#c2410c', accent: '#fdba74' },
-            { id: 'galaxy_edge', name: { he: 'פאדל קצה הגלקסיה', en: 'Galaxy Edge', ru: 'Край Галактики', fr: 'Bord Galactique' }, price: 1650, color: '#4338ca', accent: '#c084fc' }
+            { id: 'galaxy_edge', name: { he: 'פאדל קצה הגלקסיה', en: 'Galaxy Edge', ru: 'Край Галактики', fr: 'Bord Galactique' }, price: 1650, color: '#4338ca', accent: '#c084fc' },
+            { id: 'titanium_strike', name: { he: 'פאדל טיטניום סטרייק', en: 'Titanium Strike', ru: 'Титан Удар', fr: 'Frappe Titane' }, price: 1950, color: '#94a3b8', accent: '#facc15' },
+            { id: 'mythic_dragon', name: { he: 'פאדל דרקון מיתולוגי', en: 'Mythic Dragon', ru: 'Мифический Дракон', fr: 'Dragon Mythique' }, price: 2400, color: '#dc2626', accent: '#fde047' },
+            { id: 'flame_torch', name: { he: 'פאדל לפיד אש', en: 'Flame Torch', ru: 'Факел Пламени', fr: 'Torche Flamme' }, price: 2750, color: '#f97316', accent: '#fef08a' },
+            { id: 'silver_star', name: { he: 'פאדל כוכב כסף', en: 'Silver Star', ru: 'Серебряная Звезда', fr: 'Étoile Argent' }, price: 3200, color: '#e2e8f0', accent: '#38bdf8' }
         ];
 
         const stadiumsData = [
@@ -672,7 +721,9 @@
             { id: 'cyber_dome', name: { he: 'כיפת ניאון סייבר', en: 'Cyber Neon Dome', ru: 'Неоновый купол', fr: 'Dôme Néon' }, price: 320, bgTop: '#041322', bgMid: '#0c2744', bgBot: '#130b2e', line: 'rgba(34,211,238,0.16)', glow: 'rgba(168,85,247,0.14)' },
             { id: 'royal_derby', name: { he: 'דרבי זהב מלכותי', en: 'Royal Gold Derby', ru: 'Золотое дерби', fr: 'Derby Royal' }, price: 500, bgTop: '#1c1917', bgMid: '#292524', bgBot: '#0c0a09', line: 'rgba(251,191,36,0.16)', glow: 'rgba(250,204,21,0.14)' },
             { id: 'glacier_bowl', name: { he: 'זירת קרח כחולה', en: 'Glacier Bowl', ru: 'Ледовая Арена', fr: 'Arène Glacier' }, price: 680, bgTop: '#082f49', bgMid: '#0c4a6e', bgBot: '#042f2e', line: 'rgba(186,230,253,0.16)', glow: 'rgba(56,189,248,0.18)' },
-            { id: 'volcano_pit', name: { he: 'מכתש להבות', en: 'Volcano Pit', ru: 'Вулканическая Арена', fr: 'Cratère Volcan' }, price: 950, bgTop: '#2a0808', bgMid: '#450a0a', bgBot: '#18181b', line: 'rgba(251,146,60,0.18)', glow: 'rgba(239,68,68,0.18)' }
+            { id: 'volcano_pit', name: { he: 'מכתש להבות', en: 'Volcano Pit', ru: 'Вулканическая Арена', fr: 'Cratère Volcan' }, price: 950, bgTop: '#2a0808', bgMid: '#450a0a', bgBot: '#18181b', line: 'rgba(251,146,60,0.18)', glow: 'rgba(239,68,68,0.18)' },
+            { id: 'starlight_cup', name: { he: 'גביע אור כוכבים', en: 'Starlight Cup', ru: 'Кубок Звёзд', fr: 'Coupe Étoilée' }, price: 1300, bgTop: '#17153b', bgMid: '#2e236c', bgBot: '#09071a', line: 'rgba(192,132,252,0.18)', glow: 'rgba(250,204,21,0.18)' },
+            { id: 'purple_cosmos', name: { he: 'קוסמוס סגול', en: 'Purple Cosmos', ru: 'Фиолетовый Космос', fr: 'Cosmos Violet' }, price: 1650, bgTop: '#1e0b36', bgMid: '#3b0764', bgBot: '#090514', line: 'rgba(216,180,254,0.18)', glow: 'rgba(192,132,252,0.22)' }
         ];
 
         const songsData = [
@@ -683,10 +734,13 @@
             { id: 'electro', name: { he: 'אלקטרו דאנס', en: 'Electro Dance', ru: 'Электро', fr: 'Électro Danse' }, price: 180, wave: 'sawtooth', tempo: 185, notes: [261.6, 311.1, 392, 523.2, 392, 311.1] },
             { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] },
             { id: 'cyber_cup', name: { he: 'סייבר קאפ', en: 'Cyber Cup', ru: 'Кибер Кубок', fr: 'Cyber Coupe' }, price: 450, wave: 'square', tempo: 210, notes: [220, 277.2, 330, 440, 370, 330] },
+            { id: 'samba_pulse', name: { he: 'קצב סמבה מהיר', en: 'Samba Pulse', ru: 'Самба Импульс', fr: 'Pulse Samba' }, price: 520, wave: 'triangle', tempo: 195, notes: [246.9, 293.7, 329.6, 392, 440, 329.6] },
             { id: 'hall_of_fame', name: { he: 'היכל התהילה', en: 'Hall of Fame', ru: 'Зал Славы', fr: 'Panthéon' }, price: 750, wave: 'triangle', tempo: 350, notes: [293.7, 369.9, 440, 587.3, 493.9, 440] },
             { id: 'night_derby', name: { he: 'דרבי לילה', en: 'Night Derby', ru: 'Ночное Дерби', fr: 'Derby Nocturne' }, price: 900, wave: 'sawtooth', tempo: 225, notes: [130.8, 155.6, 196, 233.1, 261.6, 196] },
-            { id: 'samba_pulse', name: { he: 'קצב סמבה מהיר', en: 'Samba Pulse', ru: 'Самба Импульс', fr: 'Pulse Samba' }, price: 520, wave: 'triangle', tempo: 195, notes: [246.9, 293.7, 329.6, 392, 440, 329.6] },
-            { id: 'champions_march', name: { he: 'מארש אלופים', en: 'Champions March', ru: 'Марш Чемпионов', fr: 'Marche Champions' }, price: 1100, wave: 'square', tempo: 270, notes: [196, 246.9, 293.7, 392, 329.6, 293.7] }
+            { id: 'champions_march', name: { he: 'מארש אלופים', en: 'Champions March', ru: 'Марш Чемпионов', fr: 'Marche Champions' }, price: 1100, wave: 'square', tempo: 270, notes: [196, 246.9, 293.7, 392, 329.6, 293.7] },
+            { id: 'victory_fanfare', name: { he: 'פאנפרת ניצחון', en: 'Victory Fanfare', ru: 'Фанфары Победы', fr: 'Fanfare Victoire' }, price: 1350, wave: 'triangle', tempo: 230, notes: [329.6, 392, 523.2, 659.2, 587.3, 523.2] },
+            { id: 'club_pulse', name: { he: 'פעימת מועדון', en: 'Club Pulse', ru: 'Клубный Пульс', fr: 'Pulse Club' }, price: 1550, wave: 'sawtooth', tempo: 175, notes: [220, 261.6, 329.6, 440, 392, 329.6] },
+            { id: 'champions_hymn', name: { he: 'המנון אלופים', en: 'Champions Hymn', ru: 'Гимн Чемпионов', fr: 'Hymne Champions' }, price: 1850, wave: 'triangle', tempo: 295, notes: [261.6, 392, 523.2, 659.2, 523.2, 392] }
         ];
 
         const vipItemsData = [
@@ -712,11 +766,32 @@
                 icon: '🛡️'
             },
             {
+                id: 'extra_time_start',
+                name: { he: 'תוספת זמן פתיחה (+12s)', en: 'Bonus Start Time (+12s)', ru: 'Бонус времени (+12с)', fr: 'Temps Bonus (+12s)' },
+                desc: { he: 'מוסיף 12 שניות לפתיחת ריצת סולו (למשחק אחד)', en: 'Adds 12s to Solo timer (1 game only)', ru: 'На 1 игру: +12с в соло', fr: '1 partie : +12s en solo' },
+                price: 220,
+                icon: '⏳'
+            },
+            {
                 id: 'overdrive_boost',
                 name: { he: 'טעינה מהירה לאוברדרייב', en: 'Fast Overdrive Charge', ru: 'Быстрый заряд', fr: 'Charge Rapide' },
                 desc: { he: 'ממלא מהר יותר את מד הטעינה (למשחק אחד)', en: 'Faster charge gain on kicks (1 game only)', ru: 'На 1 игру: быстрый заряд', fr: '1 partie : charge plus rapide' },
                 price: 280,
                 icon: '🚀'
+            },
+            {
+                id: 'red_card_shield',
+                name: { he: 'הגנה מפני כרטיס אדום', en: 'Red Card Shield', ru: 'Щит от красной карточки', fr: 'Bouclier Carton Rouge' },
+                desc: { he: 'חוסם פעם אחת פגיעה של כרטיס אדום בריצה (למשחק אחד)', en: 'Blocks 1 red card hit per run (1 game only)', ru: 'На 1 игру: защита от красной карты', fr: '1 partie : bloque 1 carton rouge' },
+                price: 295,
+                icon: '🛑'
+            },
+            {
+                id: 'heel_master',
+                name: { he: 'אמן נגיעות עקב (x2)', en: 'Heel Spin Master (x2)', ru: 'Мастер кручёных (x2)', fr: 'Maître Brossé (x2)' },
+                desc: { he: 'כפל נקודות וטעינה על נגיעות עקב חדות (למשחק אחד)', en: 'Double bonus on heel spin kicks (1 game only)', ru: 'На 1 игру: x2 за кручёные удары', fr: '1 partie : x2 sur effets brossés' },
+                price: 310,
+                icon: '🌀'
             },
             {
                 id: 'double_coins_run',
@@ -726,31 +801,39 @@
                 icon: '💎'
             },
             {
+                id: 'golden_aura',
+                name: { he: 'הילת זהב ובונוס מטרה (+2 🪙)', en: 'Golden Target Aura (+2 🪙)', ru: 'Аура целей (+2 🪙)', fr: 'Aura Cibles (+2 🪙)' },
+                desc: { he: '+2 מטבעות נוספים בכל פגיעה במטרה (למשחק אחד)', en: '+2 extra coins on every target hit (1 game only)', ru: 'На 1 игру: +2 монеты за цель', fr: '1 partie : +2 pièces par cible' },
+                price: 390,
+                icon: '✨'
+            },
+            {
                 id: 'royal_crown',
                 name: { he: 'כתר המלך היוקרתי', en: 'Royal Crown Prestige', ru: 'Корона Престижа', fr: 'Couronne Royale' },
                 desc: { he: 'כתר זהב מעל הפאדל במשחק הקרוב (למשחק אחד)', en: 'Golden crown above paddle for next game (1 game only)', ru: 'На 1 игру: корона над ракеткой', fr: '1 partie : couronne sur raquette' },
                 price: 450,
                 icon: '👑'
-            },
-            {
-                id: 'extra_time_start',
-                name: { he: 'תוספת זמן פתיחה (+12s)', en: 'Bonus Start Time (+12s)', ru: 'Бонус времени (+12с)', fr: 'Temps Bonus (+12s)' },
-                desc: { he: 'מוסיף 12 שניות לפתיחת ריצת סולו (למשחק אחד)', en: 'Adds 12s to Solo timer (1 game only)', ru: 'На 1 игру: +12с в соло', fr: '1 partie : +12s en solo' },
-                price: 220,
-                icon: '⏳'
-            },
-            {
-                id: 'heel_master',
-                name: { he: 'אמן נגיעות עקב (x2)', en: 'Heel Spin Master (x2)', ru: 'Мастер кручёных (x2)', fr: 'Maître Brossé (x2)' },
-                desc: { he: 'כפל נקודות וטעינה על נגיעות עקב חדות (למשחק אחד)', en: 'Double bonus on heel spin kicks (1 game only)', ru: 'На 1 игру: x2 за кручёные удары', fr: '1 partie : x2 sur effets brossés' },
-                price: 310,
-                icon: '🌀'
             }
         ];
 
         function persistPrefs() {
             localStorage.setItem('juggle_difficulty', difficulty);
             localStorage.setItem('juggle_lang', lang);
+        }
+
+        function updateMenuRecordsStrip() {
+            const t = translations[lang];
+            const myLbl = document.getElementById('menu-my-best-lbl');
+            const myVal = document.getElementById('menu-my-best-val');
+            const topLbl = document.getElementById('menu-top1-lbl');
+            const topVal = document.getElementById('menu-top1-val');
+            if (myLbl) myLbl.innerText = t.myBestLbl;
+            if (myVal) myVal.innerText = String(personalBest);
+            if (topLbl) topLbl.innerText = t.top1Lbl;
+            if (topVal) {
+                const effectiveTop = Math.max(personalBest, topGlobalScore);
+                topVal.innerText = effectiveTop > 0 ? String(effectiveTop) : '--';
+            }
         }
 
         function updateDailyBadge() {
@@ -782,6 +865,7 @@
             document.getElementById('btn-tourney-desc').innerText = t.tourneyDesc;
             document.getElementById('lbl-menu').innerText = t.menu;
             document.getElementById('tap-instruction').innerText = t.tap;
+            document.getElementById('install-btn-text').innerText = t.installBtn;
             document.getElementById('nav-achieve').innerText = t.navAchieve;
             document.getElementById('nav-leaderboard').innerText = t.navLeaderboard;
             document.getElementById('nav-shop').innerText = t.navShop;
@@ -812,6 +896,7 @@
             document.getElementById('diff-text').innerText = diffNames[difficulty];
             document.getElementById('lang-text').innerText = { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang];
             document.getElementById('header-coins').innerText = coins;
+            updateMenuRecordsStrip();
             updateDailyBadge();
             updateLevelBadge();
             updateTimerBadge();
@@ -854,11 +939,13 @@
             localStorage.setItem('juggle_total_purchases', String(totalPurchasesCount));
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
             localStorage.setItem('juggle_personal_best', String(personalBest));
+            localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
             localStorage.setItem('juggle_best_diff', bestDifficulty);
             localStorage.setItem('juggle_diff_bests', JSON.stringify(diffBests));
             localStorage.setItem('juggle_recent_runs', JSON.stringify(recentRuns.slice(0, 8)));
             persistPrefs();
             document.getElementById('header-coins').innerText = coins;
+            updateMenuRecordsStrip();
             updateDailyBadge();
         }
 
@@ -912,6 +999,7 @@
 
         function adminGrantAllVip() {
             activeRunVip = vipItemsData.map(v => v.id);
+            redCardShieldUsed = false;
             saveGameData();
             document.getElementById('admin-feedback').innerText = 'כל פריטי היוקרה הופעלו לריצה הקרובה 👑';
         }
@@ -931,7 +1019,8 @@
                 'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_active_run_vip',
                 'juggle_career_stats', 'juggle_daily_challenge', 'juggle_streak_data',
                 'juggle_total_purchases', 'juggle_achievements', 'juggle_personal_best',
-                'juggle_best_diff', 'juggle_last_synced_score', 'juggle_diff_bests', 'juggle_recent_runs'
+                'juggle_top_global_score', 'juggle_best_diff', 'juggle_last_synced_score',
+                'juggle_diff_bests', 'juggle_recent_runs'
             ];
             keysToClear.forEach(k => localStorage.removeItem(k));
             location.reload();
@@ -1054,6 +1143,11 @@
                 }));
 
                 players.sort((a, b) => b.score - a.score);
+                if (players.length > 0) {
+                    topGlobalScore = Math.max(topGlobalScore, players[0].score);
+                    localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
+                    updateMenuRecordsStrip();
+                }
 
                 const myIndex = players.findIndex(p => p.id === playerId);
                 document.getElementById('lb-your-rank').innerText = myIndex >= 0
@@ -1125,7 +1219,7 @@
 
         // --- Audio Engine with Unique Track per Song & Volume Levels ---
         let audioCtx = null;
-        let audioLevel = 1.0; // 1.0 -> 0.45 -> 0.0
+        let audioLevel = 1.0;
         let bgmInterval = null;
 
         function initAudio() {
@@ -1153,16 +1247,16 @@
 
                 if (type === 'kick') {
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(200, now);
-                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.12);
+                    osc.frequency.setValueAtTime(210, now);
+                    osc.frequency.exponentialRampToValueAtTime(55, now + 0.12);
                     gain.gain.setValueAtTime(0.6 * audioLevel, now);
                     gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
                     osc.start(now);
                     osc.stop(now + 0.12);
                 } else if (type === 'spin') {
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(340, now);
-                    osc.frequency.exponentialRampToValueAtTime(760, now + 0.14);
+                    osc.frequency.setValueAtTime(350, now);
+                    osc.frequency.exponentialRampToValueAtTime(780, now + 0.14);
                     gain.gain.setValueAtTime(0.5 * audioLevel, now);
                     gain.gain.linearRampToValueAtTime(0.01, now + 0.14);
                     osc.start(now);
@@ -1265,15 +1359,15 @@
         // --- Canvas & Game Engine ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let gameMode = 'solo'; // 'solo' | 'practice' | 'pvp' | 'tournament'
+        let gameMode = 'solo';
         let gameRunning = false;
         let isPaused = false;
         let score = 0;
         let runJuggles = 0;
         let runBestCombo = 0;
-        let soloTimeRemaining = 60;
+        let soloTimeRemaining = 65;
         let lastFrameTime = 0;
-        let endReason = 'fall'; // 'fall' | 'timeup' | 'duel_win' | 'duel_lose' | 'tourney_next' | 'tourney_win'
+        let endReason = 'fall';
 
         let currentLevel = 1;
         let levelUpBanner = null;
@@ -1294,7 +1388,7 @@
 
         let chargeMeter = 0;
         let overdriveEnd = 0;
-        let currentMission = { kind: 'juggles', target: 18, progress: 0 };
+        let currentMission = { kind: 'juggles', target: 16, progress: 0 };
 
         let bonusTargets = [];
         let targetCooldown = 0;
@@ -1309,8 +1403,11 @@
         let widePaddleEnd = 0;
         let slowMoEnd = 0;
 
-        let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
-        let player = { x: 0, y: 0, baseWidth: 90, width: 90, height: 26, recoil: 0 };
+        let activePointerId = null;
+        let dragOffsetX = 0;
+
+        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0 };
+        let player = { x: 0, y: 0, baseWidth: 92, width: 92, height: 26, recoil: 0 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
         function isSoloMode() {
@@ -1377,6 +1474,7 @@
             const overlay = document.getElementById('pause-overlay');
             const icon = document.getElementById('pause-icon');
             if (isPaused) {
+                activePointerId = null;
                 overlay.classList.remove('hidden');
                 if (icon) icon.className = 'fa-solid fa-play';
             } else {
@@ -1391,42 +1489,42 @@
             if (difficulty === 'easy') {
                 return {
                     speedScale: 0.82,
-                    gravityScale: 0.84,
-                    kickPower: 19.5,
-                    botTrack: 0.085,
-                    botSpeedCap: 4.2,
-                    widthBonus: 12
+                    gravityScale: 0.80,
+                    kickPower: 18.8,
+                    botTrack: 0.09,
+                    botSpeedCap: 4.3,
+                    widthBonus: 16
                 };
             }
             if (difficulty === 'hard') {
                 return {
-                    speedScale: 1.24,
-                    gravityScale: 1.2,
-                    kickPower: 23.0,
-                    botTrack: 0.24,
-                    botSpeedCap: 9.2,
-                    widthBonus: -10
+                    speedScale: 1.15,
+                    gravityScale: 1.11,
+                    kickPower: 21.4,
+                    botTrack: 0.21,
+                    botSpeedCap: 8.3,
+                    widthBonus: -6
                 };
             }
             return {
-                speedScale: 1.0,
-                gravityScale: 1.0,
-                kickPower: 21.0,
+                speedScale: 0.95,
+                gravityScale: 0.91,
+                kickPower: 19.8,
                 botTrack: 0.145,
-                botSpeedCap: 6.4,
-                widthBonus: 0
+                botSpeedCap: 6.1,
+                widthBonus: 4
             };
         }
 
         function getBasePlayerWidth() {
             const cfg = getDifficultyConfig();
-            const vipBonus = hasVip('wide_master') ? 16 : 0;
-            return Math.max(66, 90 + cfg.widthBonus + vipBonus);
+            const vipBonus = hasVip('wide_master') ? 18 : 0;
+            return Math.max(72, 92 + cfg.widthBonus + vipBonus);
         }
 
         function getEscalationFactor() {
             if (isPracticeMode()) return 1.0;
-            return Math.min(1.45, 1 + (currentLevel - 1) * 0.06);
+            return Math.min(1.30, 1 + (currentLevel - 1) * 0.04);
         }
 
         function updateLevelBadge() {
@@ -1461,7 +1559,7 @@
                 alpha: 1.0,
                 scale: 0.85,
                 createdAt: Date.now(),
-                duration: 2100
+                duration: 2000
             };
             playSound('levelup');
             updateStageModifierUI();
@@ -1500,11 +1598,11 @@
                 updateChargeAndMissionUI();
                 return;
             }
-            const levelScale = Math.min(1.6, 1 + (currentLevel - 1) * 0.12);
+            const levelScale = Math.min(1.5, 1 + (currentLevel - 1) * 0.1);
             const pool = [
-                { kind: 'juggles', target: Math.round((16 + Math.floor(Math.random() * 10)) * levelScale), progress: 0 },
-                { kind: 'targets', target: Math.max(3, Math.round((3 + Math.floor(Math.random() * 2)) * Math.min(1.4, levelScale))), progress: 0 },
-                { kind: 'combo', target: Math.min(9, 5 + Math.floor(Math.random() * 3) + Math.floor((currentLevel - 1) / 2)), progress: Math.min(combo, 5) }
+                { kind: 'juggles', target: Math.round((14 + Math.floor(Math.random() * 8)) * levelScale), progress: 0 },
+                { kind: 'targets', target: Math.max(3, Math.round((3 + Math.floor(Math.random() * 2)) * Math.min(1.35, levelScale))), progress: 0 },
+                { kind: 'combo', target: Math.min(8, 4 + Math.floor(Math.random() * 3) + Math.floor((currentLevel - 1) / 2)), progress: Math.min(combo, 4) }
             ];
             currentMission = pool[Math.floor(Math.random() * pool.length)];
             if (currentMission.kind === 'combo') {
@@ -1515,11 +1613,11 @@
 
         function addCharge(amount) {
             if (isOverdriveActive()) return;
-            const boost = hasVip('overdrive_boost') ? 1.4 : 1.0;
+            const boost = hasVip('overdrive_boost') ? 1.45 : 1.0;
             chargeMeter = Math.min(100, chargeMeter + amount * boost);
             if (chargeMeter >= 100) {
                 chargeMeter = 0;
-                overdriveEnd = Date.now() + 7000;
+                overdriveEnd = Date.now() + 7500;
                 playSound('powerup');
                 addFloatingText('🔥 OVERDRIVE x2!', canvas.width / 2, canvas.height * 0.32, '#f97316');
             }
@@ -1536,12 +1634,12 @@
             if (currentMission.progress >= currentMission.target) {
                 const magnetBonus = hasVip('coin_magnet') ? 2 : 0;
                 score += 4;
-                coins += 3 + magnetBonus;
+                coins += 4 + magnetBonus;
                 soloTimeRemaining = Math.min(90, soloTimeRemaining + 5);
                 updateTimerBadge();
                 saveGameData();
                 handleScoreChanged();
-                addFloatingText(`⭐ +4 | +${3 + magnetBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
+                addFloatingText(`⭐ +4 | +${4 + magnetBonus} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#34d399');
                 pickNextMission();
             } else {
                 updateChargeAndMissionUI();
@@ -1596,12 +1694,12 @@
             const cfg = getDifficultyConfig();
             const margin = 48;
             const minY = 75;
-            const maxY = Math.max(minY + 40, canvas.height * 0.52);
+            const maxY = Math.max(minY + 40, canvas.height * 0.50);
             bonusTargets.push({
                 x: Math.random() * Math.max(40, canvas.width - margin * 2) + margin,
                 y: Math.random() * (maxY - minY) + minY,
                 radius: 23,
-                vx: (Math.random() > 0.5 ? 1 : -1) * (1.1 + Math.min(2.0, currentLevel * 0.14)) * cfg.speedScale,
+                vx: (Math.random() > 0.5 ? 1 : -1) * (1.0 + Math.min(1.8, currentLevel * 0.12)) * cfg.speedScale,
                 pulse: Math.random() * Math.PI * 2
             });
         }
@@ -1621,9 +1719,9 @@
             const cfg = getDifficultyConfig();
             goldenTarget = {
                 x: Math.random() * Math.max(60, canvas.width - 100) + 50,
-                y: canvas.height * 0.24 + Math.random() * (canvas.height * 0.22),
+                y: canvas.height * 0.24 + Math.random() * (canvas.height * 0.20),
                 radius: 20,
-                vx: (Math.random() > 0.5 ? 1 : -1) * 2.2 * cfg.speedScale,
+                vx: (Math.random() > 0.5 ? 1 : -1) * 1.9 * cfg.speedScale,
                 pulse: 0
             };
         }
@@ -1632,9 +1730,9 @@
             if (!isSoloMode() || hazardCard) return;
             hazardCard = {
                 x: Math.random() * Math.max(60, canvas.width - 100) + 50,
-                y: canvas.height * 0.35 + Math.random() * (canvas.height * 0.18),
+                y: canvas.height * 0.35 + Math.random() * (canvas.height * 0.16),
                 radius: 19,
-                life: 320
+                life: 360
             };
         }
 
@@ -1650,7 +1748,7 @@
                     y: canvas.height * 0.44,
                     width: 72,
                     height: 14,
-                    vx: (1.8 + Math.min(2.4, (score - 30) * 0.035)) * cfg.speedScale
+                    vx: (1.55 + Math.min(2.0, (score - 30) * 0.03)) * cfg.speedScale
                 };
             }
         }
@@ -1661,12 +1759,12 @@
                 return;
             }
             const cfg = getDifficultyConfig();
-            if (score >= 50 && !extraSoloBall) {
+            if (score >= 55 && !extraSoloBall) {
                 extraSoloBall = {
                     x: canvas.width * 0.35,
                     y: canvas.height * 0.32,
-                    vx: 2.2 * cfg.speedScale,
-                    vy: -8 * cfg.speedScale,
+                    vx: 2.0 * cfg.speedScale,
+                    vy: -7.5 * cfg.speedScale,
                     radius: 16,
                     rot: 0
                 };
@@ -1681,13 +1779,19 @@
         }
 
         window.addEventListener('resize', () => {
-            if (gameRunning) resizeCanvas();
+            if (gameRunning) {
+                resizeCanvas();
+                player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+                player.y = canvas.height - 65;
+            }
         });
 
         function setupMatchForMode(mode, keepTournamentProgress = false) {
             syncDailyAndStreak();
             gameMode = mode;
             isPaused = false;
+            activePointerId = null;
+            redCardShieldUsed = false;
             document.getElementById('pause-overlay').classList.add('hidden');
             const pIcon = document.getElementById('pause-icon');
             if (pIcon) pIcon.className = 'fa-solid fa-pause';
@@ -1707,7 +1811,7 @@
 
             runJuggles = 0;
             runBestCombo = 0;
-            soloTimeRemaining = 60 + (isSoloMode() && hasVip('extra_time_start') ? 12 : 0);
+            soloTimeRemaining = 65 + (isSoloMode() && hasVip('extra_time_start') ? 12 : 0);
             lastFrameTime = performance.now();
             endReason = 'fall';
 
@@ -1776,9 +1880,19 @@
         function returnToMenu() {
             gameRunning = false;
             isPaused = false;
+            activePointerId = null;
             canvas.onclick = null;
             if (animFrameId) cancelAnimationFrame(animFrameId);
             if (bgmInterval) clearInterval(bgmInterval);
+            powerups = [];
+            particles = [];
+            ballTrail = [];
+            floatingTexts = [];
+            bonusTargets = [];
+            goldenTarget = null;
+            hazardCard = null;
+            movingObstacle = null;
+            extraSoloBall = null;
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-container').classList.add('hidden');
             document.getElementById('main-menu').classList.remove('hidden');
@@ -1788,9 +1902,10 @@
         function resetPositions(serveTowardPlayer = false) {
             const cfg = getDifficultyConfig();
             ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-            ball.vx = (Math.random() - 0.5) * 3.8 * cfg.speedScale;
-            ball.vy = (serveTowardPlayer ? 5.2 : -6.0) * cfg.speedScale;
+            ball.y = canvas.height * 0.44;
+            ball.prevY = ball.y;
+            ball.vx = (Math.random() - 0.5) * 3.2 * cfg.speedScale;
+            ball.vy = (serveTowardPlayer ? 4.8 : -5.4) * cfg.speedScale;
             ball.rot = 0;
             ballTrail = [];
 
@@ -1803,16 +1918,41 @@
             }
         }
 
-        function updatePaddleFromPointer(e) {
+        canvas.addEventListener('pointerdown', (e) => {
             if (!gameRunning || isPaused) return;
+            if (e.cancelable) e.preventDefault();
+            activePointerId = e.pointerId;
+            try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
             const rect = canvas.getBoundingClientRect();
             const touchX = e.clientX - rect.left;
-            player.x = touchX - player.width / 2;
-            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-        }
+            const paddleCenter = player.x + player.width / 2;
+            if (Math.abs(touchX - paddleCenter) <= player.width * 0.75) {
+                dragOffsetX = touchX - paddleCenter;
+            } else {
+                dragOffsetX = 0;
+            }
+            const targetCenter = touchX - dragOffsetX;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, targetCenter - player.width / 2));
+        }, { passive: false });
 
-        canvas.addEventListener('pointermove', updatePaddleFromPointer);
-        canvas.addEventListener('pointerdown', updatePaddleFromPointer);
+        canvas.addEventListener('pointermove', (e) => {
+            if (!gameRunning || isPaused) return;
+            if (activePointerId !== null && e.pointerId !== activePointerId) return;
+            if (e.cancelable) e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touchX = e.clientX - rect.left;
+            const targetCenter = touchX - dragOffsetX;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, targetCenter - player.width / 2));
+        }, { passive: false });
+
+        function releasePointer(e) {
+            if (activePointerId !== null && e.pointerId === activePointerId) {
+                activePointerId = null;
+                dragOffsetX = 0;
+            }
+        }
+        canvas.addEventListener('pointerup', releasePointer);
+        canvas.addEventListener('pointercancel', releasePointer);
 
         function addFloatingText(text, x, y, color) {
             floatingTexts.push({ text, x, y, life: 1.0, color });
@@ -1827,7 +1967,7 @@
             const chosen = types[Math.floor(Math.random() * types.length)];
             powerups.push({
                 x: Math.random() * (canvas.width - 60) + 30,
-                y: Math.random() * (canvas.height * 0.45) + 100,
+                y: Math.random() * (canvas.height * 0.42) + 105,
                 radius: 18,
                 type: chosen.type,
                 color: chosen.color,
@@ -1839,6 +1979,7 @@
         function finishRun(reason) {
             gameRunning = false;
             isPaused = false;
+            activePointerId = null;
             endReason = reason;
             if (bgmInterval) clearInterval(bgmInterval);
             showGameOverScreen();
@@ -1894,8 +2035,8 @@
             const cfg = getDifficultyConfig();
             const paddleCenter = player.x + player.width / 2;
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
-            const isSweetSpot = distFromCenter <= player.width * 0.28;
-            const isHeelSpin = distFromCenter >= player.width * 0.42;
+            const isSweetSpot = distFromCenter <= player.width * 0.29;
+            const isHeelSpin = distFromCenter >= player.width * 0.38;
 
             runJuggles++;
             careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
@@ -1903,9 +2044,9 @@
 
             if (isPrimaryBall) {
                 player.recoil = isSweetSpot || isHeelSpin ? 10 : 6;
-                screenShake = Math.max(screenShake, isFireMode || isOverdriveActive() ? 6.5 : 2.5);
+                screenShake = Math.max(screenShake, isFireMode || isOverdriveActive() ? 6.0 : 2.2);
                 if (isFireMode || isOverdriveActive() || isHeelSpin) {
-                    hitstopFrames = 2;
+                    hitstopFrames = 1;
                 }
 
                 if (isHeelSpin) {
@@ -1935,23 +2076,23 @@
                 } else {
                     combo = 0;
                     isFireMode = false;
-                    chargeMeter = Math.max(0, chargeMeter - 12);
+                    chargeMeter = Math.max(0, chargeMeter - 10);
                     document.getElementById('combo-badge').classList.add('hidden');
                     playSound('kick');
                 }
-                addCharge(isSweetSpot ? 22 : 12);
+                addCharge(isSweetSpot ? 22 : 13);
             } else {
                 playSound('kick');
             }
 
-            if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 80 : 45); } catch (e) {}
+            if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 75 : 40); } catch (e) {}
 
-            const pCount = isFireMode ? 24 : 15;
+            const pCount = isFireMode ? 22 : 14;
             for (let i = 0; i < pCount; i++) {
                 particles.push({
                     x: targetBall.x, y: targetBall.y,
-                    vx: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
-                    vy: (Math.random() - 0.5) * (isFireMode ? 16 : 12),
+                    vx: (Math.random() - 0.5) * (isFireMode ? 15 : 11),
+                    vy: (Math.random() - 0.5) * (isFireMode ? 15 : 11),
                     life: 1.0,
                     color: isFireMode ? (Math.random() > 0.5 ? '#f97316' : '#ef4444') :
                         (activeSkin === 'gold' ? '#fbbf24' : activeSkin === 'neon' ? '#38bdf8' : activeSkin === 'fire' ? '#f97316' : '#ffffff')
@@ -1960,10 +2101,11 @@
 
             const escalation = getEscalationFactor();
             const offsetRatio = Math.max(-1, Math.min(1, (targetBall.x - paddleCenter) / (player.width / 2)));
-            const superShotBoost = (isOverdriveActive() || isFireMode) ? 2.4 : (isHeelSpin ? 1.4 : 0);
+            const superShotBoost = (isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin ? 1.2 : 0);
             const baseKick = cfg.kickPower + superShotBoost;
-            targetBall.vy = -baseKick * Math.min(1.24, escalation);
-            targetBall.vx = offsetRatio * (isHeelSpin ? 11.2 : 8.8) * cfg.speedScale * Math.min(1.25, escalation);
+            targetBall.vy = -baseKick * Math.min(1.16, escalation);
+            targetBall.y = player.y - targetBall.radius - 1;
+            targetBall.vx = offsetRatio * (isHeelSpin ? 10.2 : 8.0) * cfg.speedScale * Math.min(1.18, escalation);
 
             if (isSoloMode() || isPracticeMode()) {
                 const mult = ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1);
@@ -2059,24 +2201,24 @@
             }
 
             player.baseWidth = getBasePlayerWidth();
-            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.45 : player.baseWidth;
+            player.width = (now < widePaddleEnd) ? player.baseWidth * 1.42 : player.baseWidth;
             const escalation = getEscalationFactor();
-            const slowFactor = (now < slowMoEnd) ? 0.65 : 1.0;
-            const moveScale = slowFactor * cfg.speedScale * Math.min(1.28, escalation);
-            const gravScale = slowFactor * cfg.gravityScale * Math.min(1.24, escalation);
+            const slowFactor = (now < slowMoEnd) ? 0.66 : 1.0;
+            const moveScale = slowFactor * cfg.speedScale * Math.min(1.20, escalation);
+            const gravScale = slowFactor * cfg.gravityScale * Math.min(1.16, escalation);
 
             powerupTimer++;
-            if (powerupTimer > 420 && powerups.length < 2) {
+            if (powerupTimer > 450 && powerups.length < 2) {
                 spawnPowerup();
                 powerupTimer = 0;
             }
 
             if (isSoloMode()) {
                 hazardTimer++;
-                if (currentLevel >= 2 && !goldenTarget && hazardTimer % 360 === 0) {
+                if (currentLevel >= 2 && !goldenTarget && hazardTimer % 420 === 0) {
                     spawnGoldenTarget();
                 }
-                if (currentLevel >= 2 && !hazardCard && hazardTimer % 480 === 240) {
+                if (currentLevel >= 2 && !hazardCard && hazardTimer % 560 === 280) {
                     spawnHazardCard();
                 }
             }
@@ -2085,7 +2227,7 @@
                 const wantedTargets = (isSoloMode() && getActiveStageModifier() === 'double_targets') ? 2 : 1;
                 if (bonusTargets.length < wantedTargets) {
                     targetCooldown++;
-                    if (targetCooldown > (bonusTargets.length === 0 ? 130 : 65)) {
+                    if (targetCooldown > (bonusTargets.length === 0 ? 120 : 60)) {
                         spawnSingleBonusTarget();
                         targetCooldown = 0;
                     }
@@ -2107,15 +2249,17 @@
                     if (distTarget < ball.radius + bt.radius) {
                         playSound('target');
                         const targetPts = 3 * (isOverdriveActive() ? 2 : 1);
+                        const auraCoins = hasVip('golden_aura') ? 2 : 0;
+                        const totalTargetCoins = 2 + auraCoins;
                         score += targetPts;
-                        coins += 2;
+                        coins += totalTargetCoins;
                         if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + 2);
                         updateTimerBadge();
                         addCharge(30);
                         advanceMission('targets', 1, false);
                         saveGameData();
                         handleScoreChanged();
-                        addFloatingText(`🎯 +${targetPts} | +2 🪙`, bt.x, bt.y - 10, '#f43f5e');
+                        addFloatingText(`🎯 +${targetPts} | +${totalTargetCoins} 🪙`, bt.x, bt.y - 10, '#f43f5e');
 
                         for (let i = 0; i < 18; i++) {
                             particles.push({
@@ -2156,16 +2300,22 @@
                     if (hazardCard.life <= 0) {
                         hazardCard = null;
                     } else if (Math.hypot(ball.x - hazardCard.x, ball.y - hazardCard.y) < ball.radius + hazardCard.radius) {
-                        playSound('hazard');
-                        screenShake = Math.max(screenShake, 7);
-                        combo = 0;
-                        isFireMode = false;
-                        document.getElementById('combo-badge').classList.add('hidden');
-                        if (isSoloMode()) {
-                            soloTimeRemaining = Math.max(0, soloTimeRemaining - 4);
-                            updateTimerBadge();
+                        if (hasVip('red_card_shield') && !redCardShieldUsed) {
+                            redCardShieldUsed = true;
+                            playSound('powerup');
+                            addFloatingText('🛑 מגן כרטיס אדום חסם!', hazardCard.x, hazardCard.y - 12, '#34d399');
+                        } else {
+                            playSound('hazard');
+                            screenShake = Math.max(screenShake, 6.5);
+                            combo = 0;
+                            isFireMode = false;
+                            document.getElementById('combo-badge').classList.add('hidden');
+                            if (isSoloMode()) {
+                                soloTimeRemaining = Math.max(0, soloTimeRemaining - 4);
+                                updateTimerBadge();
+                            }
+                            addFloatingText('🟥 -4s & COMBO RESET', hazardCard.x, hazardCard.y - 12, '#ef4444');
                         }
-                        addFloatingText('🟥 -4s & COMBO RESET', hazardCard.x, hazardCard.y - 12, '#ef4444');
                         hazardCard = null;
                     }
                 }
@@ -2200,10 +2350,11 @@
             }
 
             if (isSoloMode() && getActiveStageModifier() === 'crosswind') {
-                ball.vx += Math.sin(now * 0.003) * 0.09 * moveScale;
+                ball.vx += Math.sin(now * 0.003) * 0.07 * moveScale;
             }
 
-            ball.vy += 0.42 * gravScale;
+            ball.prevY = ball.y;
+            ball.vy += 0.38 * gravScale;
             ball.x += ball.vx * moveScale;
             ball.y += ball.vy * moveScale;
             ball.vx *= 0.99;
@@ -2237,7 +2388,7 @@
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
 
             if ((isSoloMode() || isPracticeMode()) && extraSoloBall) {
-                extraSoloBall.vy += 0.38 * gravScale;
+                extraSoloBall.vy += 0.35 * gravScale;
                 extraSoloBall.x += extraSoloBall.vx * moveScale;
                 extraSoloBall.y += extraSoloBall.vy * moveScale;
                 extraSoloBall.vx *= 0.99;
@@ -2252,9 +2403,9 @@
                 }
 
                 if (extraSoloBall.y + extraSoloBall.radius >= player.y &&
-                    extraSoloBall.y - extraSoloBall.radius <= player.y + player.height &&
-                    extraSoloBall.x >= player.x - 20 &&
-                    extraSoloBall.x <= player.x + player.width + 20 &&
+                    extraSoloBall.y - extraSoloBall.radius <= player.y + player.height + 10 &&
+                    extraSoloBall.x >= player.x - 22 &&
+                    extraSoloBall.x <= player.x + player.width + 22 &&
                     extraSoloBall.vy > 0) {
                     applyKickToBall(extraSoloBall, false);
                 }
@@ -2287,14 +2438,16 @@
                 }
             }
 
-            if (ball.y + ball.radius >= player.y && ball.y - ball.radius <= player.y + player.height &&
-                ball.x >= player.x - 20 && ball.x <= player.x + player.width + 20 && ball.vy > 0) {
+            const crossedPaddlePlane = (ball.prevY + ball.radius <= player.y + 8) && (ball.y + ball.radius >= player.y);
+            const insidePaddleBand = (ball.y + ball.radius >= player.y) && (ball.y - ball.radius <= player.y + player.height + 8);
+            if ((crossedPaddlePlane || insidePaddleBand) &&
+                ball.x >= player.x - 22 && ball.x <= player.x + player.width + 22 && ball.vy > 0) {
                 applyKickToBall(ball, true);
             }
 
             if (isDuelMode()) {
                 bot.y = 35;
-                const roundFactor = gameMode === 'tournament' ? 1 + tournamentRound * 0.14 : 1;
+                const roundFactor = gameMode === 'tournament' ? 1 + tournamentRound * 0.12 : 1;
                 const desiredX = ball.x - bot.width / 2;
                 const deltaX = desiredX - bot.x;
                 const stepX = Math.max(-cfg.botSpeedCap * roundFactor, Math.min(cfg.botSpeedCap * roundFactor, deltaX * cfg.botTrack * roundFactor));
@@ -2302,7 +2455,7 @@
 
                 if (ball.y - ball.radius <= bot.y + bot.height + 16 && ball.vy < 0) {
                     playSound('kick');
-                    if (navigator.vibrate) try { navigator.vibrate(50); } catch (e) {}
+                    if (navigator.vibrate) try { navigator.vibrate(45); } catch (e) {}
 
                     for (let i = 0; i < 15; i++) {
                         particles.push({
@@ -2316,8 +2469,9 @@
 
                     const aimSpread = difficulty === 'hard' ? 1.1 : difficulty === 'easy' ? 1.55 : 1.35;
                     const botAngle = (Math.random() - 0.5) * aimSpread;
-                    ball.vy = cfg.kickPower * Math.min(1.18, 1 + tournamentRound * 0.05);
-                    ball.vx = botAngle * 7.4 * cfg.speedScale;
+                    ball.vy = cfg.kickPower * Math.min(1.15, 1 + tournamentRound * 0.04);
+                    ball.y = bot.y + bot.height + ball.radius + 1;
+                    ball.vx = botAngle * 7.2 * cfg.speedScale;
                 }
 
                 if (ball.y < -35) {
@@ -2593,14 +2747,15 @@
         function showGameOverScreen() {
             const t = translations[lang];
             let isNewRecord = false;
-            if (isSoloMode()) {
+            if (!isPracticeMode()) {
                 diffBests[difficulty] = Math.max(diffBests[difficulty] || 0, score);
-            }
-            if (score > personalBest) {
-                personalBest = score;
-                bestDifficulty = difficulty;
-                isNewRecord = true;
-                syncScoreToFirebase(personalBest);
+                if (score > personalBest) {
+                    personalBest = score;
+                    bestDifficulty = difficulty;
+                    isNewRecord = true;
+                    topGlobalScore = Math.max(topGlobalScore, personalBest);
+                    syncScoreToFirebase(personalBest);
+                }
             }
 
             recentRuns.unshift({
@@ -2626,6 +2781,7 @@
 
             if (endReason !== 'tourney_next') {
                 activeRunVip = [];
+                redCardShieldUsed = false;
             }
             saveGameData();
 
