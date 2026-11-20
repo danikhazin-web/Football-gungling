@@ -35,6 +35,7 @@
         <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-emerald-500/30">
             <i class="fa-solid fa-coins text-amber-400 text-base"></i>
             <span id="header-coins" class="font-bold text-amber-400 text-base">75</span>
+            <span id="streak-pill" onclick="openAchievementsModal()" class="hidden text-[11px] font-black text-orange-300 bg-orange-500/15 border border-orange-400/30 px-2 py-0.5 rounded-lg cursor-pointer">🔥 1</span>
         </div>
 
         <div class="flex gap-2">
@@ -50,8 +51,8 @@
     <!-- Main Menu -->
     <div id="main-menu" class="w-full max-w-lg flex flex-col items-center justify-center my-auto py-3 z-20 px-2">
         <div class="text-center mb-5">
-            <span class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest">מד טעינה + משימות מתחלפות ⚡🎯</span>
-            <h1 class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text">מלך ההקפצות</h1>
+            <span id="menu-badge" onclick="registerSecretAdminTap()" class="bg-amber-500/15 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-widest cursor-pointer inline-block">מד טעינה + משימות מתחלפות ⚡🎯</span>
+            <h1 id="main-game-title" onclick="registerSecretAdminTap()" class="text-4xl md:text-5xl font-black mt-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 glow-text cursor-pointer">מלך ההקפצות</h1>
             <p id="menu-subtitle" class="text-slate-400 text-sm mt-1">מלא את מד האנרגיה, השלם משימות ושבור שיאים!</p>
         </div>
 
@@ -72,7 +73,7 @@
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-user-robot text-indigo-200"></i></div>
                     <div class="text-right">
                         <div id="btn-pvp-title" class="font-bold text-base">תחרות 1 נגד 1</div>
-                        <div id="btn-pvp-desc" class="text-xs text-indigo-200/80">דו-קרב מול בוט חכם</div>
+                        <div id="btn-pvp-desc" class="text-xs text-indigo-200/80">דו-קרב מול בוט חכם עד 5 נקודות</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
@@ -83,7 +84,7 @@
                     <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-trophy text-amber-200"></i></div>
                     <div class="text-right">
                         <div id="btn-tourney-title" class="font-bold text-base">טורניר אלופים</div>
-                        <div id="btn-tourney-desc" class="text-xs text-amber-200/80">שלבי נוקאאוט עד הגביע הגדול</div>
+                        <div id="btn-tourney-desc" class="text-xs text-amber-200/80">רבע גמר, חצי גמר וגמר עד הגביע</div>
                     </div>
                 </div>
                 <i class="fa-solid fa-chevron-left text-white/60"></i>
@@ -133,16 +134,17 @@
         <div class="relative w-full flex-1 min-h-[340px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center">
             <canvas id="gameCanvas" class="w-full h-full cursor-pointer"></canvas>
             <div id="tap-instruction" class="absolute bottom-3 text-slate-400 text-xs font-medium animate-pulse bg-slate-900/85 px-4 py-1 rounded-full border border-slate-700/80 pointer-events-none">
-                גרור את השחקן ופגע במטרות הבונוס 🎯!
+                גרור את השחקן והשג נקודות / משימות 🎯!
             </div>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
     <nav class="w-full max-w-lg flex justify-around bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl border border-slate-700/50 shadow-lg z-20 shrink-0">
-        <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer">
+        <button type="button" onclick="openAchievementsModal()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-emerald-400 transition py-1 px-4 rounded-xl cursor-pointer relative">
             <i class="fa-solid fa-medal text-base"></i>
             <span id="nav-achieve" class="text-[10px] font-medium">הישגים</span>
+            <span id="daily-ready-dot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-400"></span>
         </button>
         <button type="button" onclick="openLeaderboardModal()" class="flex flex-col items-center gap-0.5 text-amber-400 hover:text-amber-300 transition py-1 px-4 rounded-xl cursor-pointer relative">
             <i class="fa-solid fa-ranking-star text-base"></i>
@@ -196,25 +198,56 @@
                 <button type="button" onclick="closeShopModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div id="shop-tabs-bar" class="grid grid-cols-4 gap-1 mb-4 bg-slate-800/60 p-1 rounded-xl">
-                <button type="button" onclick="switchShopTab('skins')" id="tab-skins-btn" class="py-2 px-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדור</button>
-                <button type="button" onclick="switchShopTab('paddles')" id="tab-paddles-btn" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדל</button>
-                <button type="button" onclick="switchShopTab('songs')" id="tab-songs-btn" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
-                <button type="button" onclick="switchShopTab('vip')" id="tab-vip-btn" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">יוקרה 👑</button>
+            <div id="shop-tabs-bar" class="grid grid-cols-5 gap-1 mb-4 bg-slate-800/60 p-1 rounded-xl">
+                <button type="button" onclick="switchShopTab('skins')" id="tab-skins-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדור</button>
+                <button type="button" onclick="switchShopTab('paddles')" id="tab-paddles-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדל</button>
+                <button type="button" onclick="switchShopTab('stadiums')" id="tab-stadiums-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיון</button>
+                <button type="button" onclick="switchShopTab('songs')" id="tab-songs-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
+                <button type="button" onclick="switchShopTab('vip')" id="tab-vip-btn" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">יוקרה 👑</button>
             </div>
 
             <div id="shop-items-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
         </div>
     </div>
 
-    <!-- Achievements Modal -->
+    <!-- Achievements, Daily Challenge & Career Stats Modal -->
     <div id="achievements-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="flex justify-between items-center mb-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col max-h-[88vh]">
+            <div class="flex justify-between items-center mb-3">
                 <h2 id="achieve-title" class="text-xl font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-medal"></i> מערכת הישגים</h2>
                 <button type="button" onclick="closeAchievementsModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
+
+            <!-- Daily Challenge & Streak Card -->
+            <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-950/60 to-orange-950/60 border border-amber-500/35 rounded-2xl p-3.5 mb-3"></div>
+
+            <!-- Career Stats Grid -->
+            <div id="career-stats-box" class="grid grid-cols-4 gap-2 mb-3"></div>
+
             <div id="achievements-container" class="overflow-y-auto space-y-3 pr-1 flex-1"></div>
+        </div>
+    </div>
+
+    <!-- Hidden Creator / Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-rose-500/40 w-full max-w-md rounded-3xl p-5 shadow-2xl flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-black text-rose-400 flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> פאנל יוצר / מפתח</h2>
+                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-400">כלי בדיקה מהירים לאנדרואיד/כרום. השינויים נשמרים ב-`localStorage`.</p>
+
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="adminAddCoins(500)" class="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">+500 מטבעות 🪙</button>
+                <button type="button" onclick="adminBoostScore(25)" class="bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">+25 נקודות (שלב) ⚡</button>
+                <button type="button" onclick="adminGrantAllVip()" class="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">הפעל כל פריטי היוקרה 👑</button>
+                <button type="button" onclick="adminCompleteDaily()" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer">השלם אתגר יומי 🎯</button>
+            </div>
+
+            <button type="button" onclick="adminResetAllData()" class="bg-rose-600/25 hover:bg-rose-600/40 border border-rose-500/50 text-rose-300 text-xs font-bold py-2.5 px-3 rounded-xl cursor-pointer mt-1">
+                איפוס מלא של כל ההתקדמות והנתונים
+            </button>
+            <div id="admin-feedback" class="text-xs text-emerald-400 text-center min-h-[18px]"></div>
         </div>
     </div>
 
@@ -297,13 +330,99 @@
         let coins = parseInt(localStorage.getItem('juggle_coins')) || 75;
         let activeSkin = localStorage.getItem('juggle_active_skin') || 'classic';
         let activePaddle = localStorage.getItem('juggle_active_paddle') || 'emerald_classic';
+        let activeStadium = localStorage.getItem('juggle_active_stadium') || 'night_pro';
         let activeSong = localStorage.getItem('juggle_active_song') || 'none';
         let unlockedSkins = JSON.parse(localStorage.getItem('juggle_unlocked_skins')) || ['classic'];
         let unlockedPaddles = JSON.parse(localStorage.getItem('juggle_unlocked_paddles')) || ['emerald_classic'];
+        let unlockedStadiums = JSON.parse(localStorage.getItem('juggle_unlocked_stadiums')) || ['night_pro'];
         let unlockedSongs = JSON.parse(localStorage.getItem('juggle_unlocked_songs')) || ['none'];
 
         // VIP / Luxury items are SINGLE-GAME consumables (active for 1 run only)
         let activeRunVip = JSON.parse(localStorage.getItem('juggle_active_run_vip')) || [];
+
+        // Career Stats
+        let careerStats = JSON.parse(localStorage.getItem('juggle_career_stats')) || {
+            totalJuggles: 0,
+            duelWins: 0,
+            tourneyTrophies: 0,
+            bestCombo: 0
+        };
+
+        // Daily Challenge & Streak
+        function getTodayKey() {
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function getYesterdayKey() {
+            const d = new Date(Date.now() - 86400000);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function createDailyChallengeForDate(dateKey) {
+            const templates = [
+                { kind: 'score', target: 35, reward: 60, label: { he: 'השג 35 נקודות בריצה אחת', en: 'Score 35 pts in a run', ru: 'Наберите 35 очков за игру', fr: 'Marquez 35 pts en 1 partie' } },
+                { kind: 'duel_win', target: 1, reward: 65, label: { he: 'נצח משחק 1 נגד 1 או טורניר', en: 'Win a 1v1 or Tournament match', ru: 'Выиграйте дуэль или турнир', fr: 'Gagnez un match 1v1 ou tournoi' } },
+                { kind: 'juggles', target: 45, reward: 55, label: { he: 'בצע 45 הקפצות סך הכל', en: 'Complete 45 total juggles', ru: 'Сделайте 45 чеканок', fr: 'Faites 45 jonglages au total' } }
+            ];
+            let hash = 0;
+            for (let i = 0; i < dateKey.length; i++) {
+                hash = ((hash << 5) - hash) + dateKey.charCodeAt(i);
+                hash |= 0;
+            }
+            const tpl = templates[Math.abs(hash) % templates.length];
+            return {
+                dateKey,
+                kind: tpl.kind,
+                target: tpl.target,
+                progress: 0,
+                reward: tpl.reward,
+                claimed: false,
+                label: tpl.label
+            };
+        }
+
+        let dailyChallenge = JSON.parse(localStorage.getItem('juggle_daily_challenge'));
+        let streakData = JSON.parse(localStorage.getItem('juggle_streak_data')) || { count: 1, lastDate: getTodayKey() };
+
+        function syncDailyAndStreak() {
+            const today = getTodayKey();
+            const yesterday = getYesterdayKey();
+
+            if (!streakData || !streakData.lastDate) {
+                streakData = { count: 1, lastDate: today };
+            } else if (streakData.lastDate === today) {
+                streakData.count = Math.max(1, Number(streakData.count) || 1);
+            } else if (streakData.lastDate === yesterday) {
+                streakData.count = (Number(streakData.count) || 1) + 1;
+                streakData.lastDate = today;
+            } else {
+                streakData.count = 1;
+                streakData.lastDate = today;
+            }
+
+            if (!dailyChallenge || dailyChallenge.dateKey !== today) {
+                dailyChallenge = createDailyChallengeForDate(today);
+            }
+        }
+        syncDailyAndStreak();
+
+        function updateDailyProgress(kind, value, isAbsolute = false) {
+            syncDailyAndStreak();
+            if (!dailyChallenge || dailyChallenge.kind !== kind) return;
+            if (isAbsolute) {
+                dailyChallenge.progress = Math.min(dailyChallenge.target, Math.max(dailyChallenge.progress, value));
+            } else {
+                dailyChallenge.progress = Math.min(dailyChallenge.target, dailyChallenge.progress + value);
+            }
+            saveGameData();
+        }
 
         let achievements = JSON.parse(localStorage.getItem('juggle_achievements')) || {
             juggles_50: { progress: 0, target: 50, reward: 30, claimed: false },
@@ -319,9 +438,9 @@
         }
 
         function syncAchievementProgress() {
-            const unlockedCount = unlockedSkins.length + unlockedPaddles.length + unlockedSongs.length - 3;
+            const unlockedCount = unlockedSkins.length + unlockedPaddles.length + unlockedStadiums.length + unlockedSongs.length - 4;
             achievements.shop_2.progress = Math.max(achievements.shop_2.progress, totalPurchasesCount, unlockedCount);
-            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, personalBest);
+            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, personalBest, careerStats.totalJuggles);
             achievements.score_100.progress = Math.max(achievements.score_100.progress, personalBest);
         }
         syncAchievementProgress();
@@ -337,8 +456,8 @@
                 lbTitle: "טבלת מובילים עולמית", lbBest: "השיא שלך:", lbSave: "שמור",
                 lbRankPrefix: "הדירוג שלך:", lbNamePlaceholder: "הכנס את שמך לטבלה...",
                 lbSynced: "✓ השיא מסונכרן לענן",
-                shopTitle: "חנות המשחק", tabSkins: "כדור", tabPaddles: "פאדל", tabSongs: "מוזיקה", tabVip: "יוקרה 👑",
-                achieveTitle: "מערכת הישגים",
+                shopTitle: "חנות המשחק", tabSkins: "כדור", tabPaddles: "פאדל", tabStadiums: "אצטדיון", tabSongs: "מוזיקה", tabVip: "יוקרה 👑",
+                achieveTitle: "הישגים, אתגר יומי וקריירה",
                 buy: "קנה", equip: "השתמש", equipped: "בשימוש", owned: "בבעלותך",
                 activeOneGame: "מוכן למשחק 1", oneGameTag: "למשחק אחד",
                 claim: "אסוף פרס", claimed: "הושלם", inProgress: "בתהליך",
@@ -350,6 +469,8 @@
                 mJuggles: "הקפץ {n} פעמים", mTargets: "פגע ב-{n} מטרות 🎯", mCombo: "הגע לקומבו {n}",
                 duelMission: "⚔️ יעד ניצחון: {p} - {b} (יעד: {goal})",
                 tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
+                dailyTitle: "📅 אתגר יומי", streakLbl: "רצף ימים",
+                statJuggles: "הקפצות", statDuels: "ניצחונות 1v1", statTrophies: "גביעים", statCombo: "קומבו שיא",
                 levelUpPhrases: [
                     "וואו! מצוין!",
                     "יפה מאוד!",
@@ -367,8 +488,8 @@
                 lbTitle: "Global Leaderboard", lbBest: "Your Best:", lbSave: "Save",
                 lbRankPrefix: "Your Rank:", lbNamePlaceholder: "Enter your name...",
                 lbSynced: "✓ Score synced to cloud",
-                shopTitle: "Game Shop", tabSkins: "Ball", tabPaddles: "Paddle", tabSongs: "Music", tabVip: "VIP 👑",
-                achieveTitle: "Achievements System",
+                shopTitle: "Game Shop", tabSkins: "Ball", tabPaddles: "Paddle", tabStadiums: "Stadium", tabSongs: "Music", tabVip: "VIP 👑",
+                achieveTitle: "Achievements, Daily & Career",
                 buy: "Buy", equip: "Equip", equipped: "Equipped", owned: "Owned",
                 activeOneGame: "1 Game Ready", oneGameTag: "1 Game",
                 claim: "Claim", claimed: "Completed", inProgress: "In Progress",
@@ -380,6 +501,8 @@
                 mJuggles: "Juggle {n} times", mTargets: "Hit {n} targets 🎯", mCombo: "Reach {n} combo",
                 duelMission: "⚔️ Score {p} - {b} (First to {goal})",
                 tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
+                dailyTitle: "📅 Daily Challenge", streakLbl: "Day Streak",
+                statJuggles: "Juggles", statDuels: "1v1 Wins", statTrophies: "Trophies", statCombo: "Best Combo",
                 levelUpPhrases: [
                     "WOW! AWESOME!",
                     "GREAT JOB!",
@@ -397,8 +520,8 @@
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш рекорд:", lbSave: "Сохранить",
                 lbRankPrefix: "Ваше место:", lbNamePlaceholder: "Введите ваше имя...",
                 lbSynced: "✓ Рекорд сохранён",
-                shopTitle: "Магазин", tabSkins: "Мяч", tabPaddles: "Падл", tabSongs: "Музыка", tabVip: "VIP 👑",
-                achieveTitle: "Система достижений",
+                shopTitle: "Магазин", tabSkins: "Мяч", tabPaddles: "Падл", tabStadiums: "Арена", tabSongs: "Музыка", tabVip: "VIP 👑",
+                achieveTitle: "Достижения, день и карьера",
                 buy: "Купить", equip: "Выбрать", equipped: "Активно", owned: "Куплено",
                 activeOneGame: "На 1 игру", oneGameTag: "1 игра",
                 claim: "Забрать", claimed: "Выполнено", inProgress: "В процессе",
@@ -410,6 +533,8 @@
                 mJuggles: "Чеканьте {n} раз", mTargets: "Попадите в {n} целей 🎯", mCombo: "Комбо {n}",
                 duelMission: "⚔️ Счёт {p} - {b} (До {goal})",
                 tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
+                dailyTitle: "📅 Задание дня", streakLbl: "Серия дней",
+                statJuggles: "Чеканки", statDuels: "Побед 1v1", statTrophies: "Кубки", statCombo: "Макс комбо",
                 levelUpPhrases: [
                     "ВАУ! ОТЛИЧНО!",
                     "ОЧЕНЬ КРУТО!",
@@ -427,8 +552,8 @@
                 lbTitle: "Classement Mondial", lbBest: "Meilleur :", lbSave: "Sauver",
                 lbRankPrefix: "Votre rang :", lbNamePlaceholder: "Entrez votre nom...",
                 lbSynced: "✓ Score synchronisé",
-                shopTitle: "Boutique", tabSkins: "Ballon", tabPaddles: "Raquette", tabSongs: "Musique", tabVip: "VIP 👑",
-                achieveTitle: "Système de Succès",
+                shopTitle: "Boutique", tabSkins: "Ballon", tabPaddles: "Raquette", tabStadiums: "Stade", tabSongs: "Musique", tabVip: "VIP 👑",
+                achieveTitle: "Succès, défi du jour & carrière",
                 buy: "Acheter", equip: "Équiper", equipped: "Équipé", owned: "Possédé",
                 activeOneGame: "1 Partie Prête", oneGameTag: "1 Partie",
                 claim: "Récupérer", claimed: "Terminé", inProgress: "En cours",
@@ -440,6 +565,8 @@
                 mJuggles: "Jonglez {n} fois", mTargets: "Touchez {n} cibles 🎯", mCombo: "Combo {n}",
                 duelMission: "⚔️ Score {p} - {b} (Premier à {goal})",
                 tourneyStages: ["Quart", "Demi-finale", "Finale"],
+                dailyTitle: "📅 Défi du Jour", streakLbl: "Série jours",
+                statJuggles: "Jonglages", statDuels: "Victoires 1v1", statTrophies: "Trophées", statCombo: "Meilleur combo",
                 levelUpPhrases: [
                     "WAOUH ! SUPER !",
                     "TRÈS BIEN !",
@@ -476,6 +603,14 @@
             { id: 'gold_bullion', name: { he: 'פאדל מטילי זהב', en: 'Gold Bullion', ru: 'Золотой Слиток', fr: 'Lingot d’Or' }, price: 850, color: '#eab308', accent: '#fef08a' },
             { id: 'obsidian_stealth', name: { he: 'פאדל אובסידיאן שחור', en: 'Obsidian Stealth', ru: 'Обсидиан', fr: 'Obsidienne' }, price: 1100, color: '#334155', accent: '#34d399' },
             { id: 'hyper_nova', name: { he: 'פאדל היפר נובה', en: 'Hyper Nova', ru: 'Гипер Нова', fr: 'Hyper Nova' }, price: 1400, color: '#ec4899', accent: '#38bdf8' }
+        ];
+
+        const stadiumsData = [
+            { id: 'night_pro', name: { he: 'אצטדיון לילה', en: 'Night Stadium', ru: 'Ночной стадион', fr: 'Stade de Nuit' }, price: 0, bgTop: '#020617', bgMid: '#0f172a', bgBot: '#020617', line: 'rgba(255,255,255,0.08)', glow: 'rgba(56,189,248,0.08)' },
+            { id: 'emerald_pitch', name: { he: 'דשא אצטדיון ירוק', en: 'Emerald Pitch', ru: 'Изумрудное поле', fr: 'Pelouse Émeraude' }, price: 90, bgTop: '#052e16', bgMid: '#14532d', bgBot: '#052e16', line: 'rgba(255,255,255,0.14)', glow: 'rgba(52,211,153,0.12)' },
+            { id: 'sunset_arena', name: { he: 'אצטדיון שקיעה', en: 'Sunset Arena', ru: 'Арена закат', fr: 'Arène Crépuscule' }, price: 180, bgTop: '#270b1b', bgMid: '#4c1d24', bgBot: '#1e1b4b', line: 'rgba(253,224,71,0.13)', glow: 'rgba(251,146,60,0.14)' },
+            { id: 'cyber_dome', name: { he: 'כיפת ניאון סייבר', en: 'Cyber Neon Dome', ru: 'Неоновый купол', fr: 'Dôme Néon' }, price: 320, bgTop: '#041322', bgMid: '#0c2744', bgBot: '#130b2e', line: 'rgba(34,211,238,0.16)', glow: 'rgba(168,85,247,0.14)' },
+            { id: 'royal_derby', name: { he: 'דרבי זהב מלכותי', en: 'Royal Gold Derby', ru: 'Золотое дерби', fr: 'Derby Royal' }, price: 500, bgTop: '#1c1917', bgMid: '#292524', bgBot: '#0c0a09', line: 'rgba(251,191,36,0.16)', glow: 'rgba(250,204,21,0.14)' }
         ];
 
         const songsData = [
@@ -541,6 +676,20 @@
             localStorage.setItem('juggle_lang', lang);
         }
 
+        function updateDailyBadge() {
+            syncDailyAndStreak();
+            const streakPill = document.getElementById('streak-pill');
+            const dot = document.getElementById('daily-ready-dot');
+            if (streakPill) {
+                streakPill.classList.remove('hidden');
+                streakPill.innerText = `🔥 ${streakData.count || 1}`;
+            }
+            if (dot) {
+                const readyToClaim = dailyChallenge && !dailyChallenge.claimed && dailyChallenge.progress >= dailyChallenge.target;
+                dot.classList.toggle('hidden', !readyToClaim);
+            }
+        }
+
         function updateUIStrings() {
             const t = translations[lang];
             document.getElementById('html-root').setAttribute('lang', lang);
@@ -564,6 +713,7 @@
             document.getElementById('shop-title').innerHTML = `<i class="fa-solid fa-store"></i> ${t.shopTitle}`;
             document.getElementById('tab-skins-btn').innerText = t.tabSkins;
             document.getElementById('tab-paddles-btn').innerText = t.tabPaddles;
+            document.getElementById('tab-stadiums-btn').innerText = t.tabStadiums;
             document.getElementById('tab-songs-btn').innerText = t.tabSongs;
             document.getElementById('tab-vip-btn').innerText = t.tabVip;
             document.getElementById('achieve-title').innerHTML = `<i class="fa-solid fa-medal"></i> ${t.achieveTitle}`;
@@ -580,6 +730,7 @@
             document.getElementById('diff-text').innerText = diffNames[difficulty];
             document.getElementById('lang-text').innerText = { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang];
             document.getElementById('header-coins').innerText = coins;
+            updateDailyBadge();
             updateLevelBadge();
             updateChargeAndMissionUI();
         }
@@ -607,21 +758,98 @@
             localStorage.setItem('juggle_coins', String(coins));
             localStorage.setItem('juggle_active_skin', activeSkin);
             localStorage.setItem('juggle_active_paddle', activePaddle);
+            localStorage.setItem('juggle_active_stadium', activeStadium);
             localStorage.setItem('juggle_active_song', activeSong);
             localStorage.setItem('juggle_unlocked_skins', JSON.stringify(unlockedSkins));
             localStorage.setItem('juggle_unlocked_paddles', JSON.stringify(unlockedPaddles));
+            localStorage.setItem('juggle_unlocked_stadiums', JSON.stringify(unlockedStadiums));
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
             localStorage.setItem('juggle_active_run_vip', JSON.stringify(activeRunVip));
+            localStorage.setItem('juggle_career_stats', JSON.stringify(careerStats));
+            localStorage.setItem('juggle_daily_challenge', JSON.stringify(dailyChallenge));
+            localStorage.setItem('juggle_streak_data', JSON.stringify(streakData));
             localStorage.setItem('juggle_total_purchases', String(totalPurchasesCount));
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
             localStorage.setItem('juggle_personal_best', String(personalBest));
             localStorage.setItem('juggle_best_diff', bestDifficulty);
             persistPrefs();
             document.getElementById('header-coins').innerText = coins;
+            updateDailyBadge();
         }
 
         function hasVip(id) {
             return activeRunVip.includes(id);
+        }
+
+        // --- Hidden Creator / Admin Panel ---
+        let secretTapCount = 0;
+        let secretTapTimer = null;
+
+        function registerSecretAdminTap() {
+            secretTapCount++;
+            if (secretTapTimer) clearTimeout(secretTapTimer);
+            secretTapTimer = setTimeout(() => { secretTapCount = 0; }, 1600);
+            if (secretTapCount >= 5) {
+                secretTapCount = 0;
+                const code = prompt(lang === 'he' ? 'הזן קוד גישה למפתח:' : 'Enter Creator PIN:');
+                if (code === '1926') {
+                    openAdminModal();
+                }
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('admin-feedback').innerText = '';
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function adminAddCoins(amt) {
+            coins += amt;
+            saveGameData();
+            document.getElementById('admin-feedback').innerText = `+${amt} 🪙 נוספו`;
+        }
+
+        function adminBoostScore(pts) {
+            if (!gameRunning) {
+                personalBest = Math.max(personalBest, score + pts);
+                saveGameData();
+                document.getElementById('admin-feedback').innerText = `השיא עודכן ל-${personalBest}`;
+                return;
+            }
+            score += pts;
+            handleScoreChanged();
+            document.getElementById('admin-feedback').innerText = `+${pts} נקודות נוספו לריצה`;
+        }
+
+        function adminGrantAllVip() {
+            activeRunVip = vipItemsData.map(v => v.id);
+            saveGameData();
+            document.getElementById('admin-feedback').innerText = 'כל פריטי היוקרה הופעלו לריצה הקרובה 👑';
+        }
+
+        function adminCompleteDaily() {
+            syncDailyAndStreak();
+            dailyChallenge.progress = dailyChallenge.target;
+            saveGameData();
+            document.getElementById('admin-feedback').innerText = 'האתגר היומי הושלם! ניתן לאסוף פרס';
+        }
+
+        function adminResetAllData() {
+            if (!confirm(lang === 'he' ? 'לאפס את כל הנתונים המקומיים של המשחק?' : 'Reset all local game progress?')) return;
+            const keysToClear = [
+                'juggle_coins', 'juggle_active_skin', 'juggle_active_paddle', 'juggle_active_stadium',
+                'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
+                'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_active_run_vip',
+                'juggle_career_stats', 'juggle_daily_challenge', 'juggle_streak_data',
+                'juggle_total_purchases', 'juggle_achievements', 'juggle_personal_best',
+                'juggle_best_diff', 'juggle_last_synced_score'
+            ];
+            keysToClear.forEach(k => localStorage.removeItem(k));
+            location.reload();
         }
 
         // --- Robust Firebase Realtime Leaderboard with Auto-Reconciliation ---
@@ -922,7 +1150,7 @@
         let duelGoal = 5;
         let tournamentRound = 0; // 0 = Quarterfinal, 1 = Semifinal, 2 = Final
         let tournamentWins = 0;
-        let endScreenOutcome = 'gameover'; // 'gameover' | 'duel_win' | 'duel_lose' | 'tourney_win'
+        let endScreenOutcome = 'gameover';
 
         let combo = 0;
         let isFireMode = false;
@@ -1034,6 +1262,7 @@
         function handleScoreChanged() {
             document.getElementById('game-score-board').innerText = score;
             if (isSoloMode()) {
+                updateDailyProgress('score', score, true);
                 const nextLvl = computeLevelFromScore(score);
                 if (nextLvl > currentLevel) {
                     currentLevel = nextLvl;
@@ -1050,7 +1279,6 @@
         }
 
         function pickNextMission() {
-            const t = translations[lang];
             if (isDuelMode()) {
                 updateChargeAndMissionUI();
                 return;
@@ -1200,6 +1428,7 @@
         });
 
         function setupMatchForMode(mode, keepTournamentProgress = false) {
+            syncDailyAndStreak();
             gameMode = mode;
             resizeCanvas();
             player.baseWidth = getBasePlayerWidth();
@@ -1253,6 +1482,7 @@
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('game-score-board').innerText = score;
             updateLevelBadge();
+            saveGameData();
             startBGM();
         }
 
@@ -1336,17 +1566,21 @@
                 playSound('levelup');
                 gameRunning = false;
                 if (bgmInterval) clearInterval(bgmInterval);
+                careerStats.duelWins = (careerStats.duelWins || 0) + 1;
+                updateDailyProgress('duel_win', 1, false);
                 if (gameMode === 'tournament') {
                     tournamentWins++;
                     if (tournamentRound < 2) {
                         tournamentRound++;
                         endScreenOutcome = 'tourney_next';
                     } else {
+                        careerStats.tourneyTrophies = (careerStats.tourneyTrophies || 0) + 1;
                         endScreenOutcome = 'tourney_win';
                     }
                 } else {
                     endScreenOutcome = 'duel_win';
                 }
+                saveGameData();
                 showGameOverScreen();
                 return true;
             }
@@ -1378,9 +1612,13 @@
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.28;
 
+            careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
+            updateDailyProgress('juggles', 1, false);
+
             if (isPrimaryBall) {
                 if (isSweetSpot) {
                     combo++;
+                    careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
                     if (combo >= 5 && !isFireMode) {
                         isFireMode = true;
                         document.getElementById('combo-badge').classList.remove('hidden');
@@ -1424,13 +1662,48 @@
                 score += mult;
                 advanceMission('juggles', 1, false);
                 handleScoreChanged();
+            } else {
+                saveGameData();
             }
         }
 
         function checkAchievements() {
-            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, score);
+            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, score, careerStats.totalJuggles);
             achievements.score_100.progress = Math.max(achievements.score_100.progress, score);
             saveGameData();
+        }
+
+        function drawStadiumBackground() {
+            const st = stadiumsData.find(s => s.id === activeStadium) || stadiumsData[0];
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, st.bgTop);
+            grad.addColorStop(0.5, st.bgMid);
+            grad.addColorStop(1, st.bgBot);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Pitch markings & center circle
+            ctx.save();
+            ctx.strokeStyle = st.line;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(14, canvas.height / 2);
+            ctx.lineTo(canvas.width - 14, canvas.height / 2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(54, canvas.width * 0.15), 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.strokeRect(14, 14, canvas.width - 28, canvas.height - 28);
+
+            // Stadium floodlight glow
+            const lightGrad = ctx.createRadialGradient(canvas.width / 2, 0, 10, canvas.width / 2, 0, canvas.height * 0.55);
+            lightGrad.addColorStop(0, st.glow);
+            lightGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = lightGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
         }
 
         function gameLoop() {
@@ -1657,14 +1930,7 @@
                 return;
             }
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
-            ctx.stroke();
+            drawStadiumBackground();
 
             if (isSoloMode() && bonusTarget) {
                 ctx.save();
@@ -1923,7 +2189,7 @@
             };
         }
 
-        // --- Shop & Achievements Modals ---
+        // --- Shop, Daily Challenge, Career Stats & Achievements Modals ---
         let currentShopTab = 'skins';
 
         function openShopModal() {
@@ -1935,17 +2201,20 @@
         }
 
         function setShopTabVisuals(tab) {
-            const skinBtn = document.getElementById('tab-skins-btn');
-            const paddleBtn = document.getElementById('tab-paddles-btn');
-            const songBtn = document.getElementById('tab-songs-btn');
-            const vipBtn = document.getElementById('tab-vip-btn');
-            const activeCls = 'py-2 px-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate';
-            const idleCls = 'py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
+            const ids = {
+                skins: 'tab-skins-btn',
+                paddles: 'tab-paddles-btn',
+                stadiums: 'tab-stadiums-btn',
+                songs: 'tab-songs-btn',
+                vip: 'tab-vip-btn'
+            };
+            const activeCls = 'py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate';
+            const idleCls = 'py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
 
-            skinBtn.className = (tab === 'skins') ? activeCls : idleCls;
-            paddleBtn.className = (tab === 'paddles') ? activeCls : idleCls;
-            songBtn.className = (tab === 'songs') ? activeCls : idleCls;
-            vipBtn.className = (tab === 'vip') ? activeCls : idleCls;
+            Object.keys(ids).forEach(key => {
+                const el = document.getElementById(ids[key]);
+                if (el) el.className = (key === tab) ? activeCls : idleCls;
+            });
         }
 
         function switchShopTab(tab) {
@@ -2002,6 +2271,27 @@
                                 ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
                                     isOwned ? `<button type="button" onclick="equipPaddle('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
                                     `<button type="button" onclick="buyPaddle('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else if (type === 'stadiums') {
+                stadiumsData.forEach(item => {
+                    let isOwned = unlockedStadiums.includes(item.id);
+                    let isEquipped = activeStadium === item.id;
+                    container.innerHTML += `
+                        <div class="bg-slate-800/80 border border-slate-700/80 p-3 rounded-2xl flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-12 h-10 rounded-xl border border-slate-600 shrink-0" style="background:linear-gradient(180deg, ${item.bgTop}, ${item.bgMid})"></div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-sm truncate">${item.name[lang] || item.name.en}</div>
+                                    <div class="text-xs text-amber-400 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${item.price}</div>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                ${isEquipped ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl font-bold">${t.equipped}</span>` :
+                                    isOwned ? `<button type="button" onclick="equipStadium('${item.id}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.equip}</button>` :
+                                    `<button type="button" onclick="buyStadium('${item.id}', ${item.price})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-4 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy}</button>`}
                             </div>
                         </div>
                     `;
@@ -2093,6 +2383,26 @@
             renderShop('paddles');
         }
 
+        function buyStadium(id, price) {
+            if (unlockedStadiums.includes(id)) return;
+            if (coins >= price) {
+                coins -= price;
+                unlockedStadiums.push(id);
+                activeStadium = id;
+                totalPurchasesCount++;
+                saveGameData();
+                renderShop('stadiums');
+            } else {
+                alert(lang === 'he' ? 'אין לך מספיק מטבעות!' : 'Not enough coins!');
+            }
+        }
+
+        function equipStadium(id) {
+            activeStadium = id;
+            saveGameData();
+            renderShop('stadiums');
+        }
+
         function buySong(id, price) {
             if (unlockedSongs.includes(id)) return;
             if (coins >= price) {
@@ -2128,9 +2438,71 @@
             }
         }
 
+        function renderDailyAndStats() {
+            syncDailyAndStreak();
+            const t = translations[lang];
+            const dailyBox = document.getElementById('daily-challenge-box');
+            const statsBox = document.getElementById('career-stats-box');
+
+            const prog = Math.min(dailyChallenge.target, Number(dailyChallenge.progress) || 0);
+            const isDone = prog >= dailyChallenge.target;
+            const streakBonus = Math.min(20, (streakData.count - 1) * 5);
+            const totalReward = dailyChallenge.reward + streakBonus;
+
+            dailyBox.innerHTML = `
+                <div class="flex justify-between items-center mb-1.5">
+                    <span class="text-xs font-black text-amber-300">${t.dailyTitle}</span>
+                    <span class="text-[11px] font-bold text-orange-300 bg-orange-500/15 px-2 py-0.5 rounded-lg">🔥 ${t.streakLbl}: ${streakData.count}</span>
+                </div>
+                <div class="flex justify-between items-center gap-2 text-xs mb-2">
+                    <span class="text-white font-semibold">${dailyChallenge.label[lang] || dailyChallenge.label.en}</span>
+                    <span class="text-amber-400 font-black shrink-0">+${totalReward} 🪙</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-300 font-bold">${prog} / ${dailyChallenge.target}</span>
+                    ${dailyChallenge.claimed
+                        ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>`
+                        : isDone
+                            ? `<button type="button" onclick="claimDailyChallenge()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-1 rounded-xl cursor-pointer transition">${t.claim}</button>`
+                            : `<span class="text-slate-400">${t.inProgress}</span>`
+                    }
+                </div>
+            `;
+
+            statsBox.innerHTML = `
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-xl p-2 text-center">
+                    <div class="text-sm font-black text-emerald-400">${careerStats.totalJuggles || 0}</div>
+                    <div class="text-[10px] text-slate-400 truncate">${t.statJuggles}</div>
+                </div>
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-xl p-2 text-center">
+                    <div class="text-sm font-black text-indigo-400">${careerStats.duelWins || 0}</div>
+                    <div class="text-[10px] text-slate-400 truncate">${t.statDuels}</div>
+                </div>
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-xl p-2 text-center">
+                    <div class="text-sm font-black text-amber-400">${careerStats.tourneyTrophies || 0}</div>
+                    <div class="text-[10px] text-slate-400 truncate">${t.statTrophies}</div>
+                </div>
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-xl p-2 text-center">
+                    <div class="text-sm font-black text-orange-400">${careerStats.bestCombo || 0}</div>
+                    <div class="text-[10px] text-slate-400 truncate">${t.statCombo}</div>
+                </div>
+            `;
+        }
+
+        function claimDailyChallenge() {
+            syncDailyAndStreak();
+            if (!dailyChallenge || dailyChallenge.claimed || dailyChallenge.progress < dailyChallenge.target) return;
+            const streakBonus = Math.min(20, ((streakData.count || 1) - 1) * 5);
+            coins += (Number(dailyChallenge.reward) || 50) + streakBonus;
+            dailyChallenge.claimed = true;
+            saveGameData();
+            renderDailyAndStats();
+        }
+
         function openAchievementsModal() {
             syncAchievementProgress();
             saveGameData();
+            renderDailyAndStats();
             renderAchievements();
             document.getElementById('achievements-modal').classList.remove('hidden');
         }
