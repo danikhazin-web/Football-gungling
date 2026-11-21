@@ -49,7 +49,7 @@
 
             <div class="text-center mb-4">
                 <div class="inline-flex items-center gap-1.5 bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                    <span>⚡ בעיטת פצצה • שער בונוס • דרגות</span>
+                    <span>⚡ בעיטת פצצה • יעדים ותארים • דרגות</span>
                 </div>
                 <h1 onclick="registerSecretAdminTap()" class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 mb-1 cursor-pointer select-none">
                     מלך ההקפצות
@@ -58,8 +58,8 @@
                     מלא את מד האנרגיה, השלם משימות ושבור שיאים!
                 </p>
 
-                <div class="inline-flex items-center gap-3 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3.5 py-1.5 text-xs">
-                    <span id="menu-rank-badge" class="font-black text-cyan-300">🏅 חובב</span>
+                <div class="inline-flex items-center gap-2.5 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3.5 py-1.5 text-xs flex-wrap justify-center">
+                    <span id="menu-title-badge" class="font-black text-cyan-300">🏅 חובב הקפצות</span>
                     <span class="text-slate-600">|</span>
                     <div><span id="menu-my-best-lbl" class="text-slate-400">השיא שלי: </span><span id="menu-my-best-val" class="font-black text-emerald-400">0</span></div>
                     <span class="text-slate-600">|</span>
@@ -117,7 +117,7 @@
         <div class="grid grid-cols-3 gap-2.5 pt-2 border-t border-slate-800/80">
             <button type="button" onclick="openAchievementsModal()" class="relative bg-slate-800/90 hover:bg-slate-700/90 py-3 px-2 rounded-2xl flex flex-col items-center gap-1 border border-slate-700/70 transition cursor-pointer">
                 <span id="daily-ready-dot" class="hidden absolute top-2 right-3 w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                <span class="text-xl">🏅</span><span id="nav-achieve" class="text-xs font-bold text-slate-200">הישגים</span>
+                <span class="text-xl">🏅</span><span id="nav-achieve" class="text-xs font-bold text-slate-200">יעדים והישגים</span>
             </button>
             <button type="button" onclick="openLeaderboardModal()" class="relative bg-slate-800/90 hover:bg-slate-700/90 py-3 px-2 rounded-2xl flex flex-col items-center gap-1 border border-slate-700/70 transition cursor-pointer">
                 <span id="sync-dot" class="hidden absolute top-2 right-3 w-2.5 h-2.5 rounded-full bg-amber-400"></span>
@@ -158,7 +158,7 @@
                 </div>
                 <span id="charge-pct" class="font-black text-amber-300 w-9 text-left">0%</span>
             </div>
-            <div class="flex items-center justify-between text-[11px] text-slate-300">
+            <div class="flex items-center justify-between text-[11px] text-slate-300 gap-2">
                 <span id="mission-text" class="font-semibold truncate">משימה: 16 הקפצות</span>
                 <span id="mission-progress" class="font-black text-emerald-400 shrink-0">0/16</span>
             </div>
@@ -166,8 +166,9 @@
 
         <div class="flex-1 relative w-full overflow-hidden">
             <canvas id="gameCanvas" class="w-full h-full"></canvas>
-            <div class="pointer-events-none absolute top-3 left-0 right-0 flex justify-center z-10">
+            <div class="pointer-events-none absolute top-3 left-0 right-0 flex flex-col items-center gap-1 z-10">
                 <div id="live-center-score" class="px-6 py-1.5 rounded-3xl bg-slate-950/65 backdrop-blur-sm border border-emerald-400/35 text-5xl font-black tracking-tight text-emerald-400">0</div>
+                <div id="live-best-target" class="hidden px-3 py-0.5 rounded-full bg-slate-950/70 border border-amber-400/30 text-[11px] font-bold text-amber-300"></div>
             </div>
             <div id="tap-instruction" class="pointer-events-none absolute bottom-24 left-0 right-0 text-center text-slate-400/50 text-xs font-medium">
                 גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר
@@ -188,6 +189,7 @@
                 <div class="text-4xl mb-2">⚽</div>
                 <h3 id="go-headline" class="text-2xl font-black text-white mb-1">המשחק נגמר!</h3>
                 <p id="go-score" class="text-3xl font-black text-emerald-400 mb-1">0</p>
+                <p id="go-near-miss" class="text-xs font-bold text-amber-300 mb-1 min-h-[16px]"></p>
                 <p id="go-run-stats" class="text-xs text-slate-300 mb-1"></p>
                 <p id="go-daily" class="text-xs text-cyan-300 font-semibold mb-1"></p>
                 <p id="go-best" class="text-sm text-slate-400 mb-2">השיא שלי: 0</p>
@@ -211,8 +213,9 @@
                 </div>
             </div>
             <div class="p-3.5 bg-slate-800/50 border-b border-slate-800 space-y-2.5">
-                <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center justify-between text-xs gap-2 flex-wrap">
                     <span class="text-slate-400"><span id="lb-best-lbl">השיא האישי שלך:</span> <strong id="lb-personal-best" class="text-emerald-400 text-sm">0</strong></span>
+                    <span id="lb-active-title" class="text-cyan-300 font-extrabold">🏅 חובב הקפצות</span>
                     <span id="lb-your-rank" class="text-amber-400 font-bold">הדירוג שלך: -</span>
                 </div>
                 <div id="lb-diff-bests" class="grid grid-cols-3 gap-1.5 text-[11px]"></div>
@@ -243,20 +246,25 @@
         </div>
     </div>
 
-    <!-- Achievements Modal -->
+    <!-- Achievements & Milestones Modal -->
     <div id="achievements-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
             <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h2 id="achieve-title" class="text-lg font-black flex items-center gap-2">🏅 הישגים</h2>
+                <h2 id="achieve-title" class="text-lg font-black flex items-center gap-2">🏅 יעדים והישגים</h2>
                 <button type="button" onclick="closeAchievementsModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
-            <div class="p-3.5 border-b border-slate-800 bg-slate-950/40 space-y-2.5 overflow-y-auto max-h-[46vh] no-scrollbar">
+            <div class="p-3.5 border-b border-slate-800 bg-slate-950/40 space-y-2.5 overflow-y-auto max-h-[42vh] no-scrollbar">
                 <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-400/35 rounded-2xl p-3"></div>
                 <div id="series-quest-box" class="bg-gradient-to-r from-cyan-500/15 to-indigo-500/15 border border-cyan-400/35 rounded-2xl p-3"></div>
                 <div id="career-stats-box" class="grid grid-cols-4 gap-1.5"></div>
                 <div id="recent-runs-box" class="space-y-1"></div>
             </div>
-            <div id="achievements-container" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
+            <div class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
+                <div id="milestones-section-title" class="text-xs font-black text-amber-300">מסלול יעדים ותארים</div>
+                <div id="milestones-container" class="space-y-2.5"></div>
+                <div id="achievements-section-title" class="text-xs font-black text-emerald-300 pt-2">הישגים</div>
+                <div id="achievements-container" class="space-y-2.5"></div>
+            </div>
         </div>
     </div>
 
@@ -357,6 +365,52 @@
         let streakData = safeParseJSON('juggle_streak_data', { count: 1, lastDate: '' });
         let dailyChallenge = safeParseJSON('juggle_daily_challenge', null);
 
+        const milestoneDefs = [
+            {
+                id: 'ms_25', type: 'best_score', target: 25, reward: 25,
+                title: { he: 'הגע ל-25 נקודות בסולו', en: 'Reach 25 Solo Score', ru: '25 очков в соло', fr: '25 pts en solo' },
+                badge: { he: 'חובב הקפצות', en: 'Juggler', ru: 'Новичок', fr: 'Jongleur' }
+            },
+            {
+                id: 'ms_60', type: 'best_score', target: 60, reward: 45,
+                title: { he: 'הגע ל-60 נקודות בסולו', en: 'Reach 60 Solo Score', ru: '60 очков в соло', fr: '60 pts en solo' },
+                badge: { he: 'שחקן ליגה', en: 'League Star', ru: 'Игрок лиги', fr: 'Joueur de ligue' }
+            },
+            {
+                id: 'ms_120', type: 'best_score', target: 120, reward: 75,
+                title: { he: 'הגע ל-120 נקודות בסולו', en: 'Reach 120 Solo Score', ru: '120 очков в соло', fr: '120 pts en solo' },
+                badge: { he: 'אשף טכני', en: 'Tech Wizard', ru: 'Мастер техники', fr: 'As technique' }
+            },
+            {
+                id: 'ms_200', type: 'best_score', target: 200, reward: 120,
+                title: { he: 'הגע ל-200 נקודות בסולו', en: 'Reach 200 Solo Score', ru: '200 очков в соло', fr: '200 pts en соло' },
+                badge: { he: 'מלך האצטדיון', en: 'Stadium King', ru: 'Король арены', fr: 'Roi du stade' }
+            },
+            {
+                id: 'ms_cup', type: 'trophies', target: 1, reward: 90,
+                title: { he: 'זכה בגביע טורניר אלופים', en: 'Win a Champions Cup', ru: 'Выиграй кубок турнира', fr: 'Gagne la coupe' },
+                badge: { he: 'אלוף הגביע', en: 'Cup Champion', ru: 'Чемпион кубка', fr: 'Champion coupe' }
+            }
+        ];
+
+        let claimedMilestones = Array.isArray(safeParseJSON('juggle_claimed_milestones', []))
+            ? safeParseJSON('juggle_claimed_milestones', []).map(String)
+            : [];
+
+        function getMilestoneProgress(ms) {
+            return ms.type === 'trophies' ? (Number(careerStats.tourneyTrophies) || 0) : (Number(personalBest) || 0);
+        }
+
+        function getHighestUnlockedTitle() {
+            let active = { he: 'מתחיל', en: 'Rookie', ru: 'Новичок', fr: 'Débutant' };
+            for (const ms of milestoneDefs) {
+                if (claimedMilestones.includes(ms.id) || getMilestoneProgress(ms) >= ms.target) {
+                    active = ms.badge;
+                }
+            }
+            return active[lang] || active.en;
+        }
+
         function dateKeyOffset(daysAgo = 0) {
             const d = new Date(Date.now() - daysAgo * 86400000);
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -421,8 +475,8 @@
         function syncAchievementProgress() {
             const derivedPurchases = [unlockedSkins, unlockedPaddles, unlockedStadiums, unlockedSongs]
                 .reduce((acc, list) => acc + Math.max(0, list.length - 1), 0);
-            totalPurchasesCount = Math.max(totalPurchasesCount, derivedPurchases);
-            achievements.shop_2.progress = Math.max(Number(achievements.shop_2.progress) || 0, totalPurchasesCount);
+            totalPurchasesCount = derivedPurchases;
+            achievements.shop_2.progress = derivedPurchases;
             achievements.juggles_50.progress = Math.max(Number(achievements.juggles_50.progress) || 0, careerStats.totalJuggles);
             achievements.score_100.progress = Math.max(Number(achievements.score_100.progress) || 0, personalBest);
         }
@@ -434,15 +488,9 @@
 
         const computeLevelFromScore = (pts) => Math.max(1, Math.floor((Number(pts) || 0) / 25) + 1);
 
-        function getPlayerRankInfo() {
-            const power = (Number(personalBest) || 0) + (Number(careerStats.tourneyTrophies) || 0) * 35;
-            if (lang === 'he') return power >= 250 ? 'אגדה' : power >= 130 ? 'מקצוען' : power >= 55 ? 'ליגה' : 'חובב';
-            return power >= 250 ? 'Legend' : power >= 130 ? 'Pro' : power >= 55 ? 'League' : 'Amateur';
-        }
-
         function getSeriesStepDefinition(stepIdx) {
             const steps = [
-                { target: 35, reward: 35, label: { he: 'שלב 1: צבור 35 הקפצות בקריירה', en: 'Step 1: Reach 35 career juggles', ru: 'Шаг 1: 35 набиваний всего', fr: 'Étape 1 : 35 jonglages au total' } },
+                { target: 35, reward: 35, label: { he: 'שלב 1: צבור 35 הקפצות סה"כ', en: 'Step 1: Reach 35 total juggles', ru: 'Шаг 1: 35 набиваний всего', fr: 'Étape 1 : 35 jonglages au total' } },
                 { target: 2, reward: 60, label: { he: 'שלב 2: נצח 2 קרבות (1 נגד 1 או טורניר)', en: 'Step 2: Win 2 duels / tournament matches', ru: 'Шаг 2: Выиграй 2 дуэли', fr: 'Étape 2 : Gagne 2 duels' } },
                 { target: 7, reward: 100, label: { he: 'שלב 3: הגע לקומבו 7 בריצה', en: 'Step 3: Reach a 7x combo in a run', ru: 'Шаг 3: Комбо 7x за забег', fr: 'Étape 3 : Combo 7x en une partie' } }
             ];
@@ -466,6 +514,18 @@
             renderDailyAndStats();
         }
 
+        function claimMilestone(msId) {
+            const ms = milestoneDefs.find(m => m.id === msId);
+            if (!ms || claimedMilestones.includes(ms.id)) return;
+            if (getMilestoneProgress(ms) < ms.target) return;
+            claimedMilestones.push(ms.id);
+            coins += ms.reward;
+            saveGameData();
+            if (personalBest > 0) syncScoreToFirebase(personalBest);
+            renderMilestones();
+            updateMenuRecordsStrip();
+        }
+
         const translations = {
             he: {
                 subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
@@ -474,15 +534,17 @@
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול יריבים בעלי סגנון משחק שונה",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
                 menu: "תפריט", tap: "גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר",
-                installBtn: "התקן", navAchieve: "הישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
+                installBtn: "התקן", navAchieve: "יעדים והישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת שיאים עולמית", lbBest: "השיא האישי שלך:", lbSave: "שמור שם",
                 lbNamePlaceholder: "הכנס שם לתצוגה...", lbRankPrefix: "הדירוג שלך:",
                 lbConnectError: "לא ניתן להתחבר לטבלה כרגע",
                 shopTitle: "חנות", tabSkins: "כדורים", tabPaddles: "פאדלים", tabStadiums: "אצטדיונים", tabSongs: "מוזיקה",
-                achieveTitle: "הישגים", gameOver: "המשחק נגמר!", timeUp: "הזמן נגמר!",
+                achieveTitle: "יעדים והישגים", milestonesTitle: "מסלול יעדים ותארים", achievementsSectionTitle: "הישגים",
+                gameOver: "המשחק נגמר!", timeUp: "הזמן נגמר!",
                 duelWon: "ניצחת בדו-קרב!", duelLost: "היריב ניצח!", tourneyWon: "אלוף הטורניר!",
                 tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
                 scoreTxt: "נקודות", bestTxt: "השיא שלי", myBestLbl: "השיא שלי: ", top1Lbl: "שיא ראשון: ",
+                liveBestPrefix: "השיא שלי: ", nearMissMsg: "כמעט שברת שיא! היית במרחק {diff} נקודות בלבד!",
                 retry: "שחק שוב", shareBtn: "שתף תוצאה", sharedCopied: "התוצאה הועתקה ללוח",
                 buy: "קנה", equip: "בחר", equipped: "נבחר", claim: "אסוף פרס", claimed: "נאסף ✓", inProgress: "בתהליך",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
@@ -506,15 +568,17 @@
                 pvpTitle: "1v1 Duel", pvpDesc: "Face rivals with distinct playstyles",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
                 menu: "Menu", tap: "Drag player to juggle • Center hits charge faster",
-                installBtn: "Install", navAchieve: "Achievements", navLeaderboard: "Leaderboard", navShop: "Shop",
+                installBtn: "Install", navAchieve: "Goals & Awards", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbBest: "Your personal best:", lbSave: "Save Name",
                 lbNamePlaceholder: "Enter display name...", lbRankPrefix: "Your rank:",
                 lbConnectError: "Unable to connect to leaderboard",
                 shopTitle: "Shop", tabSkins: "Balls", tabPaddles: "Paddles", tabStadiums: "Stadiums", tabSongs: "Music",
-                achieveTitle: "Achievements", gameOver: "Game Over!", timeUp: "Time's Up!",
+                achieveTitle: "Goals & Achievements", milestonesTitle: "Milestones & Titles", achievementsSectionTitle: "Achievements",
+                gameOver: "Game Over!", timeUp: "Time's Up!",
                 duelWon: "Duel Victory!", duelLost: "Rival Won!", tourneyWon: "Tournament Champion!",
                 tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
                 scoreTxt: "Score", bestTxt: "Best", myBestLbl: "My Best: ", top1Lbl: "Top #1: ",
+                liveBestPrefix: "My Best: ", nearMissMsg: "So close! Only {diff} pts away from your record!",
                 retry: "Play Again", shareBtn: "Share Score", sharedCopied: "Score copied to clipboard",
                 buy: "Buy", equip: "Equip", equipped: "Equipped", claim: "Claim", claimed: "Claimed ✓", inProgress: "In Progress",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
@@ -538,15 +602,17 @@
                 pvpTitle: "Дуэль 1 на 1", pvpDesc: "Соперники с разными стилями игры",
                 tourneyTitle: "Турнир чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал за кубок",
                 menu: "Меню", tap: "Веди игрока • Удары по центру заряжают быстрее",
-                installBtn: "Установить", navAchieve: "Награды", navLeaderboard: "Рекорды", navShop: "Магазин",
+                installBtn: "Установить", navAchieve: "Цели и награды", navLeaderboard: "Рекорды", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш лучший результат:", lbSave: "Сохранить",
                 lbNamePlaceholder: "Введите имя...", lbRankPrefix: "Ваше место:",
                 lbConnectError: "Не удалось подключиться к таблице",
                 shopTitle: "Магазин", tabSkins: "Мячи", tabPaddles: "Ракетки", tabStadiums: "Стадионы", tabSongs: "Музыка",
-                achieveTitle: "Награды", gameOver: "Игра окончена!", timeUp: "Время вышло!",
+                achieveTitle: "Цели и достижения", milestonesTitle: "Вехи и титулы", achievementsSectionTitle: "Достижения",
+                gameOver: "Игра окончена!", timeUp: "Время вышло!",
                 duelWon: "Победа в дуэли!", duelLost: "Соперник победил!", tourneyWon: "Чемпион турнира!",
                 tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
                 scoreTxt: "Очки", bestTxt: "Рекорд", myBestLbl: "Мой рекорд: ", top1Lbl: "Топ #1: ",
+                liveBestPrefix: "Рекорд: ", nearMissMsg: "Почти рекорд! Не хватило всего {diff} очков!",
                 retry: "Играть снова", shareBtn: "Поделиться", sharedCopied: "Результат скопирован",
                 buy: "Купить", equip: "Выбрать", equipped: "Выбрано", claim: "Забрать", claimed: "Получено ✓", inProgress: "В процессе",
                 diffEasy: "Лёгкий", diffMedium: "Средний", diffHard: "Сложный",
@@ -570,15 +636,17 @@
                 pvpTitle: "Duel 1v1", pvpDesc: "Affronte des rivaux aux styles variés",
                 tourneyTitle: "Tournoi des champions", tourneyDesc: "Quart, demi-finale et finale pour le trophée",
                 menu: "Menu", tap: "Glisse le joueur • Le centre charge plus vite",
-                installBtn: "Installer", navAchieve: "Succès", navLeaderboard: "Classement", navShop: "Boutique",
+                installBtn: "Installer", navAchieve: "Objectifs & Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement mondial", lbBest: "Votre meilleur score :", lbSave: "Enregistrer",
                 lbNamePlaceholder: "Entrez votre pseudo...", lbRankPrefix: "Votre rang :",
                 lbConnectError: "Connexion au classement impossible",
                 shopTitle: "Boutique", tabSkins: "Ballons", tabPaddles: "Raquettes", tabStadiums: "Stades", tabSongs: "Musique",
-                achieveTitle: "Succès", gameOver: "Partie terminée !", timeUp: "Temps écoulé !",
+                achieveTitle: "Objectifs et Succès", milestonesTitle: "Jalons et Titres", achievementsSectionTitle: "Succès",
+                gameOver: "Partie terminée !", timeUp: "Temps écoulé !",
                 duelWon: "Victoire en duel !", duelLost: "Le rival a gagné !", tourneyWon: "Champion du tournoi !",
                 tourneyStages: ["Quart", "Demi-finale", "Finale"],
                 scoreTxt: "Score", bestTxt: "Record", myBestLbl: "Mon record : ", top1Lbl: "Top #1 : ",
+                liveBestPrefix: "Record : ", nearMissMsg: "Si proche ! Plus que {diff} pts du record !",
                 retry: "Rejouer", shareBtn: "Partager", sharedCopied: "Score copié",
                 buy: "Acheter", equip: "Équiper", equipped: "Équipé", claim: "Réclamer", claimed: "Réclamé ✓", inProgress: "En cours",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
@@ -660,7 +728,7 @@
             setTxt('menu-top1-lbl', t.top1Lbl);
             const effTop = Math.max(personalBest, topGlobalScore);
             setTxt('menu-top1-val', effTop > 0 ? String(effTop) : '--');
-            setTxt('menu-rank-badge', `🏅 ${getPlayerRankInfo()}`);
+            setTxt('menu-title-badge', `🏅 ${getHighestUnlockedTitle()}`);
         }
 
         function updateDailyBadge() {
@@ -674,8 +742,21 @@
                 const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
                 const sDef = getSeriesStepDefinition(sIdx);
                 const seriesReady = !seriesQuest.claimedSteps[sIdx] && seriesQuest.progress >= sDef.target;
-                dot.classList.toggle('hidden', !(dailyReady || seriesReady));
+                const msReady = milestoneDefs.some(ms => !claimedMilestones.includes(ms.id) && getMilestoneProgress(ms) >= ms.target);
+                dot.classList.toggle('hidden', !(dailyReady || seriesReady || msReady));
             }
+        }
+
+        function updateLiveBestTargetUI() {
+            const el = document.getElementById('live-best-target');
+            if (!el) return;
+            if (!isSoloMode() || personalBest <= 0) {
+                el.classList.add('hidden');
+                return;
+            }
+            const t = translations[lang];
+            el.classList.remove('hidden');
+            el.innerText = `${t.liveBestPrefix}${personalBest}`;
         }
 
         function updateUIStrings() {
@@ -696,7 +777,9 @@
                 'tab-stadiums-btn': t.tabStadiums, 'tab-songs-btn': t.tabSongs,
                 'pause-title': t.pauseTitle, 'pause-resume-btn': t.resumeBtn, 'pause-menu-btn': t.pauseMenuBtn,
                 'go-retry-btn': t.retry, 'go-menu-btn': t.menu, 'go-share-btn': t.shareBtn,
-                'hot-minute-badge': t.hotMinuteLbl
+                'hot-minute-badge': t.hotMinuteLbl,
+                'milestones-section-title': t.milestonesTitle,
+                'achievements-section-title': t.achievementsSectionTitle
             };
             Object.entries(map).forEach(([id, val]) => setTxt(id, val));
 
@@ -727,6 +810,7 @@
             updateTimerBadge();
             updateChargeAndMissionUI();
             updateLiveScoreBoard();
+            updateLiveBestTargetUI();
         }
 
         function toggleLang() {
@@ -761,6 +845,7 @@
             localStorage.setItem('juggle_streak_data', JSON.stringify(streakData));
             localStorage.setItem('juggle_total_purchases', String(totalPurchasesCount));
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
+            localStorage.setItem('juggle_claimed_milestones', JSON.stringify(claimedMilestones));
             localStorage.setItem('juggle_personal_best', String(personalBest));
             localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
             localStorage.setItem('juggle_best_diff', bestDifficulty);
@@ -811,9 +896,9 @@
                 'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
                 'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_career_stats',
                 'juggle_series_quest', 'juggle_daily_challenge', 'juggle_streak_data',
-                'juggle_total_purchases', 'juggle_achievements', 'juggle_personal_best',
-                'juggle_top_global_score', 'juggle_best_diff', 'juggle_last_synced_score',
-                'juggle_diff_bests', 'juggle_recent_runs'].forEach(k => localStorage.removeItem(k));
+                'juggle_total_purchases', 'juggle_achievements', 'juggle_claimed_milestones',
+                'juggle_personal_best', 'juggle_top_global_score', 'juggle_best_diff',
+                'juggle_last_synced_score', 'juggle_diff_bests', 'juggle_recent_runs'].forEach(k => localStorage.removeItem(k));
             location.reload();
         }
 
@@ -831,6 +916,7 @@
             if (validScore <= 0) return false;
             const payload = {
                 name: (playerName || '').trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player'),
+                title: getHighestUnlockedTitle(),
                 score: validScore,
                 difficulty: bestDifficulty || difficulty,
                 updatedAt: Date.now()
@@ -859,7 +945,13 @@
             const listEl = document.getElementById('leaderboard-list');
             const normalized = (Array.isArray(players) ? players : [])
                 .filter(p => p && typeof p === 'object')
-                .map(p => ({ id: String(p.id || ''), name: String(p.name || 'Player'), score: Number(p.score) || 0, diff: String(p.difficulty || '') }))
+                .map(p => ({
+                    id: String(p.id || ''),
+                    name: String(p.name || 'Player'),
+                    title: String(p.title || ''),
+                    score: Number(p.score) || 0,
+                    diff: String(p.difficulty || '')
+                }))
                 .sort((a, b) => b.score - a.score);
 
             if (normalized.length > 0) {
@@ -870,6 +962,7 @@
 
             const myIdx = normalized.findIndex(p => p.id === playerId);
             document.getElementById('lb-your-rank').innerText = myIdx >= 0 ? `${t.lbRankPrefix} #${myIdx + 1} / ${normalized.length}` : `${t.lbRankPrefix} -`;
+            document.getElementById('lb-active-title').innerText = `🏅 ${getHighestUnlockedTitle()}`;
             const diffLabels = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
 
             listEl.innerHTML = '';
@@ -886,9 +979,13 @@
                     ? `<span class="w-7 h-7 rounded-full bg-amber-500/15 text-amber-300 font-black text-sm flex items-center justify-center shrink-0">${iconMap[rank]}</span>`
                     : `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
 
+                const metaParts = [];
+                if (p.title) metaParts.push(`🏅 ${p.title}`);
+                if (p.diff && diffLabels[p.diff]) metaParts.push(diffLabels[p.diff]);
+
                 const row = document.createElement('div');
                 row.className = `p-3 rounded-2xl flex items-center justify-between border ${isMe ? 'bg-emerald-950/60 border-emerald-500/70' : 'bg-slate-800/70 border-slate-700/60'}`;
-                row.innerHTML = `${badge}<div class="flex flex-col min-w-0 flex-1 mx-2.5"><span class="font-bold text-sm truncate ${isMe ? 'text-emerald-300' : 'text-white'}"></span>${p.diff && diffLabels[p.diff] ? `<span class="text-[10px] text-slate-400">${diffLabels[p.diff]}</span>` : ''}</div><span class="font-black text-base text-amber-400 shrink-0">${p.score}</span>`;
+                row.innerHTML = `${badge}<div class="flex flex-col min-w-0 flex-1 mx-2.5"><span class="font-bold text-sm truncate ${isMe ? 'text-emerald-300' : 'text-white'}"></span>${metaParts.length ? `<span class="text-[10px] text-cyan-300/90 truncate">${metaParts.join(' • ')}</span>` : ''}</div><span class="font-black text-base text-amber-400 shrink-0">${p.score}</span>`;
                 row.querySelector('span.font-bold').textContent = p.name + (isMe ? (lang === 'he' ? ' (אתה)' : ' (You)') : '');
                 listEl.appendChild(row);
             });
@@ -924,6 +1021,7 @@
             const refreshIcon = document.getElementById('lb-refresh-icon');
             document.getElementById('player-name-input').value = playerName;
             document.getElementById('lb-personal-best').innerText = personalBest;
+            document.getElementById('lb-active-title').innerText = `🏅 ${getHighestUnlockedTitle()}`;
             renderDiffBestsBox();
             setSyncStatusMessage('');
             if (refreshBtn) refreshBtn.disabled = true;
@@ -934,7 +1032,8 @@
                 let res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 let data = await res.json();
-                const cloudScore = data && data[playerId] ? Number(data[playerId].score) || 0 : 0;
+                const cloudEntry = data && data[playerId] ? data[playerId] : null;
+                const cloudScore = cloudEntry ? Number(cloudEntry.score) || 0 : 0;
 
                 if (personalBest > cloudScore || (forceSync && personalBest > 0)) {
                     if (await syncScoreToFirebase(personalBest)) {
@@ -949,7 +1048,11 @@
 
                 const players = data && typeof data === 'object'
                     ? Object.entries(data).filter(([, v]) => v && typeof v === 'object').map(([id, v]) => ({
-                        id, name: String(v.name || 'Player'), score: Number(v.score) || 0, difficulty: String(v.difficulty || '')
+                        id,
+                        name: String(v.name || 'Player'),
+                        title: String(v.title || ''),
+                        score: Number(v.score) || 0,
+                        difficulty: String(v.difficulty || '')
                     }))
                     : [];
                 renderLeaderboardRows(players);
@@ -1363,7 +1466,7 @@
 
             pickNextMission(); updateStageModifierUI(); updateTimerBadge();
             document.getElementById('combo-badge').classList.add('hidden');
-            updateLiveScoreBoard(); updateLevelBadge(); saveGameData(); startBGM();
+            updateLiveScoreBoard(); updateLiveBestTargetUI(); updateLevelBadge(); saveGameData(); startBGM();
             lastFrameTime = performance.now();
         }
 
@@ -1371,6 +1474,7 @@
             if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
             releaseAllPointers();
             document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('flex');
             document.getElementById('game-container').classList.remove('hidden');
             setupMatchForMode(mode, keepTournamentProgress);
             gameRunning = true;
@@ -1387,7 +1491,9 @@
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
             document.getElementById('game-container').classList.add('hidden');
-            document.getElementById('main-menu').classList.remove('hidden');
+            const menu = document.getElementById('main-menu');
+            menu.classList.remove('hidden');
+            menu.classList.add('flex');
             updateUIStrings();
         }
 
@@ -1895,6 +2001,7 @@
 
         function showGameOverScreen() {
             const t = translations[lang];
+            const prevBest = personalBest;
             let isNewRecord = false;
             if (isSoloMode()) {
                 diffBests[difficulty] = Math.max(diffBests[difficulty] || 0, score);
@@ -1909,6 +2016,13 @@
             if (earnedCoins > 0) coins += earnedCoins;
             saveGameData();
             if (isSoloMode() && personalBest > 0) syncScoreToFirebase(personalBest);
+
+            const nearEl = document.getElementById('go-near-miss');
+            if (isSoloMode() && !isNewRecord && prevBest > score && (prevBest - score) <= 3) {
+                nearEl.innerText = t.nearMissMsg.replace('{diff}', String(prevBest - score));
+            } else {
+                nearEl.innerText = '';
+            }
 
             const headlines = { timeup: t.timeUp, duel_win: t.duelWon, duel_lose: t.duelLost, tourney_win: t.tourneyWon, tourney_next: `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]}` };
             document.getElementById('go-headline').innerText = headlines[endReason] || t.gameOver;
@@ -1974,7 +2088,7 @@
         function purchaseItem(list, price, onEquip, tab) {
             if (list.includes(onEquip)) return;
             if (coins < price) { alert(lang === 'he' ? 'אין לך מספיק מטבעות!' : 'Not enough coins!'); return; }
-            coins -= price; list.push(onEquip); totalPurchasesCount++;
+            coins -= price; list.push(onEquip);
             saveGameData(); renderShop(tab);
         }
         const buySkin = (id, p) => { purchaseItem(unlockedSkins, p, id, 'skins'); if (unlockedSkins.includes(id)) equipSkin(id); };
@@ -2030,10 +2144,37 @@
 
         function openAchievementsModal() {
             releaseAllPointers(); syncAchievementProgress(); saveGameData();
-            renderDailyAndStats(); renderAchievements();
+            renderDailyAndStats(); renderMilestones(); renderAchievements();
             document.getElementById('achievements-modal').classList.remove('hidden');
         }
         function closeAchievementsModal() { document.getElementById('achievements-modal').classList.add('hidden'); }
+
+        function renderMilestones() {
+            const container = document.getElementById('milestones-container');
+            if (!container) return;
+            const t = translations[lang];
+            container.innerHTML = milestoneDefs.map(ms => {
+                const cur = Math.min(ms.target, Math.max(0, getMilestoneProgress(ms)));
+                const pct = Math.min(100, Math.round((cur / ms.target) * 100));
+                const claimed = claimedMilestones.includes(ms.id);
+                const ready = !claimed && getMilestoneProgress(ms) >= ms.target;
+                const badgeText = ms.badge[lang] || ms.badge.en;
+                return `<div class="bg-slate-800/80 border border-amber-500/25 p-3.5 rounded-2xl flex flex-col gap-2">
+                    <div class="flex justify-between items-center gap-2">
+                        <div class="min-w-0">
+                            <div class="font-bold text-sm truncate">${ms.title[lang] || ms.title.en}</div>
+                            <div class="text-[11px] text-cyan-300 font-bold">🏅 ${badgeText}</div>
+                        </div>
+                        <div class="text-xs text-amber-400 font-bold shrink-0">+${ms.reward} 🪙</div>
+                    </div>
+                    <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-amber-400 h-full transition-all duration-300" style="width:${pct}%"></div></div>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>${cur} / ${ms.target}</span>
+                        ${claimed ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` : ready ? `<button type="button" onclick="claimMilestone('${ms.id}')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-3 py-1 rounded-xl transition cursor-pointer">${t.claim}</button>` : `<span class="text-slate-500">${t.inProgress}</span>`}
+                    </div>
+                </div>`;
+            }).join('');
+        }
 
         function renderAchievements() {
             const container = document.getElementById('achievements-container');
@@ -2047,7 +2188,7 @@
                 const d = achievements[id] || { progress: 0, target: 1, reward: 20, claimed: false };
                 const cur = Math.min(d.target, Math.max(0, Number(d.progress) || 0));
                 const pct = Math.min(100, Math.round((cur / d.target) * 100));
-                return `<div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl flex flex-col gap-2"><div class="flex justify-between items-center gap-2"><div class="font-bold text-sm">${title[lang] || title.en}</div><div class="text-xs text-amber-400 font-bold shrink-0">+${d.reward} 🪙</div></div><div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full transition-all duration-300" style="width:${pct}%"></div></div><div class="flex justify-between items-center text-xs text-slate-400"><span>${cur} / ${d.target}</span>${d.claimed ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` : cur >= d.target ? `<button type="button" onclick="claimAchievement('${id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded-xl transition cursor-pointer">${t.claim}</button>` : `<span class="text-slate-500">${t.inProgress}</span>`}</div></div>`;
+                return `<div class="bg-slate-800/80 border border-slate-700/80 p-3.5 rounded-2xl flex flex-col gap-2"><div class="flex justify-between items-center gap-2"><div class="font-bold text-sm">${title[lang] || title.en}</div><div class="text-xs text-amber-400 font-bold shrink-0">+${d.reward} 🪙</div></div><div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full transition-all duration-300" style="width:${pct}%"></div></div><div class="flex justify-between items-center text-xs text-slate-400"><span>${cur} / ${d.target}</span>${d.claimed ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` : cur >= d.target ? `<button type="button" onclick="claimAchievement('${id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1 rounded-xl transition cursor-pointer">${t.claim}</button>` : `<span class="text-slate-500">${t.inProgress}</span>`}</div></div>`;
             }).join('');
         }
 
@@ -2061,4 +2202,3 @@
     </script>
 </body>
 </html>
-
