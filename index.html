@@ -27,7 +27,7 @@
     <!-- Main Menu -->
     <div id="main-menu" class="flex-1 flex flex-col justify-between p-4 max-w-md w-full mx-auto overflow-y-auto no-scrollbar">
         <div>
-            <div class="flex flex-wrap justify-between items-center gap-2 mb-3 pt-1">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pt-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
                     <button type="button" onclick="toggleLang()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-700 cursor-pointer min-h-[34px] whitespace-nowrap">
                         <span>🌐</span><span id="lang-text">עברית</span>
@@ -47,38 +47,27 @@
                 </div>
             </div>
 
-            <div class="text-center mb-3">
+            <div class="text-center mb-4">
                 <div class="inline-flex items-center gap-1.5 bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                    <span>⚡ בעיטת פצצה • קריירה • דרגות</span>
+                    <span>⚡ בעיטת פצצה • שער בונוס • דרגות</span>
                 </div>
                 <h1 onclick="registerSecretAdminTap()" class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 mb-1 cursor-pointer select-none">
                     מלך ההקפצות
                 </h1>
-                <p id="menu-subtitle" class="text-slate-400 text-xs font-medium mb-2.5">
+                <p id="menu-subtitle" class="text-slate-400 text-xs font-medium mb-3">
                     מלא את מד האנרגיה, השלם משימות ושבור שיאים!
                 </p>
 
-                <div class="inline-flex items-center gap-2.5 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3 py-1.5 text-xs mb-2">
+                <div class="inline-flex items-center gap-3 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3.5 py-1.5 text-xs">
                     <span id="menu-rank-badge" class="font-black text-cyan-300">🏅 חובב</span>
                     <span class="text-slate-600">|</span>
-                    <div><span id="menu-ovr-lbl" class="text-slate-400">דירוג: </span><span id="menu-ovr-val" class="font-black text-amber-300">60</span></div>
-                    <span class="text-slate-600">|</span>
                     <div><span id="menu-my-best-lbl" class="text-slate-400">השיא שלי: </span><span id="menu-my-best-val" class="font-black text-emerald-400">0</span></div>
-                </div>
-
-                <div class="bg-slate-800/75 border border-slate-700/70 rounded-2xl px-3 py-2 flex items-center justify-between gap-2 text-xs">
-                    <div class="text-right min-w-0">
-                        <div id="menu-club-lbl" class="font-bold text-slate-200 truncate">מועדון: הפועל עכו</div>
-                        <div id="menu-break-lbl" class="text-[11px] text-cyan-300 truncate">פגרת נבחרות בעוד 2 משחקים</div>
-                    </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" onclick="openCareerHubModal()" class="bg-indigo-600/80 hover:bg-indigo-500 text-white font-bold px-2.5 py-1.5 rounded-xl text-[11px] cursor-pointer transition">קריירה</button>
-                        <button type="button" onclick="openTriviaModal('menu')" class="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 font-bold px-2.5 py-1.5 rounded-xl text-[11px] cursor-pointer transition">טריוויה</button>
-                    </div>
+                    <span class="text-slate-600">|</span>
+                    <div><span id="menu-top1-lbl" class="text-slate-400">שיא ראשון: </span><span id="menu-top1-val" class="font-black text-amber-400">--</span></div>
                 </div>
             </div>
 
-            <div class="space-y-2.5 mb-3">
+            <div class="space-y-2.5 mb-4">
                 <button type="button" onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl shadow-lg shadow-emerald-950/50 flex items-center justify-between transition active:scale-95 cursor-pointer border border-emerald-400/20">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">⚽</div>
@@ -195,44 +184,19 @@
         </div>
 
         <div id="game-over-overlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 max-w-xs w-full text-center shadow-2xl">
-                <div class="text-4xl mb-1.5">⚽</div>
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl">
+                <div class="text-4xl mb-2">⚽</div>
                 <h3 id="go-headline" class="text-2xl font-black text-white mb-1">המשחק נגמר!</h3>
                 <p id="go-score" class="text-3xl font-black text-emerald-400 mb-1">0</p>
                 <p id="go-run-stats" class="text-xs text-slate-300 mb-1"></p>
                 <p id="go-daily" class="text-xs text-cyan-300 font-semibold mb-1"></p>
-                <p id="go-career-note" class="text-xs text-amber-200 font-semibold mb-1"></p>
                 <p id="go-best" class="text-sm text-slate-400 mb-2">השיא שלי: 0</p>
                 <div id="go-coins" class="text-amber-400 font-bold text-sm mb-3"></div>
-                <button id="go-trivia-btn" type="button" onclick="openTriviaModal('gameover')" class="w-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 font-bold py-2 rounded-2xl transition cursor-pointer text-xs mb-2">שאלת טריוויה לבונוס (+12 🪙)</button>
                 <button id="go-retry-btn" type="button" onclick="handleGameOverRetry()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-2xl transition cursor-pointer mb-2">שחק שוב</button>
                 <button id="go-menu-btn" type="button" onclick="returnToMenu()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-2xl border border-slate-700 transition cursor-pointer mb-2">תפריט</button>
                 <button id="go-share-btn" type="button" onclick="handleGameOverShare()" class="w-full bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-bold py-2 rounded-2xl border border-slate-700 transition cursor-pointer text-xs">שתף תוצאה</button>
                 <div id="go-copied" class="text-[11px] text-emerald-400 font-semibold mt-1 h-4"></div>
             </div>
-        </div>
-    </div>
-    <!-- Career Hub Modal (OVR Training, Contract Offers & International Break) -->
-    <div id="career-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h2 id="career-modal-title" class="text-lg font-black flex items-center gap-2">👔 קריירה וחוזה</h2>
-                <button type="button" onclick="closeCareerHubModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
-            </div>
-            <div id="career-modal-body" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
-        </div>
-    </div>
-
-    <!-- Trivia Modal -->
-    <div id="trivia-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-30 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-amber-500/40 rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
-                <h3 id="trivia-modal-title" class="font-black text-amber-300 text-base">🧠 טריוויה כדורגל</h3>
-                <button type="button" onclick="closeTriviaModal()" class="bg-slate-800 hover:bg-slate-700 w-7 h-7 rounded-full text-xs text-slate-300 cursor-pointer">✕</button>
-            </div>
-            <p id="trivia-question-text" class="text-sm font-bold text-white leading-relaxed"></p>
-            <div id="trivia-options-box" class="space-y-2"></div>
-            <div id="trivia-result-text" class="text-xs font-bold text-center min-h-[18px]"></div>
         </div>
     </div>
 
@@ -313,6 +277,7 @@
             <div id="admin-feedback" class="text-xs text-emerald-300 font-semibold text-center min-h-[16px]"></div>
         </div>
     </div>
+
     <script>
         const FIREBASE_DB_URL = 'https://football-juggling-default-rtdb.firebaseio.com';
         const MAX_PARTICLES = 70;
@@ -376,67 +341,8 @@
             totalJuggles: Number(rawCareer.totalJuggles) || 0,
             duelWins: Number(rawCareer.duelWins) || 0,
             tourneyTrophies: Number(rawCareer.tourneyTrophies) || 0,
-            bestCombo: Number(rawCareer.bestCombo) || 0,
-            ovr: Math.min(92, Math.max(60, Number(rawCareer.ovr) || 60)),
-            season: Math.max(1, Number(rawCareer.season) || 1),
-            matchesPlayed: Math.max(0, Number(rawCareer.matchesPlayed) || 0),
-            clubId: String(rawCareer.clubId || 'hapoel_akko'),
-            triviaAnsweredIds: Array.isArray(rawCareer.triviaAnsweredIds) ? rawCareer.triviaAnsweredIds : []
+            bestCombo: Number(rawCareer.bestCombo) || 0
         };
-
-        const clubsData = [
-            { id: 'hapoel_akko', name: { he: 'הפועל עכו', en: 'Hapoel Acre', ru: 'Хапоэль Акко', fr: 'Hapoel Acre' }, minOvr: 60, coinBonus: 1, chargeBonus: 0, widthBonus: 0 },
-            { id: 'maccabi_haifa', name: { he: 'מכבי חיפה', en: 'Maccabi Haifa', ru: 'Маккаби Хайфа', fr: 'Maccabi Haïfa' }, minOvr: 66, coinBonus: 2, chargeBonus: 2, widthBonus: 2 },
-            { id: 'aston_villa', name: { he: 'אסטון וילה', en: 'Aston Villa', ru: 'Астон Вилла', fr: 'Aston Villa' }, minOvr: 72, coinBonus: 3, chargeBonus: 3, widthBonus: 4 },
-            { id: 'bayern_munich', name: { he: 'באיירן מינכן', en: 'Bayern Munich', ru: 'Бавария Мюнхен', fr: 'Bayern Munich' }, minOvr: 78, coinBonus: 4, chargeBonus: 4, widthBonus: 6 }
-        ];
-
-        const triviaQuestions = [
-            {
-                id: 't1',
-                q: { he: 'כמה שחקנים פותחים בהרכב של קבוצת כדורגל על המגרש?', en: 'How many outfield + GK players start per soccer team?', ru: 'Сколько игроков в стартовом составе футбольной команды?', fr: 'Combien de joueurs débutent sur le terrain par équipe ?' },
-                opts: {
-                    he: ['11 שחקנים', '9 שחקנים', '12 שחקנים'],
-                    en: ['11 players', '9 players', '12 players'],
-                    ru: ['11 игроков', '9 игроков', '12 игроков'],
-                    fr: ['11 joueurs', '9 joueurs', '12 joueurs']
-                },
-                correct: 0
-            },
-            {
-                id: 't2',
-                q: { he: 'מהו אורך מחצית רגילה בכדורגל בוגרים?', en: 'What is the standard length of one half in senior soccer?', ru: 'Сколько длится один обычный тайм в футболе?', fr: 'Quelle est la durée standard d’une mi-temps au football ?' },
-                opts: {
-                    he: ['35 דקות', '45 דקות', '50 דקות'],
-                    en: ['35 minutes', '45 minutes', '50 minutes'],
-                    ru: ['35 минут', '45 минут', '50 минут'],
-                    fr: ['35 minutes', '45 minutes', '50 minutes']
-                },
-                correct: 1
-            },
-            {
-                id: 't3',
-                q: { he: 'איזה כרטיס מוציא שופט לעבירה חמורה או כרטיס צהוב שני?', en: 'Which card means a player is sent off?', ru: 'Какая карточка означает удаление игрока с поля?', fr: 'Quel carton entraîne l’expulsion d’un joueur ?' },
-                opts: {
-                    he: ['כרטיס ירוק', 'כרטיס אדום', 'כרטיס לבן'],
-                    en: ['Green card', 'Red card', 'White card'],
-                    ru: ['Зелёная карточка', 'Красный картон', 'Белая карточка'],
-                    fr: ['Carton vert', 'Carton rouge', 'Carton blanc']
-                },
-                correct: 1
-            },
-            {
-                id: 't4',
-                q: { he: 'איך מתחדש המשחק לאחר שהכדור עובר את קו הרוחב מאחורי השער?', en: 'How does play restart after the ball crosses the goal line off an attacker?', en: 'How does play restart after a goal kick?', ru: 'Как возобновляется игра при ударе от ворот?', fr: 'Comment reprend le jeu après une sortie de but par l’attaque ?' },
-                opts: {
-                    he: ['בעיטת שוער / בעיטת שער', 'כדור ביניים', 'זריקת חוץ מהאמצע'],
-                    en: ['Goal kick', 'Drop ball', 'Center throw-in'],
-                    ru: ['Удар от ворот', 'Спорный мяч', 'Вбрасывание с центра'],
-                    fr: ['Six mètres', 'Balle à terre', 'Touche du milieu']
-                },
-                correct: 0
-            }
-        ];
 
         const rawSeries = safeParseJSON('juggle_series_quest', {});
         let seriesQuest = {
@@ -528,40 +434,8 @@
 
         const computeLevelFromScore = (pts) => Math.max(1, Math.floor((Number(pts) || 0) / 25) + 1);
 
-        function getActiveClub() {
-            return clubsData.find(c => c.id === careerStats.clubId) || clubsData[0];
-        }
-
-        function getTrainingCost() {
-            return Math.min(240, 45 + Math.max(0, (careerStats.ovr - 60) * 8));
-        }
-
-        function trainPlayerGradually() {
-            const cost = getTrainingCost();
-            if (careerStats.ovr >= 92) return false;
-            if (coins < cost) {
-                alert(lang === 'he' ? 'אין מספיק מטבעות לאימון כרגע.' : 'Not enough coins for training.');
-                return false;
-            }
-            coins -= cost;
-            careerStats.ovr = Math.min(92, careerStats.ovr + 1);
-            saveGameData();
-            renderCareerHubModal();
-            return true;
-        }
-
-        function signContractOffer(clubId) {
-            const club = clubsData.find(c => c.id === clubId);
-            if (!club || careerStats.ovr < club.minOvr) return;
-            const isSameClub = careerStats.clubId === club.id;
-            careerStats.clubId = club.id;
-            coins += isSameClub ? 15 : 25;
-            saveGameData();
-            renderCareerHubModal();
-        }
-
         function getPlayerRankInfo() {
-            const power = (Number(personalBest) || 0) + (Number(careerStats.tourneyTrophies) || 0) * 35 + ((careerStats.ovr || 60) - 60) * 3;
+            const power = (Number(personalBest) || 0) + (Number(careerStats.tourneyTrophies) || 0) * 35;
             if (lang === 'he') return power >= 250 ? 'אגדה' : power >= 130 ? 'מקצוען' : power >= 55 ? 'ליגה' : 'חובב';
             return power >= 250 ? 'Legend' : power >= 130 ? 'Pro' : power >= 55 ? 'League' : 'Amateur';
         }
@@ -591,6 +465,7 @@
             saveGameData();
             renderDailyAndStats();
         }
+
         const translations = {
             he: {
                 subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
@@ -607,7 +482,7 @@
                 achieveTitle: "הישגים", gameOver: "המשחק נגמר!", timeUp: "הזמן נגמר!",
                 duelWon: "ניצחת בדו-קרב!", duelLost: "היריב ניצח!", tourneyWon: "אלוף הטורניר!",
                 tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
-                scoreTxt: "נקודות", bestTxt: "השיא שלי", myBestLbl: "השיא שלי: ", ovrLbl: "דירוג: ",
+                scoreTxt: "נקודות", bestTxt: "השיא שלי", myBestLbl: "השיא שלי: ", top1Lbl: "שיא ראשון: ",
                 retry: "שחק שוב", shareBtn: "שתף תוצאה", sharedCopied: "התוצאה הועתקה ללוח",
                 buy: "קנה", equip: "בחר", equipped: "נבחר", claim: "אסוף פרס", claimed: "נאסף ✓", inProgress: "בתהליך",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
@@ -639,7 +514,7 @@
                 achieveTitle: "Achievements", gameOver: "Game Over!", timeUp: "Time's Up!",
                 duelWon: "Duel Victory!", duelLost: "Rival Won!", tourneyWon: "Tournament Champion!",
                 tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
-                scoreTxt: "Score", bestTxt: "Best", myBestLbl: "My Best: ", ovrLbl: "OVR: ",
+                scoreTxt: "Score", bestTxt: "Best", myBestLbl: "My Best: ", top1Lbl: "Top #1: ",
                 retry: "Play Again", shareBtn: "Share Score", sharedCopied: "Score copied to clipboard",
                 buy: "Buy", equip: "Equip", equipped: "Equipped", claim: "Claim", claimed: "Claimed ✓", inProgress: "In Progress",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
@@ -671,7 +546,7 @@
                 achieveTitle: "Награды", gameOver: "Игра окончена!", timeUp: "Время вышло!",
                 duelWon: "Победа в дуэли!", duelLost: "Соперник победил!", tourneyWon: "Чемпион турнира!",
                 tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
-                scoreTxt: "Очки", bestTxt: "Рекорд", myBestLbl: "Мой рекорд: ", ovrLbl: "Рейтинг: ",
+                scoreTxt: "Очки", bestTxt: "Рекорд", myBestLbl: "Мой рекорд: ", top1Lbl: "Топ #1: ",
                 retry: "Играть снова", shareBtn: "Поделиться", sharedCopied: "Результат скопирован",
                 buy: "Купить", equip: "Выбрать", equipped: "Выбрано", claim: "Забрать", claimed: "Получено ✓", inProgress: "В процессе",
                 diffEasy: "Лёгкий", diffMedium: "Средний", diffHard: "Сложный",
@@ -703,7 +578,7 @@
                 achieveTitle: "Succès", gameOver: "Partie terminée !", timeUp: "Temps écoulé !",
                 duelWon: "Victoire en duel !", duelLost: "Le rival a gagné !", tourneyWon: "Champion du tournoi !",
                 tourneyStages: ["Quart", "Demi-finale", "Finale"],
-                scoreTxt: "Score", bestTxt: "Record", myBestLbl: "Mon record : ", ovrLbl: "Note : ",
+                scoreTxt: "Score", bestTxt: "Record", myBestLbl: "Mon record : ", top1Lbl: "Top #1 : ",
                 retry: "Rejouer", shareBtn: "Partager", sharedCopied: "Score copié",
                 buy: "Acheter", equip: "Équiper", equipped: "Équipé", claim: "Réclamer", claimed: "Réclamé ✓", inProgress: "En cours",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
@@ -779,18 +654,13 @@
 
         function updateMenuRecordsStrip() {
             const t = translations[lang];
-            const club = getActiveClub();
-            const remainingBreak = 3 - (careerStats.matchesPlayed % 3);
             const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
             setTxt('menu-my-best-lbl', t.myBestLbl);
             setTxt('menu-my-best-val', String(personalBest));
-            setTxt('menu-ovr-lbl', t.ovrLbl);
-            setTxt('menu-ovr-val', String(careerStats.ovr || 60));
+            setTxt('menu-top1-lbl', t.top1Lbl);
+            const effTop = Math.max(personalBest, topGlobalScore);
+            setTxt('menu-top1-val', effTop > 0 ? String(effTop) : '--');
             setTxt('menu-rank-badge', `🏅 ${getPlayerRankInfo()}`);
-            setTxt('menu-club-lbl', `${lang === 'he' ? 'מועדון' : 'Club'}: ${club.name[lang] || club.name.en} • ${lang === 'he' ? 'עונה' : 'S'}${careerStats.season}`);
-            setTxt('menu-break-lbl', lang === 'he'
-                ? `פגרת נבחרות בעוד ${remainingBreak} משחקים`
-                : `International break in ${remainingBreak} match(es)`);
         }
 
         function updateDailyBadge() {
@@ -830,18 +700,24 @@
             };
             Object.entries(map).forEach(([id, val]) => setTxt(id, val));
 
-            document.getElementById('lb-title').innerHTML = `🏆 ${t.lbTitle}`;
-            document.getElementById('player-name-input').placeholder = t.lbNamePlaceholder;
-            document.getElementById('shop-title').innerHTML = `🏪 ${t.shopTitle}`;
-            document.getElementById('achieve-title').innerHTML = `🏅 ${t.achieveTitle}`;
+            const lbTitle = document.getElementById('lb-title');
+            if (lbTitle) lbTitle.innerHTML = `🏆 ${t.lbTitle}`;
+            const nameInp = document.getElementById('player-name-input');
+            if (nameInp) nameInp.placeholder = t.lbNamePlaceholder;
+            const shopTitle = document.getElementById('shop-title');
+            if (shopTitle) shopTitle.innerHTML = `🏪 ${t.shopTitle}`;
+            const achieveTitle = document.getElementById('achieve-title');
+            if (achieveTitle) achieveTitle.innerHTML = `🏅 ${t.achieveTitle}`;
 
             const diffNames = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
             const diffBtn = document.getElementById('diff-btn');
-            diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer min-h-[34px] whitespace-nowrap ' + (
-                difficulty === 'easy' ? 'bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-500/50 text-emerald-300'
-                    : difficulty === 'hard' ? 'bg-rose-950/80 hover:bg-rose-900/80 border-rose-500/50 text-rose-300'
-                    : 'bg-slate-700/85 hover:bg-slate-700 border-slate-600 text-white'
-            );
+            if (diffBtn) {
+                diffBtn.className = 'px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border cursor-pointer min-h-[34px] whitespace-nowrap ' + (
+                    difficulty === 'easy' ? 'bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-500/50 text-emerald-300'
+                        : difficulty === 'hard' ? 'bg-rose-950/80 hover:bg-rose-900/80 border-rose-500/50 text-rose-300'
+                        : 'bg-slate-700/85 hover:bg-slate-700 border-slate-600 text-white'
+                );
+            }
             setTxt('diff-text', diffNames[difficulty]);
             setTxt('lang-text', { he: 'עברית', en: 'English', ru: 'Русский', fr: 'Français' }[lang]);
             setTxt('header-coins', coins);
@@ -891,89 +767,12 @@
             localStorage.setItem('juggle_diff_bests', JSON.stringify(diffBests));
             localStorage.setItem('juggle_recent_runs', JSON.stringify(recentRuns.slice(0, 8)));
             persistPrefs();
-            document.getElementById('header-coins').innerText = coins;
+            const coinEl = document.getElementById('header-coins');
+            if (coinEl) coinEl.innerText = coins;
             updateMenuRecordsStrip();
             updateDailyBadge();
         }
 
-        function openCareerHubModal() { releaseAllPointers(); renderCareerHubModal(); document.getElementById('career-modal').classList.remove('hidden'); }
-        function closeCareerHubModal() { document.getElementById('career-modal').classList.add('hidden'); }
-
-        function renderCareerHubModal() {
-            const body = document.getElementById('career-modal-body');
-            if (!body) return;
-            const club = getActiveClub();
-            const cost = getTrainingCost();
-            const ovrBonusPct = Math.min(20, Math.max(0, (careerStats.ovr - 60) * 0.6)).toFixed(1);
-
-            const offersHtml = clubsData.map(c => {
-                const isCurrent = c.id === careerStats.clubId;
-                const unlocked = careerStats.ovr >= c.minOvr;
-                const cName = c.name[lang] || c.name.en;
-                return `<div class="bg-slate-800/75 border border-slate-700/70 rounded-2xl p-3 flex items-center justify-between gap-2">
-                    <div>
-                        <div class="text-xs font-black text-white">${cName} ${isCurrent ? (lang === 'he' ? '(נוכחי)' : '(Current)') : ''}</div>
-                        <div class="text-[11px] text-slate-400">${lang === 'he' ? `דירוג נדרש: ${c.minOvr} • בונוס מטבעות: +${c.coinBonus}` : `Min OVR: ${c.minOvr} • Coin bonus: +${c.coinBonus}`}</div>
-                    </div>
-                    ${isCurrent
-                        ? `<button type="button" onclick="signContractOffer('${c.id}')" class="bg-emerald-600/30 hover:bg-emerald-600/45 border border-emerald-400/40 text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-xl cursor-pointer">${lang === 'he' ? 'חידוש (+15 🪙)' : 'Renew (+15 🪙)'}</button>`
-                        : unlocked
-                            ? `<button type="button" onclick="signContractOffer('${c.id}')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl cursor-pointer">${lang === 'he' ? 'חתום (+25 🪙)' : 'Sign (+25 🪙)'}</button>`
-                            : `<span class="text-[11px] text-slate-500 font-bold">${lang === 'he' ? `צריך ${c.minOvr}` : `Need ${c.minOvr}`}</span>`
-                    }
-                </div>`;
-            }).join('');
-
-            body.innerHTML = `
-                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3.5 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-300">${lang === 'he' ? 'דירוג שחקן (OVR)' : 'Player Rating (OVR)'}</span>
-                        <span class="text-lg font-black text-amber-300">${careerStats.ovr}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-400">${lang === 'he' ? `שיפור עדין קבוע: +${ovrBonusPct}% טעינת מד • עונה ${careerStats.season}` : `Steady boost: +${ovrBonusPct}% charge • Season ${careerStats.season}`}</div>
-                    <button type="button" onclick="trainPlayerGradually()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs cursor-pointer transition">
-                        ${careerStats.ovr >= 92 ? (lang === 'he' ? 'דירוג מקסימלי הושג' : 'Max OVR Reached') : (lang === 'he' ? `אימון ממוקד (+1 OVR) — ${cost} 🪙` : `Focused Training (+1 OVR) — ${cost} 🪙`)}
-                    </button>
-                </div>
-                <div class="text-xs font-black text-cyan-300">${lang === 'he' ? 'הצעות חוזה ומועדונים' : 'Club Contracts & Offers'}</div>
-                <div class="space-y-2">${offersHtml}</div>
-            `;
-        }
-
-        let currentTriviaIdx = 0;
-        let triviaSource = 'menu';
-        function openTriviaModal(source = 'menu') {
-            triviaSource = source;
-            currentTriviaIdx = Math.floor(Math.random() * triviaQuestions.length);
-            const qObj = triviaQuestions[currentTriviaIdx];
-            const alreadyAnswered = careerStats.triviaAnsweredIds.includes(qObj.id);
-            document.getElementById('trivia-question-text').innerText = qObj.q[lang] || qObj.q.en;
-            const resEl = document.getElementById('trivia-result-text');
-            resEl.innerText = alreadyAnswered ? (lang === 'he' ? 'כבר ענית על שאלה זו — תשובה נכונה תיתן בונוס קטן (+4 🪙)' : 'Already answered — right answer gives +4 🪙') : '';
-            resEl.className = 'text-xs font-bold text-center text-slate-400 min-h-[18px]';
-            const opts = qObj.opts[lang] || qObj.opts.en;
-            document.getElementById('trivia-options-box').innerHTML = opts.map((txt, idx) =>
-                `<button type="button" onclick="answerTrivia(${idx})" class="w-full text-right bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl cursor-pointer transition">${txt}</button>`
-            ).join('');
-            document.getElementById('trivia-modal').classList.remove('hidden');
-        }
-        function closeTriviaModal() { document.getElementById('trivia-modal').classList.add('hidden'); }
-        function answerTrivia(choiceIdx) {
-            const qObj = triviaQuestions[currentTriviaIdx];
-            const resEl = document.getElementById('trivia-result-text');
-            const firstTime = !careerStats.triviaAnsweredIds.includes(qObj.id);
-            if (choiceIdx === qObj.correct) {
-                const reward = firstTime ? 12 : 4;
-                if (firstTime) careerStats.triviaAnsweredIds.push(qObj.id);
-                coins += reward;
-                saveGameData();
-                resEl.innerText = lang === 'he' ? `תשובה נכונה! קיבלת +${reward} 🪙` : `Correct! +${reward} 🪙`;
-                resEl.className = 'text-xs font-black text-center text-emerald-400 min-h-[18px]';
-            } else {
-                resEl.innerText = lang === 'he' ? 'לא בדיוק — אפשר לנסות שאלה אחרת בהמשך!' : 'Not quite — try another question later!';
-                resEl.className = 'text-xs font-bold text-center text-rose-400 min-h-[18px]';
-            }
-        }
         let secretTapCount = 0;
         let secretTapTimer = null;
         function registerSecretAdminTap() {
@@ -1331,7 +1130,13 @@
             document.getElementById('pause-overlay').classList.toggle('hidden', !isPaused);
             const icon = document.getElementById('pause-icon');
             if (icon) icon.innerText = isPaused ? '▶' : '⏸';
-            if (!isPaused) { lastFrameTime = performance.now(); animFrameId = requestAnimationFrame(gameLoop); }
+            if (!isPaused) {
+                lastFrameTime = performance.now();
+                if (!animFrameId) animFrameId = requestAnimationFrame(gameLoop);
+            } else if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
         }
 
         function getDifficultyConfig() {
@@ -1340,12 +1145,13 @@
             return { speedScale: 0.95, gravityScale: 0.91, kickPower: 19.8, botTrack: 0.145, botSpeedCap: 6.1, widthBonus: 4 };
         }
 
-        const getBasePlayerWidth = () => Math.max(72, 92 + getDifficultyConfig().widthBonus + (getActiveClub().widthBonus || 0));
+        const getBasePlayerWidth = () => Math.max(72, 92 + getDifficultyConfig().widthBonus);
         const getEscalationFactor = () => isPracticeMode() ? 1.0 : Math.min(1.30, 1 + (currentLevel - 1) * 0.04);
 
         function updateLevelBadge() {
             const t = translations[lang];
             const el = document.getElementById('level-badge');
+            if (!el) return;
             if (gameMode === 'tournament') el.innerText = `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]} (${score}:${opponentScore})`;
             else if (gameMode === 'pvp') el.innerText = `⚔️ ${score} : ${opponentScore}`;
             else if (isPracticeMode()) el.innerText = t.practiceBadge;
@@ -1400,9 +1206,7 @@
 
         function addCharge(amount) {
             if (isOverdriveActive()) return;
-            const clubBonus = getActiveClub().chargeBonus || 0;
-            const ovrBonus = Math.min(10, Math.max(0, Math.floor((careerStats.ovr - 60) / 3)));
-            chargeMeter = Math.min(100, chargeMeter + amount + clubBonus + ovrBonus);
+            chargeMeter = Math.min(100, chargeMeter + amount);
             if (chargeMeter >= 100) {
                 chargeMeter = 0;
                 overdriveEnd = Date.now() + 7500;
@@ -1432,6 +1236,7 @@
             const lblEl = document.getElementById('charge-label');
             const mTextEl = document.getElementById('mission-text');
             const mProgEl = document.getElementById('mission-progress');
+            if (!barEl || !pctEl || !lblEl || !mTextEl || !mProgEl) return;
 
             if (isOverdriveActive()) {
                 lblEl.innerText = `${t.overdriveLbl} (${Math.max(1, Math.ceil((overdriveEnd - Date.now()) / 1000))}s)`;
@@ -1536,7 +1341,7 @@
             const styleOrder = ['technical', 'aggressive', 'guardian'];
             currentBotStyle = mode === 'tournament' ? styleOrder[Math.min(tournamentRound, 2)] : styleOrder[Math.floor(Math.random() * 3)];
 
-            runJuggles = 0; runBestCombo = 0; soloTimeRemaining = 65; lastFrameTime = performance.now(); endReason = 'fall';
+            runJuggles = 0; runBestCombo = 0; soloTimeRemaining = 65; endReason = 'fall';
             opponentScore = 0; duelGoal = mode === 'tournament' ? 3 + tournamentRound : 5;
             currentLevel = 1; levelUpBanner = null; combo = 0; isFireMode = false; ball.powerShot = false;
             chargeMeter = 0; overdriveEnd = 0; hotMinuteEnd = 0; hotMinuteTriggered = false;
@@ -1559,6 +1364,7 @@
             pickNextMission(); updateStageModifierUI(); updateTimerBadge();
             document.getElementById('combo-badge').classList.add('hidden');
             updateLiveScoreBoard(); updateLevelBadge(); saveGameData(); startBGM();
+            lastFrameTime = performance.now();
         }
 
         function startGame(mode, keepTournamentProgress = false) {
@@ -1758,7 +1564,7 @@
         }
 
         function gameLoop(nowPerf) {
-            if (!gameRunning || isPaused) return;
+            if (!gameRunning || isPaused) { animFrameId = null; return; }
             const now = Date.now();
             const dtSec = Math.min(0.1, Math.max(0.001, ((nowPerf || performance.now()) - lastFrameTime) / 1000));
             lastFrameTime = nowPerf || performance.now();
@@ -1810,7 +1616,7 @@
                     if (withinX && crossedGate) {
                         playSound('powerup');
                         const gPts = isHotMinuteActive() ? 5 : 3;
-                        const gCoins = (isHotMinuteActive() ? 5 : 3) + (getActiveClub().coinBonus || 0);
+                        const gCoins = isHotMinuteActive() ? 5 : 3;
                         score += gPts; coins += gCoins; addCharge(25);
                         saveGameData(); handleScoreChanged();
                         addFloatingText(`🥅 +${gPts} | +${gCoins} 🪙`, bonusGate.x + bonusGate.width / 2, bonusGate.y - 10, '#34d399');
@@ -2097,22 +1903,9 @@
                     topGlobalScore = Math.max(topGlobalScore, personalBest);
                 }
             }
-            careerStats.matchesPlayed = (careerStats.matchesPlayed || 0) + 1;
-            let careerNote = '';
-            if (careerStats.matchesPlayed % 3 === 0) {
-                coins += 10;
-                careerNote = lang === 'he' ? '🌍 פגרת נבחרות הושלמה (+10 🪙)' : '🌍 International break bonus (+10 🪙)';
-            }
-            if (careerStats.matchesPlayed % 6 === 0 && careerStats.ovr < 92) {
-                careerStats.ovr += 1;
-                careerStats.season += 1;
-                careerNote = lang === 'he' ? `📈 סיום מחזור עונה — עלית לדירוג ${careerStats.ovr}!` : `📈 Season cycle complete — OVR ${careerStats.ovr}!`;
-            }
-
             recentRuns = [{ mode: gameMode, diff: difficulty, score, juggles: runJuggles, ts: Date.now() }, ...recentRuns].slice(0, 8);
             const baseCoinReward = isDuelMode() ? Math.floor(runJuggles / 5) : Math.floor(score / 4);
-            const clubCoinBonus = (runJuggles >= 8 || score >= 12) ? (getActiveClub().coinBonus || 0) : 0;
-            const earnedCoins = baseCoinReward + clubCoinBonus + (endReason === 'duel_win' ? 6 : endReason === 'tourney_next' ? 5 : endReason === 'tourney_win' ? 15 : 0);
+            const earnedCoins = baseCoinReward + (endReason === 'duel_win' ? 6 : endReason === 'tourney_next' ? 5 : endReason === 'tourney_win' ? 15 : 0);
             if (earnedCoins > 0) coins += earnedCoins;
             saveGameData();
             if (isSoloMode() && personalBest > 0) syncScoreToFirebase(personalBest);
@@ -2122,7 +1915,6 @@
             document.getElementById('go-score').innerText = isDuelMode() ? `${score} - ${opponentScore}` : `${t.scoreTxt}: ${score}`;
             document.getElementById('go-run-stats').innerText = `${t.runJugglesLbl}: ${runJuggles} • ${t.runComboLbl}: ${runBestCombo}`;
             document.getElementById('go-daily').innerText = `${t.dailyProgLbl}: ${Math.min(dailyChallenge.target, dailyChallenge.progress || 0)}/${dailyChallenge.target}`;
-            document.getElementById('go-career-note').innerText = careerNote;
             const bestEl = document.getElementById('go-best');
             bestEl.innerText = isNewRecord ? `🏆 ${t.bestTxt}: ${personalBest}` : `${t.bestTxt}: ${personalBest}`;
             bestEl.className = isNewRecord ? 'text-sm font-black text-amber-300' : 'text-sm font-bold text-slate-400';
@@ -2269,3 +2061,4 @@
     </script>
 </body>
 </html>
+
