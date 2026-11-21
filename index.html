@@ -489,7 +489,7 @@
                 overdriveLbl: "🔥 אוברדרייב", hotMinuteLbl: "🔥 דקה חמה",
                 modDoubleTargets: "🎯 2 מטרות", modCrosswind: "💨 רוח צד",
                 mJuggles: "השלם {n} הקפצות", mTargets: "פגע ב-{n} מטרות", mCombo: "הגע לקומבו x{n}",
-                duelMission: "{style} • {p}-{b} (יעד {goal})",
+                duelMission: "{style} • {p}-{b} (יעד {goal}) • הקפצות {j}",
                 botStyles: { technical: "טכני", aggressive: "אגרסיבי", guardian: "שומר" },
                 dailyTitle: "אתגר יומי", seriesTitle: "סדרת משימות", streakLbl: "רצף", dailyProgLbl: "אתגר יומי",
                 runJugglesLbl: "הקפצות", runComboLbl: "קומבו שיא",
@@ -521,7 +521,7 @@
                 overdriveLbl: "🔥 OVERDRIVE", hotMinuteLbl: "🔥 Hot Rush",
                 modDoubleTargets: "🎯 2 Targets", modCrosswind: "💨 Crosswind",
                 mJuggles: "Do {n} juggles", mTargets: "Hit {n} targets", mCombo: "Reach x{n} combo",
-                duelMission: "{style} • {p}-{b} (Goal {goal})",
+                duelMission: "{style} • {p}-{b} (Goal {goal}) • Juggles {j}",
                 botStyles: { technical: "Technical", aggressive: "Aggressive", guardian: "Guardian" },
                 dailyTitle: "Daily Challenge", seriesTitle: "Quest Series", streakLbl: "Streak", dailyProgLbl: "Daily",
                 runJugglesLbl: "Juggles", runComboLbl: "Best Combo",
@@ -553,7 +553,7 @@
                 overdriveLbl: "🔥 ОВЕРДРАЙВ", hotMinuteLbl: "🔥 Жаркий рывок",
                 modDoubleTargets: "🎯 2 цели", modCrosswind: "💨 Боковой ветер",
                 mJuggles: "Сделай {n} набиваний", mTargets: "Попади в {n} целей", mCombo: "Комбо x{n}",
-                duelMission: "{style} • {p}-{b} (Цель {goal})",
+                duelMission: "{style} • {p}-{b} (Цель {goal}) • Набиваний {j}",
                 botStyles: { technical: "Техничный", aggressive: "Агрессивный", guardian: "Защитник" },
                 dailyTitle: "Задание дня", seriesTitle: "Серия заданий", streakLbl: "Серия", dailyProgLbl: "День",
                 runJugglesLbl: "Набиваний", runComboLbl: "Макс. комбо",
@@ -585,7 +585,7 @@
                 overdriveLbl: "🔥 OVERDRIVE", hotMinuteLbl: "🔥 Rush Chaud",
                 modDoubleTargets: "🎯 2 Cibles", modCrosswind: "💨 Vent Latéral",
                 mJuggles: "Fais {n} jonglages", mTargets: "Touche {n} cibles", mCombo: "Combo x{n}",
-                duelMission: "{style} • {p}-{b} (But {goal})",
+                duelMission: "{style} • {p}-{b} (But {goal}) • Jonglages {j}",
                 botStyles: { technical: "Technique", aggressive: "Agressif", guardian: "Gardien" },
                 dailyTitle: "Défi du jour", seriesTitle: "Série de quêtes", streakLbl: "Série", dailyProgLbl: "Jour",
                 runJugglesLbl: "Jonglages", runComboLbl: "Combo max",
@@ -604,33 +604,46 @@
             { id: 'rainbow', name: { he: 'כדור קשת', en: 'Rainbow Ball', ru: 'Радужный', fr: 'Arc-en-ciel' }, price: 200, color: '#ec4899' },
             { id: 'steel', name: { he: 'כדור ברזל', en: 'Steel Ball', ru: 'Стальной', fr: 'Acier' }, price: 250, color: '#64748b' },
             { id: 'galaxy', name: { he: 'כדור גלקסיה', en: 'Galaxy Ball', ru: 'Галактика', fr: 'Galaxie' }, price: 300, color: '#4f46e5' },
+            { id: 'ultra_lime', name: { he: 'כדור ליים טורבו', en: 'Turbo Lime Ball', ru: 'Турбо Лайм', fr: 'Citron Turbo' }, price: 420, color: '#a3e635' },
+            { id: 'crimson_pro', name: { he: 'כדור קרימזון', en: 'Crimson Pro', ru: 'Малиновый Про', fr: 'Cramoisi Pro' }, price: 580, color: '#f43f5e' },
             { id: 'diamond', name: { he: 'יהלום קריסטל', en: 'Crystal Diamond', ru: 'Алмаз', fr: 'Diamant' }, price: 750, color: '#67e8f9' },
             { id: 'magma_king', name: { he: 'מלך הלבה', en: 'Magma King', ru: 'Король Лавы', fr: 'Roi de Magma' }, price: 1000, color: '#ea580c' },
-            { id: 'platinum_gold', name: { he: 'זהב פלטינה', en: 'Platinum Gold', ru: 'Платиновое Золото', fr: 'Or Platine' }, price: 3650, color: '#fde047' }
+            { id: 'solar_nova', name: { he: 'סולאר נובה', en: 'Solar Nova', ru: 'Солнечная Нова', fr: 'Nova Solaire' }, price: 1650, color: '#facc15' },
+            { id: 'plasma_violet', name: { he: 'פלזמה סגולה', en: 'Plasma Violet', ru: 'Фиолетовая Плазма', fr: 'Plasma Violet' }, price: 2450, color: '#c084fc' },
+            { id: 'platinum_gold', name: { he: 'זהב פלטינה', en: 'Platinum Gold', ru: 'Платиновое Золото', fr: 'Or Platine' }, price: 3650, color: '#fef08a' }
         ];
 
         const paddlesData = [
             { id: 'emerald_classic', name: { he: 'פאדל ירוק קלאסי', en: 'Classic Emerald', ru: 'Изумрудный', fr: 'Émeraude Classique' }, price: 0, color: '#10b981', accent: '#fbbf24' },
             { id: 'cobalt_pro', name: { he: 'פאדל כחול קובלט', en: 'Cobalt Pro', ru: 'Кобальт Про', fr: 'Cobalt Pro' }, price: 65, color: '#2563eb', accent: '#38bdf8' },
             { id: 'sunset_blaze', name: { he: 'פאדל להבת שקיעה', en: 'Sunset Blaze', ru: 'Закат', fr: 'Lueur Couchant' }, price: 130, color: '#ea580c', accent: '#fde047' },
+            { id: 'mint_pulse', name: { he: 'פאדל מנטה פולס', en: 'Mint Pulse', ru: 'Мятный Импульс', fr: 'Menthe Pulse' }, price: 210, color: '#14b8a6', accent: '#99f6e4' },
             { id: 'royal_amethyst', name: { he: 'פאדל אמטיסט מלכותי', en: 'Royal Amethyst', ru: 'Аметист', fr: 'Améthyste Royal' }, price: 310, color: '#9333ea', accent: '#facc15' },
+            { id: 'ruby_striker', name: { he: 'פאדל רובי סטרייקר', en: 'Ruby Striker', ru: 'Рубин Форвард', fr: 'Rubis Buteur' }, price: 480, color: '#e11d48', accent: '#fda4af' },
+            { id: 'cyber_pink', name: { he: 'פאדל סייבר ורוד', en: 'Cyber Pink', ru: 'Кибер Розовый', fr: 'Cyber Rose' }, price: 660, color: '#db2777', accent: '#67e8f9' },
             { id: 'gold_bullion', name: { he: 'פאדל מטילי זהב', en: 'Gold Bullion', ru: 'Золотой Слиток', fr: 'Lingot d’Or' }, price: 850, color: '#eab308', accent: '#fef08a' },
-            { id: 'obsidian_stealth', name: { he: 'פאדל אובסידיאן שחור', en: 'Obsidian Stealth', ru: 'Обсидиан', fr: 'Obsidienne' }, price: 1100, color: '#334155', accent: '#34d399' }
+            { id: 'obsidian_stealth', name: { he: 'פאדל אובסידיאן שחור', en: 'Obsidian Stealth', ru: 'Обсидиан', fr: 'Obsidienne' }, price: 1100, color: '#334155', accent: '#34d399' },
+            { id: 'galactic_master', name: { he: 'פאדל מאסטר גלקטי', en: 'Galactic Master', ru: 'Галактический Мастер', fr: 'Maître Galactique' }, price: 1500, color: '#4338ca', accent: '#f472b6' }
         ];
 
         const stadiumsData = [
             { id: 'night_pro', name: { he: 'אצטדיון לילה', en: 'Night Stadium', ru: 'Ночной стадион', fr: 'Stade de Nuit' }, price: 0, bgTop: '#020617', bgMid: '#0f172a', bgBot: '#020617', line: 'rgba(255,255,255,0.08)', glow: 'rgba(56,189,248,0.08)' },
             { id: 'emerald_pitch', name: { he: 'דשא אצטדיון ירוק', en: 'Emerald Pitch', ru: 'Изумрудное поле', fr: 'Pelouse Émeraude' }, price: 90, bgTop: '#052e16', bgMid: '#14532d', bgBot: '#052e16', line: 'rgba(255,255,255,0.14)', glow: 'rgba(52,211,153,0.12)' },
             { id: 'sunset_arena', name: { he: 'אצטדיון שקיעה', en: 'Sunset Arena', ru: 'Арена закат', fr: 'Arène Crépuscule' }, price: 180, bgTop: '#270b1b', bgMid: '#4c1d24', bgBot: '#1e1b4b', line: 'rgba(253,224,71,0.13)', glow: 'rgba(251,146,60,0.14)' },
+            { id: 'arctic_ice', name: { he: 'זירת קרח ארקטית', en: 'Arctic Ice Bowl', ru: 'Ледяная арена', fr: 'Arène Arctique' }, price: 250, bgTop: '#082f49', bgMid: '#0c4a6e', bgBot: '#0f172a', line: 'rgba(186,230,253,0.16)', glow: 'rgba(125,211,252,0.15)' },
             { id: 'cyber_dome', name: { he: 'כיפת ניאון סייבר', en: 'Cyber Neon Dome', ru: 'Неоновый купол', fr: 'Dôme Néon' }, price: 320, bgTop: '#041322', bgMid: '#0c2744', bgBot: '#130b2e', line: 'rgba(34,211,238,0.16)', glow: 'rgba(168,85,247,0.14)' },
-            { id: 'royal_derby', name: { he: 'דרבי זהב מלכותי', en: 'Royal Gold Derby', ru: 'Золотое дерби', fr: 'Derby Royal' }, price: 500, bgTop: '#1c1917', bgMid: '#292524', bgBot: '#0c0a09', line: 'rgba(251,191,36,0.16)', glow: 'rgba(250,204,21,0.14)' }
+            { id: 'royal_derby', name: { he: 'דרבי זהב מלכותי', en: 'Royal Gold Derby', ru: 'Золотое дерби', fr: 'Derby Royal' }, price: 500, bgTop: '#1c1917', bgMid: '#292524', bgBot: '#0c0a09', line: 'rgba(251,191,36,0.16)', glow: 'rgba(250,204,21,0.14)' },
+            { id: 'volcano_cup', name: { he: 'גביע הלבה', en: 'Magma Cup Arena', ru: 'Арена лавы', fr: 'Arène Volcanique' }, price: 720, bgTop: '#2a0808', bgMid: '#450a0a', bgBot: '#180606', line: 'rgba(251,146,60,0.16)', glow: 'rgba(239,68,68,0.16)' },
+            { id: 'starlight_final', name: { he: 'גמר כוכבים', en: 'Starlight Final', ru: 'Звёздный финал', fr: 'Finale Étoilée' }, price: 980, bgTop: '#090d16', bgMid: '#1e1b4b', bgBot: '#090d16', line: 'rgba(244,114,182,0.16)', glow: 'rgba(129,140,248,0.16)' }
         ];
 
         const songsData = [
             { id: 'none', name: { he: 'בלי מוזיקה', en: 'No Music', ru: 'Без музыки', fr: 'Pas de musique' }, price: 0, wave: 'sine', tempo: 500, notes: [] },
             { id: 'beat1', name: { he: 'קצב אצטדיון', en: 'Stadium Beat', ru: 'Стадионный бит', fr: 'Rythme Stade' }, price: 40, wave: 'sine', tempo: 380, notes: [196, 261.6, 329.6, 392] },
             { id: 'synth', name: { he: 'סינת׳ווייב', en: 'Synthwave', ru: 'Синтвейв', fr: 'Synthwave' }, price: 80, wave: 'sawtooth', tempo: 260, notes: [146.8, 174.6, 220, 293.7, 220, 174.6] },
-            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] }
+            { id: 'turbo_pulse', name: { he: 'פולס טורבו', en: 'Turbo Pulse', ru: 'Турбо импульс', fr: 'Pulse Turbo' }, price: 150, wave: 'square', tempo: 220, notes: [220, 277.2, 329.6, 440, 329.6, 277.2] },
+            { id: 'anthem', name: { he: 'המנון הגמר', en: 'Final Anthem', ru: 'Гимн Финала', fr: 'Hymne Finale' }, price: 280, wave: 'triangle', tempo: 320, notes: [261.6, 329.6, 392, 523.2, 440, 392] },
+            { id: 'midnight_drive', name: { he: 'דרייב חצות', en: 'Midnight Drive', ru: 'Ночной драйв', fr: 'Drive Minuit' }, price: 420, wave: 'triangle', tempo: 240, notes: [164.8, 196, 246.9, 329.6, 293.7, 246.9] }
         ];
 
         function persistPrefs() {
@@ -706,6 +719,7 @@
             updateLevelBadge();
             updateTimerBadge();
             updateChargeAndMissionUI();
+            updateLiveScoreBoard();
         }
 
         function toggleLang() {
@@ -998,7 +1012,7 @@
             initAudio();
             let step = 0;
             const dur = Math.max(0.11, (song.tempo / 1000) * 0.72);
-            const peakGain = (song.wave === 'sawtooth' ? 0.032 : 0.055) * audioLevel;
+            const peakGain = (song.wave === 'sawtooth' || song.wave === 'square' ? 0.032 : 0.055) * audioLevel;
             bgmInterval = setInterval(() => {
                 if (audioLevel <= 0.01 || activeSong === 'none' || isPaused || !gameRunning) return;
                 try {
@@ -1054,7 +1068,14 @@
 
         function updateLiveScoreBoard() {
             const bigEl = document.getElementById('live-center-score');
-            if (bigEl) bigEl.innerText = String(score);
+            if (!bigEl) return;
+            if (isDuelMode()) {
+                bigEl.className = 'px-5 py-1.5 rounded-3xl bg-slate-950/65 backdrop-blur-sm border border-indigo-400/40 text-3xl font-black tracking-tight text-indigo-300';
+                bigEl.innerText = `${score} : ${opponentScore}`;
+            } else {
+                bigEl.className = 'px-6 py-1.5 rounded-3xl bg-slate-950/65 backdrop-blur-sm border border-emerald-400/35 text-5xl font-black tracking-tight text-emerald-400';
+                bigEl.innerText = String(score);
+            }
         }
 
         const getActiveStageModifier = () => (!isSoloMode() || currentLevel < 3) ? 'none' : (currentLevel % 2 === 1 ? 'double_targets' : 'crosswind');
@@ -1116,7 +1137,7 @@
         function updateLevelBadge() {
             const t = translations[lang];
             const el = document.getElementById('level-badge');
-            if (gameMode === 'tournament') el.innerText = `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]}`;
+            if (gameMode === 'tournament') el.innerText = `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]} (${score}:${opponentScore})`;
             else if (gameMode === 'pvp') el.innerText = `⚔️ ${score} : ${opponentScore}`;
             else if (isPracticeMode()) el.innerText = t.practiceBadge;
             else el.innerText = `${t.levelPrefix} ${currentLevel}`;
@@ -1150,8 +1171,8 @@
                 if (nextLvl > currentLevel) { currentLevel = nextLvl; updateLevelBadge(); triggerLevelUpCelebration(currentLevel); }
             } else { updateLevelBadge(); updateChargeAndMissionUI(); }
             if (isSoloMode() || isPracticeMode()) { ensureMovingObstacle(); ensureExtraSoloBall(); }
-            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, score, careerStats.totalJuggles);
-            achievements.score_100.progress = Math.max(achievements.score_100.progress, score);
+            achievements.juggles_50.progress = Math.max(achievements.juggles_50.progress, careerStats.totalJuggles);
+            if (isSoloMode()) achievements.score_100.progress = Math.max(achievements.score_100.progress, score);
             saveGameData();
         }
 
@@ -1211,8 +1232,13 @@
 
             if (isDuelMode()) {
                 const styleName = t.botStyles[currentBotStyle] || currentBotStyle;
-                mTextEl.innerText = t.duelMission.replace('{style}', styleName).replace('{p}', score).replace('{b}', opponentScore).replace('{goal}', duelGoal);
-                mProgEl.innerText = `${score}/${duelGoal}`;
+                mTextEl.innerText = t.duelMission
+                    .replace('{style}', styleName)
+                    .replace('{p}', score)
+                    .replace('{b}', opponentScore)
+                    .replace('{goal}', duelGoal)
+                    .replace('{j}', runJuggles);
+                mProgEl.innerText = `⚽ ${runJuggles}`;
                 return;
             }
             if (isPracticeMode()) {
@@ -1314,7 +1340,7 @@
                 const styleName = t.botStyles[currentBotStyle] || currentBotStyle;
                 levelUpBanner = {
                     phrase: `⚔️ ${stageBanner}`,
-                    sub: `${styleName} • ${t.duelMission.replace('{style}', styleName).replace('{p}', '0').replace('{b}', '0').replace('{goal}', String(duelGoal))}`,
+                    sub: `${styleName} • ${t.duelMission.replace('{style}', styleName).replace('{p}', '0').replace('{b}', '0').replace('{goal}', String(duelGoal)).replace('{j}', '0')}`,
                     alpha: 1.0, scale: 0.9, createdAt: Date.now(), duration: 1700
                 };
             }
@@ -1335,11 +1361,12 @@
         }
 
         function returnToMenu() {
-            gameRunning = false; isPaused = false; releaseAllPointers();
+            gameRunning = false; isPaused = false; combo = 0; isFireMode = false; releaseAllPointers();
             if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
             if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
             powerups = []; particles = []; ballTrail = []; floatingTexts = []; bonusTargets = [];
             bonusGate = null; goldenTarget = null; hazardCard = null; movingObstacle = null; extraSoloBall = null;
+            document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
             document.getElementById('game-container').classList.add('hidden');
@@ -1420,7 +1447,7 @@
             opponentScore++;
             playSound('fail');
             addFloatingText('🤖 +1', canvas.width / 2, canvas.height * 0.36, '#f87171');
-            updateLevelBadge(); updateChargeAndMissionUI();
+            updateLevelBadge(); updateChargeAndMissionUI(); updateLiveScoreBoard();
             if (opponentScore >= duelGoal) { finishRun('duel_lose'); return true; }
             resetPositions(true);
             return false;
@@ -1495,7 +1522,10 @@
                 score += ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1) * (isHotMinuteActive() ? 2 : 1);
                 advanceMission('juggles', 1, false);
                 handleScoreChanged();
-            } else saveGameData();
+            } else {
+                updateChargeAndMissionUI();
+                saveGameData();
+            }
         }
 
         function drawStadiumBackground() {
@@ -1721,7 +1751,7 @@
                     })));
                     const aimSpread = currentBotStyle === 'technical' ? 1.55 : difficulty === 'hard' ? 1.1 : difficulty === 'easy' ? 1.55 : 1.35;
                     ball.powerShot = false;
-                    ball.vy = cfg.kickPower * (currentBotStyle === 'aggressive' ? 1.15 : 1.0) * Math.min(1.15, 1 + tournamentRound * 0.04);
+                    ball.vy = Math.abs(cfg.kickPower * 0.42 * (currentBotStyle === 'aggressive' ? 1.15 : 1.0) * Math.min(1.15, 1 + tournamentRound * 0.04));
                     ball.y = bot.y + bot.height + ball.radius + 1;
                     ball.vx = (Math.random() - 0.5) * aimSpread * 7.2 * cfg.speedScale;
                 }
@@ -1849,7 +1879,7 @@
         function showGameOverScreen() {
             const t = translations[lang];
             let isNewRecord = false;
-            if (!isPracticeMode()) {
+            if (isSoloMode()) {
                 diffBests[difficulty] = Math.max(diffBests[difficulty] || 0, score);
                 if (score > personalBest) {
                     personalBest = score; bestDifficulty = difficulty; isNewRecord = true;
@@ -1857,10 +1887,11 @@
                 }
             }
             recentRuns = [{ mode: gameMode, diff: difficulty, score, juggles: runJuggles, ts: Date.now() }, ...recentRuns].slice(0, 8);
-            const earnedCoins = Math.floor(score / 4) + (endReason === 'duel_win' ? 6 : endReason === 'tourney_next' ? 5 : endReason === 'tourney_win' ? 15 : 0);
+            const baseCoinReward = isDuelMode() ? Math.floor(runJuggles / 5) : Math.floor(score / 4);
+            const earnedCoins = baseCoinReward + (endReason === 'duel_win' ? 6 : endReason === 'tourney_next' ? 5 : endReason === 'tourney_win' ? 15 : 0);
             if (earnedCoins > 0) coins += earnedCoins;
             saveGameData();
-            if (!isPracticeMode() && personalBest > 0) syncScoreToFirebase(personalBest);
+            if (isSoloMode() && personalBest > 0) syncScoreToFirebase(personalBest);
 
             const headlines = { timeup: t.timeUp, duel_win: t.duelWon, duel_lose: t.duelLost, tourney_win: t.tourneyWon, tourney_next: `🏆 ${t.tourneyStages[Math.min(tournamentRound, 2)]}` };
             document.getElementById('go-headline').innerText = headlines[endReason] || t.gameOver;
@@ -1883,7 +1914,8 @@
 
         async function handleGameOverShare() {
             const t = translations[lang];
-            const text = `⚽ ${t.scoreTxt}: ${score} | ${t.bestTxt}: ${personalBest} | ${t.runComboLbl}: ${runBestCombo}`;
+            const scoreStr = isDuelMode() ? `${score}-${opponentScore}` : String(score);
+            const text = `⚽ ${t.scoreTxt}: ${scoreStr} | ${t.runJugglesLbl}: ${runJuggles} | ${t.bestTxt}: ${personalBest}`;
             if (navigator.share) { try { await navigator.share({ title: 'מלך ההקפצות', text }); return; } catch {} }
             if (navigator.clipboard) { try { await navigator.clipboard.writeText(text); document.getElementById('go-copied').innerText = t.sharedCopied; } catch {} }
         }
