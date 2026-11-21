@@ -171,7 +171,7 @@
                 <div id="live-best-target" class="hidden px-3 py-0.5 rounded-full bg-slate-950/70 border border-amber-400/30 text-[11px] font-bold text-amber-300"></div>
             </div>
             <div id="tap-instruction" class="pointer-events-none absolute bottom-24 left-0 right-0 text-center text-slate-400/50 text-xs font-medium">
-                גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר
+                גרור לכוון • הקפץ כשהטבעת צמודה לכדור לבונוס דיוק
             </div>
         </div>
 
@@ -383,7 +383,7 @@
             },
             {
                 id: 'ms_200', type: 'best_score', target: 200, reward: 120,
-                title: { he: 'הגע ל-200 נקודות בסולו', en: 'Reach 200 Solo Score', ru: '200 очков в соло', fr: '200 pts en соло' },
+                title: { he: 'הגע ל-200 נקודות בסולו', en: 'Reach 200 Solo Score', ru: '200 очков в соло', fr: '200 pts en solo' },
                 badge: { he: 'מלך האצטדיון', en: 'Stadium King', ru: 'Король арены', fr: 'Roi du stade' }
             },
             {
@@ -533,7 +533,7 @@
                 practiceTitle: "אימון חופשי", practiceDesc: "תרגול קומבואים וטכניקות בלי שעון לחוץ",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול יריבים בעלי סגנון משחק שונה",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
-                menu: "תפריט", tap: "גרור את השחקן כדי להקפיץ • פגיעה במרכז טוענת מהר יותר",
+                menu: "תפריט", tap: "גרור לכוון • הקפץ כשהטבעת צמודה לכדור לבונוס דיוק",
                 installBtn: "התקן", navAchieve: "יעדים והישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת שיאים עולמית", lbBest: "השיא האישי שלך:", lbSave: "שמור שם",
                 lbNamePlaceholder: "הכנס שם לתצוגה...", lbRankPrefix: "הדירוג שלך:",
@@ -567,7 +567,7 @@
                 practiceTitle: "Free Practice", practiceDesc: "Practice combos and control without timer pressure",
                 pvpTitle: "1v1 Duel", pvpDesc: "Face rivals with distinct playstyles",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
-                menu: "Menu", tap: "Drag player to juggle • Center hits charge faster",
+                menu: "Menu", tap: "Drag to aim • Juggle on tight ring for accuracy bonus",
                 installBtn: "Install", navAchieve: "Goals & Awards", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbBest: "Your personal best:", lbSave: "Save Name",
                 lbNamePlaceholder: "Enter display name...", lbRankPrefix: "Your rank:",
@@ -601,7 +601,7 @@
                 practiceTitle: "Свободная тренировка", practiceDesc: "Тренируй комбо без таймера и давления",
                 pvpTitle: "Дуэль 1 на 1", pvpDesc: "Соперники с разными стилями игры",
                 tourneyTitle: "Турнир чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал за кубок",
-                menu: "Меню", tap: "Веди игрока • Удары по центру заряжают быстрее",
+                menu: "Меню", tap: "Веди для прицела • Бей при узком кольце за бонус точности",
                 installBtn: "Установить", navAchieve: "Цели и награды", navLeaderboard: "Рекорды", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш лучший результат:", lbSave: "Сохранить",
                 lbNamePlaceholder: "Введите имя...", lbRankPrefix: "Ваше место:",
@@ -635,7 +635,7 @@
                 practiceTitle: "Entraînement libre", practiceDesc: "Enchaîne les combos sans pression du chrono",
                 pvpTitle: "Duel 1v1", pvpDesc: "Affronte des rivaux aux styles variés",
                 tourneyTitle: "Tournoi des champions", tourneyDesc: "Quart, demi-finale et finale pour le trophée",
-                menu: "Menu", tap: "Glisse le joueur • Le centre charge plus vite",
+                menu: "Menu", tap: "Glisse pour viser • Frappe au bon timing pour le bonus",
                 installBtn: "Installer", navAchieve: "Objectifs & Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement mondial", lbBest: "Votre meilleur score :", lbSave: "Enregistrer",
                 lbNamePlaceholder: "Entrez votre pseudo...", lbRankPrefix: "Votre rang :",
@@ -1155,7 +1155,7 @@
         let hotMinuteEnd = 0, hotMinuteTriggered = false, powerups = [], powerupTimer = 0, widePaddleEnd = 0, slowMoEnd = 0;
         let activePointerId = null, dragOffsetX = 0;
 
-        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, powerShot: false };
+        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, powerShot: false, ringRadius: 42 };
         let player = { x: 0, y: 0, baseWidth: 92, width: 92, height: 26, recoil: 0 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
@@ -1243,13 +1243,13 @@
         }
 
         function getDifficultyConfig() {
-            if (difficulty === 'easy') return { speedScale: 0.82, gravityScale: 0.80, kickPower: 18.8, botTrack: 0.09, botSpeedCap: 4.3, widthBonus: 16 };
-            if (difficulty === 'hard') return { speedScale: 1.15, gravityScale: 1.11, kickPower: 21.4, botTrack: 0.21, botSpeedCap: 8.3, widthBonus: -6 };
-            return { speedScale: 0.95, gravityScale: 0.91, kickPower: 19.8, botTrack: 0.145, botSpeedCap: 6.1, widthBonus: 4 };
+            if (difficulty === 'easy') return { speedScale: 0.85, gravityScale: 0.84, kickPower: 18.8, botTrack: 0.095, botSpeedCap: 4.4, widthBonus: 12 };
+            if (difficulty === 'hard') return { speedScale: 1.18, gravityScale: 1.15, kickPower: 21.4, botTrack: 0.22, botSpeedCap: 8.5, widthBonus: -8 };
+            return { speedScale: 0.98, gravityScale: 0.95, kickPower: 19.8, botTrack: 0.15, botSpeedCap: 6.2, widthBonus: 0 };
         }
 
-        const getBasePlayerWidth = () => Math.max(72, 92 + getDifficultyConfig().widthBonus);
-        const getEscalationFactor = () => isPracticeMode() ? 1.0 : Math.min(1.30, 1 + (currentLevel - 1) * 0.04);
+        const getBasePlayerWidth = () => Math.max(68, 90 + getDifficultyConfig().widthBonus);
+        const getEscalationFactor = () => isPracticeMode() ? 1.0 : Math.min(1.34, 1 + (currentLevel - 1) * 0.045);
 
         function updateLevelBadge() {
             const t = translations[lang];
@@ -1270,7 +1270,7 @@
             playSound('levelup');
             updateStageModifierUI();
             if (isSoloMode()) {
-                soloTimeRemaining = Math.min(90, soloTimeRemaining + 8);
+                soloTimeRemaining = Math.min(90, soloTimeRemaining + 7);
                 if (!hotMinuteTriggered && currentLevel >= 4) {
                     hotMinuteTriggered = true;
                     hotMinuteEnd = Date.now() + 10000;
@@ -1376,8 +1376,8 @@
             bonusTargets.push({
                 x: Math.random() * Math.max(40, canvas.width - 96) + 48,
                 y: Math.random() * Math.max(40, canvas.height * 0.50 - 95) + 95,
-                radius: 23,
-                vx: (Math.random() > 0.5 ? 1 : -1) * (1.0 + Math.min(1.8, currentLevel * 0.12)) * cfg.speedScale,
+                radius: 22,
+                vx: (Math.random() > 0.5 ? 1 : -1) * (1.2 + Math.min(2.1, currentLevel * 0.14)) * cfg.speedScale,
                 pulse: Math.random() * Math.PI * 2
             });
         }
@@ -1389,12 +1389,12 @@
 
         function spawnBonusGate() {
             if (!isSoloMode() || bonusGate) return;
-            bonusGate = { x: canvas.width / 2 - 44, y: canvas.height * 0.30, width: 88, height: 22, vx: (Math.random() > 0.5 ? 1 : -1) * 1.35 * getDifficultyConfig().speedScale, life: 480 };
+            bonusGate = { x: canvas.width / 2 - 42, y: canvas.height * 0.30, width: 84, height: 22, vx: (Math.random() > 0.5 ? 1 : -1) * 1.55 * getDifficultyConfig().speedScale, life: 480 };
         }
 
         function spawnGoldenTarget() {
             if (!isSoloMode() || goldenTarget) return;
-            goldenTarget = { x: Math.random() * Math.max(60, canvas.width - 100) + 50, y: canvas.height * 0.24 + Math.random() * (canvas.height * 0.20), radius: 20, vx: (Math.random() > 0.5 ? 1 : -1) * 1.9 * getDifficultyConfig().speedScale, pulse: 0 };
+            goldenTarget = { x: Math.random() * Math.max(60, canvas.width - 100) + 50, y: canvas.height * 0.24 + Math.random() * (canvas.height * 0.20), radius: 20, vx: (Math.random() > 0.5 ? 1 : -1) * 2.1 * getDifficultyConfig().speedScale, pulse: 0 };
         }
 
         function spawnHazardCard() {
@@ -1404,16 +1404,16 @@
 
         function ensureMovingObstacle() {
             if (!isSoloMode() && !isPracticeMode()) { movingObstacle = null; return; }
-            if (score >= 30 && !movingObstacle) {
-                movingObstacle = { x: canvas.width / 2 - 36, y: canvas.height * 0.44, width: 72, height: 14, vx: (1.55 + Math.min(2.0, (score - 30) * 0.03)) * getDifficultyConfig().speedScale };
+            if (score >= 25 && !movingObstacle) {
+                movingObstacle = { x: canvas.width / 2 - 38, y: canvas.height * 0.44, width: 76, height: 14, vx: (1.7 + Math.min(2.2, (score - 25) * 0.035)) * getDifficultyConfig().speedScale };
             }
         }
 
         function ensureExtraSoloBall() {
             if (!isSoloMode() && !isPracticeMode()) { extraSoloBall = null; return; }
-            if (score >= 55 && !extraSoloBall) {
+            if (score >= 50 && !extraSoloBall) {
                 const s = getDifficultyConfig().speedScale;
-                extraSoloBall = { x: canvas.width * 0.35, y: canvas.height * 0.32, vx: 2.0 * s, vy: -7.5 * s, radius: 16, rot: 0 };
+                extraSoloBall = { x: canvas.width * 0.35, y: canvas.height * 0.32, vx: 2.2 * s, vy: -7.8 * s, radius: 16, rot: 0 };
                 addFloatingText('⚽ כדור בונוס!', canvas.width / 2, canvas.height * 0.35, '#38bdf8');
             }
         }
@@ -1500,8 +1500,8 @@
         function resetPositions(serveTowardPlayer = false) {
             const s = getDifficultyConfig().speedScale;
             ball.x = canvas.width / 2; ball.y = canvas.height * 0.44; ball.prevY = ball.y;
-            ball.vx = (Math.random() - 0.5) * 3.2 * s; ball.vy = (serveTowardPlayer ? 4.8 : -5.4) * s;
-            ball.rot = 0; ball.powerShot = false; ballTrail = [];
+            ball.vx = (Math.random() - 0.5) * 3.4 * s; ball.vy = (serveTowardPlayer ? 5.0 : -5.6) * s;
+            ball.rot = 0; ball.powerShot = false; ball.ringRadius = 42; ballTrail = [];
             player.x = canvas.width / 2 - player.width / 2; player.y = canvas.height - 65;
             if (isDuelMode()) { bot.x = canvas.width / 2 - bot.width / 2; bot.y = 35; }
         }
@@ -1576,32 +1576,46 @@
             return false;
         }
 
+        function isRingTimingSweet(targetBall) {
+            if (!targetBall || typeof targetBall.ringRadius !== 'number') return false;
+            return Math.abs(targetBall.ringRadius - targetBall.radius) <= 6.5;
+        }
+
         function applyKickToBall(targetBall, isPrimaryBall) {
             const cfg = getDifficultyConfig();
             const paddleCenter = player.x + player.width / 2;
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
-            const isSweetSpot = distFromCenter <= player.width * 0.29;
+            const isSweetSpot = distFromCenter <= player.width * 0.28;
             const isHeelSpin = distFromCenter >= player.width * 0.38;
-            const triggerPowerShot = isPrimaryBall && (isOverdriveActive() || combo >= 7) && isSweetSpot;
+            const timingBonus = isPrimaryBall && isRingTimingSweet(targetBall);
+            const triggerPowerShot = isPrimaryBall && ((isOverdriveActive() && isSweetSpot) || (combo >= 7 && timingBonus));
 
             runJuggles++;
             careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
             updateDailyProgress('juggles', 1, false);
+            if (isPrimaryBall) targetBall.ringRadius = 42;
 
             if (isPrimaryBall) {
                 targetBall.powerShot = triggerPowerShot;
-                player.recoil = isSweetSpot || isHeelSpin || triggerPowerShot ? 11 : 6;
-                screenShake = Math.max(screenShake, triggerPowerShot ? 7.5 : (isFireMode || isOverdriveActive() ? 6.0 : 2.2));
-                if (triggerPowerShot || isFireMode || isOverdriveActive() || isHeelSpin) hitstopFrames = 1;
+                player.recoil = isSweetSpot || isHeelSpin || triggerPowerShot || timingBonus ? 11 : 6;
+                screenShake = Math.max(screenShake, triggerPowerShot ? 7.5 : (isFireMode || isOverdriveActive() || timingBonus ? 5.5 : 2.2));
+                if (triggerPowerShot || isFireMode || isOverdriveActive() || isHeelSpin || timingBonus) hitstopFrames = 1;
 
                 if (triggerPowerShot) {
                     addFloatingText('💥 POWER SHOT!', targetBall.x, targetBall.y - 38, '#fb7185');
                     playSound('firekick');
+                } else if (timingBonus) {
+                    combo++; runBestCombo = Math.max(runBestCombo, combo);
+                    careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
+                    addCharge(30);
+                    addFloatingText('🎯 דיוק מושלם +1', targetBall.x, targetBall.y - 36, '#fde047');
+                    if (isSoloMode()) score += 1;
+                    playSound('spin');
                 } else if (isHeelSpin) {
                     combo++; runBestCombo = Math.max(runBestCombo, combo);
                     careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
-                    addCharge(28);
-                    addFloatingText('🌀 HEEL SPIN +1', targetBall.x, targetBall.y - 34, '#38bdf8');
+                    addCharge(24);
+                    addFloatingText('🌀 כדור מסובב +1', targetBall.x, targetBall.y - 34, '#38bdf8');
                     if (isSoloMode()) score += 1;
                     playSound('spin');
                 } else if (isSweetSpot) {
@@ -1615,17 +1629,17 @@
                     advanceMission('combo', combo, true);
                     playSound(isFireMode ? 'firekick' : 'kick');
                 } else {
-                    combo = 0; isFireMode = false; chargeMeter = Math.max(0, chargeMeter - 10);
+                    combo = 0; isFireMode = false; chargeMeter = Math.max(0, chargeMeter - 12);
                     document.getElementById('combo-badge').classList.add('hidden');
                     playSound('kick');
                 }
-                addCharge(isSweetSpot ? 22 : 13);
+                addCharge(isSweetSpot ? 20 : 12);
             } else playSound('kick');
 
             if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 65 : 35); } catch {}
 
-            const pCount = (isFireMode || triggerPowerShot) ? 16 : 10;
-            const sparkColor = triggerPowerShot ? '#fb7185' : isFireMode ? '#f97316'
+            const pCount = (isFireMode || triggerPowerShot || timingBonus) ? 16 : 10;
+            const sparkColor = triggerPowerShot ? '#fb7185' : timingBonus ? '#fde047' : isFireMode ? '#f97316'
                 : (skinsData.find(s => s.id === activeSkin)?.color || '#ffffff');
             pushParticles(Array.from({ length: pCount }, () => ({
                 x: targetBall.x, y: targetBall.y,
@@ -1636,10 +1650,10 @@
 
             const escalation = getEscalationFactor();
             const offsetRatio = Math.max(-1, Math.min(1, (targetBall.x - paddleCenter) / (player.width / 2)));
-            const boost = triggerPowerShot ? 3.4 : ((isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin ? 1.2 : 0));
-            targetBall.vy = -(cfg.kickPower + boost) * Math.min(1.18, escalation);
+            const boost = triggerPowerShot ? 3.4 : ((isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin || timingBonus ? 1.3 : 0));
+            targetBall.vy = -(cfg.kickPower + boost) * Math.min(1.20, escalation);
             targetBall.y = player.y - targetBall.radius - 1;
-            targetBall.vx = offsetRatio * (triggerPowerShot ? 11.5 : (isHeelSpin ? 10.2 : 8.0)) * cfg.speedScale * Math.min(1.18, escalation);
+            targetBall.vx = offsetRatio * (triggerPowerShot ? 11.8 : (isHeelSpin ? 10.5 : 8.4)) * cfg.speedScale * Math.min(1.20, escalation);
 
             if (isSoloMode() || isPracticeMode()) {
                 score += ((isPrimaryBall && isFireMode) ? 2 : 1) * (isOverdriveActive() ? 2 : 1) * (isHotMinuteActive() ? 2 : 1);
@@ -1699,8 +1713,8 @@
 
             player.baseWidth = getBasePlayerWidth();
             player.width = now < widePaddleEnd ? player.baseWidth * 1.42 : player.baseWidth;
-            const moveScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.speedScale * Math.min(1.20, getEscalationFactor());
-            const gravScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.gravityScale * Math.min(1.16, getEscalationFactor());
+            const moveScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.speedScale * Math.min(1.24, getEscalationFactor());
+            const gravScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.gravityScale * Math.min(1.20, getEscalationFactor());
 
             if (++powerupTimer > 540 && powerups.length < 1) { spawnPowerup(); powerupTimer = 0; }
 
@@ -1801,14 +1815,21 @@
                 }
             }
 
-            if (isSoloMode() && getActiveStageModifier() === 'crosswind') ball.vx += Math.sin(now * 0.003) * 0.07 * moveScale;
+            if (isSoloMode() && getActiveStageModifier() === 'crosswind') ball.vx += Math.sin(now * 0.003) * 0.08 * moveScale;
 
             ball.prevY = ball.y;
-            ball.vy += 0.38 * gravScale;
+            ball.vy += 0.40 * gravScale;
             ball.x += ball.vx * moveScale;
             ball.y += ball.vy * moveScale;
             ball.vx *= 0.99;
             ball.rot += ball.vx * 0.05;
+
+            if (ball.vy > 0) {
+                const shrinkSpeed = (1.15 + Math.min(0.85, (currentLevel - 1) * 0.08)) * moveScale;
+                ball.ringRadius = ball.ringRadius <= ball.radius ? 44 : Math.max(ball.radius, ball.ringRadius - shrinkSpeed);
+            } else {
+                ball.ringRadius = 42;
+            }
 
             if (Math.hypot(ball.vx, ball.vy) > 6.5 || isFireMode || isOverdriveActive() || ball.powerShot) {
                 ballTrail.push({ x: ball.x, y: ball.y, r: ball.radius * (ball.powerShot || isOverdriveActive() ? 0.92 : 0.68), alpha: ball.powerShot || isOverdriveActive() ? 0.65 : 0.35 });
@@ -1828,7 +1849,7 @@
             if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.85; }
 
             if ((isSoloMode() || isPracticeMode()) && extraSoloBall) {
-                extraSoloBall.vy += 0.35 * gravScale;
+                extraSoloBall.vy += 0.36 * gravScale;
                 extraSoloBall.x += extraSoloBall.vx * moveScale;
                 extraSoloBall.y += extraSoloBall.vy * moveScale;
                 extraSoloBall.vx *= 0.99; extraSoloBall.rot += extraSoloBall.vx * 0.05;
@@ -1882,7 +1903,7 @@
                 else if (ball.y > canvas.height + 40) { if (awardDuelPointToBot()) return; }
             } else if (ball.y > canvas.height + 40) {
                 if (isPracticeMode()) {
-                    combo = 0; isFireMode = false; ball.powerShot = false;
+                    combo = 0; isFireMode = false; ball.powerShot = false; ball.ringRadius = 42;
                     document.getElementById('combo-badge').classList.add('hidden');
                     resetPositions(false);
                     addFloatingText('🏋️ המשך אימון!', canvas.width / 2, canvas.height * 0.45, '#2dd4bf');
@@ -1951,6 +1972,15 @@
                 ctx.beginPath(); ctx.arc(tr.x, tr.y, tr.r * ratio, 0, Math.PI * 2); ctx.fill();
             });
             ctx.globalAlpha = 1.0;
+
+            if (ball.vy > 0 && ball.y < player.y) {
+                const sweetNow = isRingTimingSweet(ball);
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.ringRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = sweetNow ? 'rgba(250, 204, 21, 0.9)' : 'rgba(148, 163, 184, 0.42)';
+                ctx.lineWidth = sweetNow ? 2.5 : 1.5;
+                ctx.stroke();
+            }
 
             const paddleObj = paddlesData.find(p => p.id === activePaddle) || paddlesData[0];
             const paddleMainColor = now < widePaddleEnd ? '#34d399' : paddleObj.color;
