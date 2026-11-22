@@ -171,7 +171,7 @@
                 <div id="live-best-target" class="hidden px-3 py-0.5 rounded-full bg-slate-950/70 border border-amber-400/30 text-[11px] font-bold text-amber-300"></div>
             </div>
             <div id="tap-instruction" class="pointer-events-none absolute bottom-24 left-0 right-0 text-center text-slate-400/50 text-xs font-medium">
-                גרור לכוון • הקפץ כשהטבעת צמודה לכדור לבונוס דיוק
+                גרור להזזת הפאדל • כוון עם מרכז וקצוות הפאדל
             </div>
         </div>
 
@@ -533,7 +533,7 @@
                 practiceTitle: "אימון חופשי", practiceDesc: "תרגול קומבואים וטכניקות בלי שעון לחוץ",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "דו-קרב מול יריבים בעלי סגנון משחק שונה",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
-                menu: "תפריט", tap: "גרור לכוון • הקפץ כשהטבעת צמודה לכדור לבונוס דיוק",
+                menu: "תפריט", tap: "גרור להזזת הפאדל • כוון עם מרכז וקצוות הפאדל",
                 installBtn: "התקן", navAchieve: "יעדים והישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת שיאים עולמית", lbBest: "השיא האישי שלך:", lbSave: "שמור שם",
                 lbNamePlaceholder: "הכנס שם לתצוגה...", lbRankPrefix: "הדירוג שלך:",
@@ -567,7 +567,7 @@
                 practiceTitle: "Free Practice", practiceDesc: "Practice combos and control without timer pressure",
                 pvpTitle: "1v1 Duel", pvpDesc: "Face rivals with distinct playstyles",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
-                menu: "Menu", tap: "Drag to aim • Juggle on tight ring for accuracy bonus",
+                menu: "Menu", tap: "Drag to move paddle • Aim with center & edges",
                 installBtn: "Install", navAchieve: "Goals & Awards", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbBest: "Your personal best:", lbSave: "Save Name",
                 lbNamePlaceholder: "Enter display name...", lbRankPrefix: "Your rank:",
@@ -601,7 +601,7 @@
                 practiceTitle: "Свободная тренировка", practiceDesc: "Тренируй комбо без таймера и давления",
                 pvpTitle: "Дуэль 1 на 1", pvpDesc: "Соперники с разными стилями игры",
                 tourneyTitle: "Турнир чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал за кубок",
-                menu: "Меню", tap: "Веди для прицела • Бей при узком кольце за бонус точности",
+                menu: "Меню", tap: "Веди для управления • Целься центром и краями",
                 installBtn: "Установить", navAchieve: "Цели и награды", navLeaderboard: "Рекорды", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш лучший результат:", lbSave: "Сохранить",
                 lbNamePlaceholder: "Введите имя...", lbRankPrefix: "Ваше место:",
@@ -635,7 +635,7 @@
                 practiceTitle: "Entraînement libre", practiceDesc: "Enchaîne les combos sans pression du chrono",
                 pvpTitle: "Duel 1v1", pvpDesc: "Affronte des rivaux aux styles variés",
                 tourneyTitle: "Tournoi des champions", tourneyDesc: "Quart, demi-finale et finale pour le trophée",
-                menu: "Menu", tap: "Glisse pour viser • Frappe au bon timing pour le bonus",
+                menu: "Menu", tap: "Glisse pour déplacer • Vise avec le centre et les bords",
                 installBtn: "Installer", navAchieve: "Objectifs & Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement mondial", lbBest: "Votre meilleur score :", lbSave: "Enregistrer",
                 lbNamePlaceholder: "Entrez votre pseudo...", lbRankPrefix: "Votre rang :",
@@ -1089,6 +1089,7 @@
                 const gain = audioCtx.createGain();
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 const now = audioCtx.currentTime;
+                const pitchLift = 1 + Math.min(0.22, combo * 0.025) + (isHotMinuteActive() ? 0.08 : 0);
                 const profiles = {
                     kick: ['triangle', 210, 55, 0.12, 0.55],
                     spin: ['sine', 350, 780, 0.14, 0.45],
@@ -1101,8 +1102,8 @@
                 };
                 const [wave, fStart, fEnd, dur, vol] = profiles[type] || profiles.kick;
                 osc.type = wave;
-                osc.frequency.setValueAtTime(fStart, now);
-                osc.frequency.exponentialRampToValueAtTime(fEnd, now + dur);
+                osc.frequency.setValueAtTime(fStart * pitchLift, now);
+                osc.frequency.exponentialRampToValueAtTime(Math.max(40, fEnd * pitchLift), now + dur);
                 gain.gain.setValueAtTime(vol * audioLevel, now);
                 gain.gain.linearRampToValueAtTime(0.01, now + dur);
                 osc.start(now); osc.stop(now + dur);
@@ -1131,7 +1132,8 @@
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = song.wave;
-                    osc.frequency.setValueAtTime(song.notes[step % song.notes.length], now);
+                    const paceMult = isHotMinuteActive() ? 1.12 : isOverdriveActive() ? 1.06 : 1.0;
+                    osc.frequency.setValueAtTime(song.notes[step % song.notes.length] * paceMult, now);
                     gain.gain.setValueAtTime(peakGain, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
                     osc.connect(gain); gain.connect(audioCtx.destination);
@@ -1155,7 +1157,7 @@
         let hotMinuteEnd = 0, hotMinuteTriggered = false, powerups = [], powerupTimer = 0, widePaddleEnd = 0, slowMoEnd = 0;
         let activePointerId = null, dragOffsetX = 0;
 
-        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, powerShot: false, ringRadius: 42 };
+        let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, spinRate: 0, hitFlash: 0, powerShot: false };
         let player = { x: 0, y: 0, baseWidth: 92, width: 92, height: 26, recoil: 0 };
         let bot = { x: 0, y: 0, width: 90, height: 26 };
 
@@ -1373,12 +1375,14 @@
         function spawnSingleBonusTarget() {
             if (!isSoloMode() && !isPracticeMode()) return;
             const cfg = getDifficultyConfig();
+            const isFastSprint = isSoloMode() && currentLevel >= 2 && Math.random() < 0.35;
             bonusTargets.push({
                 x: Math.random() * Math.max(40, canvas.width - 96) + 48,
                 y: Math.random() * Math.max(40, canvas.height * 0.50 - 95) + 95,
-                radius: 22,
-                vx: (Math.random() > 0.5 ? 1 : -1) * (1.2 + Math.min(2.1, currentLevel * 0.14)) * cfg.speedScale,
-                pulse: Math.random() * Math.PI * 2
+                radius: isFastSprint ? 19 : 22,
+                vx: (Math.random() > 0.5 ? 1 : -1) * (isFastSprint ? 2.45 : 1.2 + Math.min(2.1, currentLevel * 0.14)) * cfg.speedScale,
+                pulse: Math.random() * Math.PI * 2,
+                fast: isFastSprint
             });
         }
 
@@ -1413,7 +1417,7 @@
             if (!isSoloMode() && !isPracticeMode()) { extraSoloBall = null; return; }
             if (score >= 50 && !extraSoloBall) {
                 const s = getDifficultyConfig().speedScale;
-                extraSoloBall = { x: canvas.width * 0.35, y: canvas.height * 0.32, vx: 2.2 * s, vy: -7.8 * s, radius: 16, rot: 0 };
+                extraSoloBall = { x: canvas.width * 0.35, y: canvas.height * 0.32, vx: 2.2 * s, vy: -7.8 * s, radius: 16, rot: 0, spinRate: 0.06 };
                 addFloatingText('⚽ כדור בונוס!', canvas.width / 2, canvas.height * 0.35, '#38bdf8');
             }
         }
@@ -1446,7 +1450,7 @@
 
             runJuggles = 0; runBestCombo = 0; soloTimeRemaining = 65; endReason = 'fall';
             opponentScore = 0; duelGoal = mode === 'tournament' ? 3 + tournamentRound : 5;
-            currentLevel = 1; levelUpBanner = null; combo = 0; isFireMode = false; ball.powerShot = false;
+            currentLevel = 1; levelUpBanner = null; combo = 0; isFireMode = false; ball.powerShot = false; ball.spinRate = 0; ball.hitFlash = 0;
             chargeMeter = 0; overdriveEnd = 0; hotMinuteEnd = 0; hotMinuteTriggered = false;
             bonusGate = null; gateCooldown = 520; powerups = []; particles = []; ballTrail = []; floatingTexts = [];
             screenShake = 0; hitstopFrames = 0; widePaddleEnd = 0; slowMoEnd = 0; powerupTimer = 0;
@@ -1501,7 +1505,7 @@
             const s = getDifficultyConfig().speedScale;
             ball.x = canvas.width / 2; ball.y = canvas.height * 0.44; ball.prevY = ball.y;
             ball.vx = (Math.random() - 0.5) * 3.4 * s; ball.vy = (serveTowardPlayer ? 5.0 : -5.6) * s;
-            ball.rot = 0; ball.powerShot = false; ball.ringRadius = 42; ballTrail = [];
+            ball.rot = 0; ball.spinRate = 0; ball.hitFlash = 0; ball.powerShot = false; ballTrail = [];
             player.x = canvas.width / 2 - player.width / 2; player.y = canvas.height - 65;
             if (isDuelMode()) { bot.x = canvas.width / 2 - bot.width / 2; bot.y = 35; }
         }
@@ -1576,41 +1580,29 @@
             return false;
         }
 
-        function isRingTimingSweet(targetBall) {
-            if (!targetBall || typeof targetBall.ringRadius !== 'number') return false;
-            return Math.abs(targetBall.ringRadius - targetBall.radius) <= 6.5;
-        }
-
         function applyKickToBall(targetBall, isPrimaryBall) {
             const cfg = getDifficultyConfig();
             const paddleCenter = player.x + player.width / 2;
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.28;
             const isHeelSpin = distFromCenter >= player.width * 0.38;
-            const timingBonus = isPrimaryBall && isRingTimingSweet(targetBall);
-            const triggerPowerShot = isPrimaryBall && ((isOverdriveActive() && isSweetSpot) || (combo >= 7 && timingBonus));
+            const triggerPowerShot = isPrimaryBall && isOverdriveActive() && isSweetSpot;
 
             runJuggles++;
             careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
             updateDailyProgress('juggles', 1, false);
-            if (isPrimaryBall) targetBall.ringRadius = 42;
 
             if (isPrimaryBall) {
                 targetBall.powerShot = triggerPowerShot;
-                player.recoil = isSweetSpot || isHeelSpin || triggerPowerShot || timingBonus ? 11 : 6;
-                screenShake = Math.max(screenShake, triggerPowerShot ? 7.5 : (isFireMode || isOverdriveActive() || timingBonus ? 5.5 : 2.2));
-                if (triggerPowerShot || isFireMode || isOverdriveActive() || isHeelSpin || timingBonus) hitstopFrames = 1;
+                targetBall.hitFlash = 1.0;
+                targetBall.spinRate = ((targetBall.x - paddleCenter) / (player.width / 2)) * (isHeelSpin ? 0.34 : 0.16);
+                player.recoil = isSweetSpot || isHeelSpin || triggerPowerShot ? 11 : 6;
+                screenShake = Math.max(screenShake, triggerPowerShot ? 7.5 : (isFireMode || isOverdriveActive() ? 5.5 : 2.2));
+                if (triggerPowerShot || isFireMode || isOverdriveActive() || isHeelSpin) hitstopFrames = 1;
 
                 if (triggerPowerShot) {
                     addFloatingText('💥 POWER SHOT!', targetBall.x, targetBall.y - 38, '#fb7185');
                     playSound('firekick');
-                } else if (timingBonus) {
-                    combo++; runBestCombo = Math.max(runBestCombo, combo);
-                    careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
-                    addCharge(30);
-                    addFloatingText('🎯 דיוק מושלם +1', targetBall.x, targetBall.y - 36, '#fde047');
-                    if (isSoloMode()) score += 1;
-                    playSound('spin');
                 } else if (isHeelSpin) {
                     combo++; runBestCombo = Math.max(runBestCombo, combo);
                     careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
@@ -1634,12 +1626,15 @@
                     playSound('kick');
                 }
                 addCharge(isSweetSpot ? 20 : 12);
-            } else playSound('kick');
+            } else {
+                targetBall.hitFlash = 0.8;
+                playSound('kick');
+            }
 
             if (navigator.vibrate) try { navigator.vibrate(isFireMode ? 65 : 35); } catch {}
 
-            const pCount = (isFireMode || triggerPowerShot || timingBonus) ? 16 : 10;
-            const sparkColor = triggerPowerShot ? '#fb7185' : timingBonus ? '#fde047' : isFireMode ? '#f97316'
+            const pCount = (isFireMode || triggerPowerShot) ? 16 : 10;
+            const sparkColor = triggerPowerShot ? '#fb7185' : isFireMode ? '#f97316'
                 : (skinsData.find(s => s.id === activeSkin)?.color || '#ffffff');
             pushParticles(Array.from({ length: pCount }, () => ({
                 x: targetBall.x, y: targetBall.y,
@@ -1650,7 +1645,7 @@
 
             const escalation = getEscalationFactor();
             const offsetRatio = Math.max(-1, Math.min(1, (targetBall.x - paddleCenter) / (player.width / 2)));
-            const boost = triggerPowerShot ? 3.4 : ((isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin || timingBonus ? 1.3 : 0));
+            const boost = triggerPowerShot ? 3.4 : ((isOverdriveActive() || isFireMode) ? 2.1 : (isHeelSpin ? 1.3 : 0));
             targetBall.vy = -(cfg.kickPower + boost) * Math.min(1.20, escalation);
             targetBall.y = player.y - targetBall.radius - 1;
             targetBall.vx = offsetRatio * (triggerPowerShot ? 11.8 : (isHeelSpin ? 10.5 : 8.4)) * cfg.speedScale * Math.min(1.20, escalation);
@@ -1700,6 +1695,7 @@
             if (isOverdriveActive()) updateChargeAndMissionUI();
             if (player.recoil > 0) player.recoil = Math.max(0, player.recoil - 1.1);
             if (screenShake > 0) screenShake = Math.max(0, screenShake - 0.6);
+            if (ball.hitFlash > 0) ball.hitFlash = Math.max(0, ball.hitFlash - 0.12);
 
             if (levelUpBanner) {
                 const elapsed = now - levelUpBanner.createdAt;
@@ -1760,16 +1756,17 @@
                     if (Math.hypot(ball.x - bt.x, ball.y - bt.y) < ball.radius + bt.radius) {
                         playSound('target');
                         const hotMult = isHotMinuteActive() ? 2 : 1;
-                        const targetPts = 3 * (isOverdriveActive() ? 2 : 1) * hotMult;
-                        const targetCoins = 2 * hotMult;
+                        const sprintMult = bt.fast ? 2 : 1;
+                        const targetPts = 3 * (isOverdriveActive() ? 2 : 1) * hotMult * (bt.fast ? 1 : 1);
+                        const targetCoins = 2 * hotMult * sprintMult;
                         score += targetPts; coins += targetCoins;
-                        if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + 2);
-                        updateTimerBadge(); addCharge(30); advanceMission('targets', 1, false);
+                        if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + (bt.fast ? 4 : 2));
+                        updateTimerBadge(); addCharge(bt.fast ? 38 : 30); advanceMission('targets', 1, false);
                         saveGameData(); handleScoreChanged();
-                        addFloatingText(`🎯 +${targetPts} | +${targetCoins} 🪙`, bt.x, bt.y - 10, '#f43f5e');
+                        addFloatingText(`${bt.fast ? '⚡' : '🎯'} +${targetPts} | +${targetCoins} 🪙`, bt.x, bt.y - 10, bt.fast ? '#fde047' : '#f43f5e');
                         pushParticles(Array.from({ length: 12 }, (_, i) => ({
                             x: bt.x, y: bt.y, vx: (Math.random() - 0.5) * 11, vy: (Math.random() - 0.5) * 11,
-                            life: 1.0, color: i % 2 === 0 ? '#f43f5e' : '#fbbf24'
+                            life: 1.0, color: i % 2 === 0 ? (bt.fast ? '#fde047' : '#f43f5e') : '#fbbf24'
                         })));
                         bonusTargets.splice(tIdx, 1); targetCooldown = 0;
                     }
@@ -1819,17 +1816,12 @@
 
             ball.prevY = ball.y;
             ball.vy += 0.40 * gravScale;
+            ball.vx += ball.spinRate * 0.22 * moveScale;
             ball.x += ball.vx * moveScale;
             ball.y += ball.vy * moveScale;
             ball.vx *= 0.99;
-            ball.rot += ball.vx * 0.05;
-
-            if (ball.vy > 0) {
-                const shrinkSpeed = (1.15 + Math.min(0.85, (currentLevel - 1) * 0.08)) * moveScale;
-                ball.ringRadius = ball.ringRadius <= ball.radius ? 44 : Math.max(ball.radius, ball.ringRadius - shrinkSpeed);
-            } else {
-                ball.ringRadius = 42;
-            }
+            ball.spinRate *= 0.985;
+            ball.rot += ball.vx * 0.04 + ball.spinRate;
 
             if (Math.hypot(ball.vx, ball.vy) > 6.5 || isFireMode || isOverdriveActive() || ball.powerShot) {
                 ballTrail.push({ x: ball.x, y: ball.y, r: ball.radius * (ball.powerShot || isOverdriveActive() ? 0.92 : 0.68), alpha: ball.powerShot || isOverdriveActive() ? 0.65 : 0.35 });
@@ -1852,7 +1844,7 @@
                 extraSoloBall.vy += 0.36 * gravScale;
                 extraSoloBall.x += extraSoloBall.vx * moveScale;
                 extraSoloBall.y += extraSoloBall.vy * moveScale;
-                extraSoloBall.vx *= 0.99; extraSoloBall.rot += extraSoloBall.vx * 0.05;
+                extraSoloBall.vx *= 0.99; extraSoloBall.rot += extraSoloBall.vx * 0.05 + (extraSoloBall.spinRate || 0);
                 if (extraSoloBall.x - extraSoloBall.radius < 0) { extraSoloBall.x = extraSoloBall.radius; extraSoloBall.vx *= -0.85; }
                 else if (extraSoloBall.x + extraSoloBall.radius > canvas.width) { extraSoloBall.x = canvas.width - extraSoloBall.radius; extraSoloBall.vx *= -0.85; }
                 if (extraSoloBall.y + extraSoloBall.radius >= player.y && extraSoloBall.y - extraSoloBall.radius <= player.y + player.height + 10 &&
@@ -1881,9 +1873,9 @@
 
             if (isDuelMode()) {
                 bot.y = 35;
-                const roundFactor = gameMode === 'tournament' ? 1 + tournamentRound * 0.12 : 1;
-                const styleTrackMult = currentBotStyle === 'technical' ? 1.2 : currentBotStyle === 'guardian' ? 1.05 : 0.95;
-                const styleCapMult = currentBotStyle === 'aggressive' ? 1.22 : currentBotStyle === 'guardian' ? 0.92 : 1.05;
+                const roundFactor = gameMode === 'tournament' ? 1 + tournamentRound * 0.14 : 1;
+                const styleTrackMult = currentBotStyle === 'technical' ? 1.22 : currentBotStyle === 'guardian' ? 1.08 : 0.96;
+                const styleCapMult = currentBotStyle === 'aggressive' ? 1.24 : currentBotStyle === 'guardian' ? 0.94 : 1.06;
                 const cap = cfg.botSpeedCap * roundFactor * styleCapMult;
                 const stepX = Math.max(-cap, Math.min(cap, (ball.x - bot.width / 2 - bot.x) * cfg.botTrack * roundFactor * styleTrackMult));
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x + stepX));
@@ -1893,9 +1885,10 @@
                     pushParticles(Array.from({ length: 10 }, () => ({
                         x: ball.x, y: ball.y, vx: (Math.random() - 0.5) * 11, vy: (Math.random() - 0.5) * 11, life: 1.0, color: '#6366f1'
                     })));
-                    const aimSpread = currentBotStyle === 'technical' ? 1.55 : difficulty === 'hard' ? 1.1 : difficulty === 'easy' ? 1.55 : 1.35;
+                    const aimSpread = currentBotStyle === 'technical' ? 1.65 : difficulty === 'hard' ? 1.15 : difficulty === 'easy' ? 1.55 : 1.38;
                     ball.powerShot = false;
-                    ball.vy = Math.abs(cfg.kickPower * 0.42 * (currentBotStyle === 'aggressive' ? 1.15 : 1.0) * Math.min(1.15, 1 + tournamentRound * 0.04));
+                    ball.spinRate = currentBotStyle === 'technical' ? (Math.random() > 0.5 ? 0.18 : -0.18) : 0;
+                    ball.vy = Math.abs(cfg.kickPower * 0.42 * (currentBotStyle === 'aggressive' ? 1.16 : 1.0) * Math.min(1.18, 1 + tournamentRound * 0.05));
                     ball.y = bot.y + bot.height + ball.radius + 1;
                     ball.vx = (Math.random() - 0.5) * aimSpread * 7.2 * cfg.speedScale;
                 }
@@ -1903,7 +1896,7 @@
                 else if (ball.y > canvas.height + 40) { if (awardDuelPointToBot()) return; }
             } else if (ball.y > canvas.height + 40) {
                 if (isPracticeMode()) {
-                    combo = 0; isFireMode = false; ball.powerShot = false; ball.ringRadius = 42;
+                    combo = 0; isFireMode = false; ball.powerShot = false; ball.spinRate = 0;
                     document.getElementById('combo-badge').classList.add('hidden');
                     resetPositions(false);
                     addFloatingText('🏋️ המשך אימון!', canvas.width / 2, canvas.height * 0.45, '#2dd4bf');
@@ -1930,8 +1923,10 @@
             if (isSoloMode() || isPracticeMode()) {
                 bonusTargets.forEach(bt => {
                     ctx.beginPath(); ctx.arc(bt.x, bt.y, bt.radius + Math.sin(bt.pulse) * 3, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(244, 63, 94, 0.18)'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#f43f5e'; ctx.stroke();
-                    ctx.font = '15px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🎯', bt.x, bt.y);
+                    ctx.fillStyle = bt.fast ? 'rgba(250, 204, 21, 0.22)' : 'rgba(244, 63, 94, 0.18)'; ctx.fill();
+                    ctx.lineWidth = 3; ctx.strokeStyle = bt.fast ? '#facc15' : '#f43f5e'; ctx.stroke();
+                    ctx.font = '15px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(bt.fast ? '⚡' : '🎯', bt.x, bt.y);
                 });
                 if (goldenTarget) {
                     ctx.beginPath(); ctx.arc(goldenTarget.x, goldenTarget.y, goldenTarget.radius + Math.sin(goldenTarget.pulse) * 3, 0, Math.PI * 2);
@@ -1973,15 +1968,6 @@
             });
             ctx.globalAlpha = 1.0;
 
-            if (ball.vy > 0 && ball.y < player.y) {
-                const sweetNow = isRingTimingSweet(ball);
-                ctx.beginPath();
-                ctx.arc(ball.x, ball.y, ball.ringRadius, 0, Math.PI * 2);
-                ctx.strokeStyle = sweetNow ? 'rgba(250, 204, 21, 0.9)' : 'rgba(148, 163, 184, 0.42)';
-                ctx.lineWidth = sweetNow ? 2.5 : 1.5;
-                ctx.stroke();
-            }
-
             const paddleObj = paddlesData.find(p => p.id === activePaddle) || paddlesData[0];
             const paddleMainColor = now < widePaddleEnd ? '#34d399' : paddleObj.color;
             const drawPlayerY = player.y + player.recoil;
@@ -2001,8 +1987,17 @@
                 ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(0, 0, extraSoloBall.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
             }
 
-            ctx.save(); ctx.translate(ball.x, ball.y); ctx.rotate(ball.rot);
-            ctx.fillStyle = trailColor; ctx.beginPath(); ctx.arc(0, 0, ball.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            ctx.save();
+            ctx.translate(ball.x, ball.y);
+            ctx.rotate(ball.rot);
+            const rScale = 1 + ball.hitFlash * 0.14;
+            ctx.scale(rScale, rScale);
+            ctx.fillStyle = ball.hitFlash > 0.35 ? '#ffffff' : trailColor;
+            ctx.beginPath(); ctx.arc(0, 0, ball.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = 'rgba(15, 23, 42, 0.35)';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(-ball.radius * 0.65, 0); ctx.lineTo(ball.radius * 0.65, 0); ctx.stroke();
+            ctx.restore();
 
             for (let i = floatingTexts.length - 1; i >= 0; i--) {
                 const ft = floatingTexts[i]; ft.y -= 1.2; ft.life -= 0.02;
