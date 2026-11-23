@@ -49,13 +49,13 @@
 
             <div class="text-center mb-4">
                 <div class="inline-flex items-center gap-1.5 bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                    <span>⚡ 10 שלבים • קשת כיוון • מטרות שרשרת</span>
+                    <span>⚡ 10 שלבים • שדרוגים • קשת כיוון • Fever</span>
                 </div>
                 <h1 onclick="registerSecretAdminTap()" class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 mb-1 cursor-pointer select-none">
                     מלך ההקפצות
                 </h1>
                 <p id="menu-subtitle" class="text-slate-400 text-xs font-medium mb-3">
-                    מלא את מד האנרגיה, השלם משימות ושבור שיאים!
+                    מלא את מד האנרגיה, שדרג את הציוד ושבור שיאים!
                 </p>
 
                 <div class="inline-flex items-center gap-2.5 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3.5 py-1.5 text-xs flex-wrap justify-center">
@@ -73,7 +73,7 @@
                         <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">⚽</div>
                         <div class="text-right">
                             <div id="btn-solo-title" class="font-extrabold text-base">שבירת שיא (סולו)</div>
-                            <div id="btn-solo-desc" class="text-emerald-100/80 text-xs">10 שלבים מתחלפים, מטרות שרשרת ומצב Fever</div>
+                            <div id="btn-solo-desc" class="text-emerald-100/80 text-xs">10 שלבים מתחלפים, אתגרי שלב ורגעי לחץ</div>
                         </div>
                     </div>
                     <span class="text-white/80 text-lg">›</span>
@@ -95,7 +95,7 @@
                         <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🤖</div>
                         <div class="text-right">
                             <div id="btn-pvp-title" class="font-extrabold text-base">תחרות 1 נגד 1</div>
-                            <div id="btn-pvp-desc" class="text-indigo-100/80 text-xs">יריבים עם מהלך מיוחד: טכני, אגרסיבי ושומר</div>
+                            <div id="btn-pvp-desc" class="text-indigo-100/80 text-xs">יריבים עם מהלך מיוחד וסימון ויזואלי בזמן אמת</div>
                         </div>
                     </div>
                     <span class="text-white/80 text-lg">›</span>
@@ -158,6 +158,15 @@
                 </div>
                 <span id="charge-pct" class="font-black text-amber-300 w-9 text-left">0%</span>
             </div>
+
+            <div id="stage-track-row" class="hidden flex items-center justify-between gap-2 text-[10px] text-cyan-200">
+                <span id="stage-track-label" class="font-bold truncate">לשלב 2: 14 נק'</span>
+                <div class="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden shrink-0">
+                    <div id="stage-track-fill" class="h-full bg-cyan-400 transition-all duration-150" style="width: 0%"></div>
+                </div>
+                <span id="stage-task-pill" class="font-extrabold text-amber-300 shrink-0">🎯 0/2</span>
+            </div>
+
             <div class="flex items-center justify-between text-[11px] text-slate-300 gap-2">
                 <span id="mission-text" class="font-semibold truncate">משימה: 14 הקפצות</span>
                 <span id="mission-progress" class="font-black text-emerald-400 shrink-0">0/14</span>
@@ -236,11 +245,12 @@
                 <h2 id="shop-title" class="text-lg font-black flex items-center gap-2">🏪 חנות</h2>
                 <button type="button" onclick="closeShopModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
-            <div class="grid grid-cols-4 gap-1.5 p-2 bg-slate-950/50 border-b border-slate-800">
-                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">כדורים</button>
-                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
-                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
-                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
+            <div class="grid grid-cols-5 gap-1 p-2 bg-slate-950/50 border-b border-slate-800">
+                <button id="tab-upgrades-btn" type="button" onclick="switchShopTab('upgrades')" class="py-2 px-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">שדרוגים</button>
+                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">כדורים</button>
+                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
+                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
+                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
             </div>
             <div id="shop-items-container" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
         </div>
@@ -343,6 +353,13 @@
         let unlockedPaddles = ensureUnlocked(safeParseJSON('juggle_unlocked_paddles', ['emerald_classic']), 'emerald_classic');
         let unlockedStadiums = ensureUnlocked(safeParseJSON('juggle_unlocked_stadiums', ['night_pro']), 'night_pro');
         let unlockedSongs = ensureUnlocked(safeParseJSON('juggle_unlocked_songs', ['none']), 'none');
+
+        const rawUpgrades = safeParseJSON('juggle_upgrades', {});
+        let upgrades = {
+            paddleWidth: Math.min(5, Math.max(0, Number(rawUpgrades.paddleWidth) || 0)),
+            sweepPower: Math.min(5, Math.max(0, Number(rawUpgrades.sweepPower) || 0)),
+            controlFocus: Math.min(5, Math.max(0, Number(rawUpgrades.controlFocus) || 0))
+        };
 
         const rawCareer = safeParseJSON('juggle_career_stats', {});
         let careerStats = {
@@ -473,10 +490,11 @@
         }
 
         function syncAchievementProgress() {
-            const derivedPurchases = [unlockedSkins, unlockedPaddles, unlockedStadiums, unlockedSongs]
+            const itemPurchases = [unlockedSkins, unlockedPaddles, unlockedStadiums, unlockedSongs]
                 .reduce((acc, list) => acc + Math.max(0, list.length - 1), 0);
-            totalPurchasesCount = derivedPurchases;
-            achievements.shop_2.progress = derivedPurchases;
+            const upgradePurchases = (upgrades.paddleWidth || 0) + (upgrades.sweepPower || 0) + (upgrades.controlFocus || 0);
+            totalPurchasesCount = itemPurchases + upgradePurchases;
+            achievements.shop_2.progress = totalPurchasesCount;
             achievements.juggles_50.progress = Math.max(Number(achievements.juggles_50.progress) || 0, careerStats.totalJuggles);
             achievements.score_100.progress = Math.max(Number(achievements.score_100.progress) || 0, personalBest);
         }
@@ -514,6 +532,13 @@
         function getCurrentStageDef() {
             const idx = Math.min(STAGE_DEFS.length - 1, Math.max(0, currentLevel - 1));
             return STAGE_DEFS[idx];
+        }
+
+        function getNextStageThreshold(lvl) {
+            const nextDef = STAGE_DEFS.find(s => s.lvl === lvl + 1);
+            if (nextDef) return { targetScore: nextDef.minScore, nextLvl: nextDef.lvl };
+            const base = 220 + (Math.max(10, lvl) - 10 + 1) * 45;
+            return { targetScore: base, nextLvl: lvl + 1 };
         }
 
         function getSeriesStepDefinition(stepIdx) {
@@ -556,17 +581,17 @@
 
         const translations = {
             he: {
-                subtitle: "מלא את מד האנרגיה, השלם משימות ושבור שיאים!",
-                soloTitle: "שבירת שיא (סולו)", soloDesc: "10 שלבים מתחלפים, מטרות שרשרת ומצב Fever",
+                subtitle: "מלא את מד האנרגיה, שדרג את הציוד ושבור שיאים!",
+                soloTitle: "שבירת שיא (סולו)", soloDesc: "10 שלבים מתחלפים, אתגרי שלב ורגעי לחץ",
                 practiceTitle: "אימון חופשי", practiceDesc: "תרגול סוויפ, קשת כיוון ומטרות בלי שעון",
-                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "יריבים עם מהלך מיוחד: טכני, אגרסיבי ושומר",
+                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "יריבים עם מהלך מיוחד וסימון ויזואלי בזמן אמת",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
                 menu: "תפריט", tap: "החלקה מהירה = סוויפ • קומבו x3 פותח קשת כיוון",
                 installBtn: "התקן", navAchieve: "יעדים והישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
                 lbTitle: "טבלת שיאים עולמית", lbBest: "השיא האישי שלך:", lbSave: "שמור שם",
                 lbNamePlaceholder: "הכנס שם לתצוגה...", lbRankPrefix: "הדירוג שלך:",
                 lbConnectError: "לא ניתן להתחבר לטבלה כרגע",
-                shopTitle: "חנות", tabSkins: "כדורים", tabPaddles: "פאדלים", tabStadiums: "אצטדיונים", tabSongs: "מוזיקה",
+                shopTitle: "חנות", tabUpgrades: "שדרוגים", tabSkins: "כדורים", tabPaddles: "פאדלים", tabStadiums: "אצטדיונים", tabSongs: "מוזיקה",
                 achieveTitle: "יעדים והישגים", milestonesTitle: "מסלול יעדים ותארים", achievementsSectionTitle: "הישגים",
                 gameOver: "המשחק נגמר!", timeUp: "הזמן נגמר!",
                 duelWon: "ניצחת בדו-קרב!", duelLost: "היריב ניצח!", tourneyWon: "אלוף הטורניר!",
@@ -575,7 +600,7 @@
                 liveBestPrefix: "השיא שלי: ", newRecordLive: "👑 שיא אישי חדש!",
                 nearMissMsg: "כמעט שברת שיא! היית במרחק {diff} נקודות בלבד!",
                 retry: "שחק שוב", shareBtn: "שתף תוצאה", sharedCopied: "התוצאה הועתקה ללוח",
-                buy: "קנה", equip: "בחר", equipped: "נבחר", claim: "אסוף פרס", claimed: "נאסף ✓", inProgress: "בתהליך",
+                buy: "שדרג / קנה", equip: "בחר", equipped: "נבחר", maxed: "מקסימום ★", claim: "אסוף פרס", claimed: "נאסף ✓", inProgress: "בתהליך",
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
                 levelPrefix: "שלב", practiceBadge: "🏋️ אימון", chargeLbl: "מד טעינה",
                 overdriveLbl: "🔥 אוברדרייב", hotMinuteLbl: "🔥 FEVER",
@@ -587,20 +612,23 @@
                 statJuggles: "הקפצות", statDuels: "ניצחונות", statTrophies: "גביעים", statCombo: "קומבו שיא",
                 recentRunsTitle: "ריצות אחרונות", noRecentRuns: "אין עדיין ריצות שמורות",
                 pauseTitle: "המשחק מושהה", resumeBtn: "המשך משחק", pauseMenuBtn: "חזרה לתפריט",
-                levelUpPhrases: ["שלב {lvl} נפתח!", "אתגר חדש! שלב {lvl}", "קצב עולה! שלב {lvl}", "שליטה מלאה! שלב {lvl}"]
+                levelUpPhrases: ["שלב {lvl} נפתח!", "אתגר חדש! שלב {lvl}", "קצב עולה! שלב {lvl}", "שליטה מלאה! שלב {lvl}"],
+                stageNextLbl: "לשלב {lvl}: {pts} נק'",
+                stageTaskLbl: "יעד שלב: {cur}/{target} • +3 🪙",
+                nearTargetMsg: "✨ קרוב מאוד!"
             },
             en: {
-                subtitle: "Charge up, complete missions, and break records!",
-                soloTitle: "High Score (Solo)", soloDesc: "10 unique stages, chain targets & Fever mode",
+                subtitle: "Charge up, upgrade gear, and break records!",
+                soloTitle: "High Score (Solo)", soloDesc: "10 unique stages, stage tasks & clutch finale",
                 practiceTitle: "Free Practice", practiceDesc: "Practice sweep kicks & aim arc without timer",
-                pvpTitle: "1v1 Duel", pvpDesc: "Rivals with signature moves: Technical, Aggressive & Guardian",
+                pvpTitle: "1v1 Duel", pvpDesc: "Rivals with signature moves & live visual cues",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
                 menu: "Menu", tap: "Fast swipe = Sweep • x3 Combo unlocks Aim Arc",
                 installBtn: "Install", navAchieve: "Goals & Awards", navLeaderboard: "Leaderboard", navShop: "Shop",
                 lbTitle: "Global Leaderboard", lbBest: "Your personal best:", lbSave: "Save Name",
                 lbNamePlaceholder: "Enter display name...", lbRankPrefix: "Your rank:",
                 lbConnectError: "Unable to connect to leaderboard",
-                shopTitle: "Shop", tabSkins: "Balls", tabPaddles: "Paddles", tabStadiums: "Stadiums", tabSongs: "Music",
+                shopTitle: "Shop", tabUpgrades: "Upgrades", tabSkins: "Balls", tabPaddles: "Paddles", tabStadiums: "Stadiums", tabSongs: "Music",
                 achieveTitle: "Goals & Achievements", milestonesTitle: "Milestones & Titles", achievementsSectionTitle: "Achievements",
                 gameOver: "Game Over!", timeUp: "Time's Up!",
                 duelWon: "Duel Victory!", duelLost: "Rival Won!", tourneyWon: "Tournament Champion!",
@@ -609,7 +637,7 @@
                 liveBestPrefix: "My Best: ", newRecordLive: "👑 NEW RECORD!",
                 nearMissMsg: "So close! Only {diff} pts away from your record!",
                 retry: "Play Again", shareBtn: "Share Score", sharedCopied: "Score copied to clipboard",
-                buy: "Buy", equip: "Equip", equipped: "Equipped", claim: "Claim", claimed: "Claimed ✓", inProgress: "In Progress",
+                buy: "Upgrade / Buy", equip: "Equip", equipped: "Equipped", maxed: "MAX ★", claim: "Claim", claimed: "Claimed ✓", inProgress: "In Progress",
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
                 levelPrefix: "Stage", practiceBadge: "🏋️ Practice", chargeLbl: "Charge",
                 overdriveLbl: "🔥 OVERDRIVE", hotMinuteLbl: "🔥 FEVER",
@@ -621,20 +649,23 @@
                 statJuggles: "Juggles", statDuels: "Duel Wins", statTrophies: "Trophies", statCombo: "Max Combo",
                 recentRunsTitle: "Recent Runs", noRecentRuns: "No recent runs yet",
                 pauseTitle: "Game Paused", resumeBtn: "Resume", pauseMenuBtn: "Main Menu",
-                levelUpPhrases: ["Stage {lvl} Unlocked!", "New Twist! Stage {lvl}", "Pace Up! Stage {lvl}", "In Control! Stage {lvl}"]
+                levelUpPhrases: ["Stage {lvl} Unlocked!", "New Twist! Stage {lvl}", "Pace Up! Stage {lvl}", "In Control! Stage {lvl}"],
+                stageNextLbl: "Stage {lvl}: {pts} pts",
+                stageTaskLbl: "Stage Task: {cur}/{target} • +3 🪙",
+                nearTargetMsg: "✨ Close!"
             },
             ru: {
-                subtitle: "Заряжай шкалу, выполняй миссии и бей рекорды!",
-                soloTitle: "Рекорд (Соло)", soloDesc: "10 уникальных этапов, цепочка целей и Fever",
+                subtitle: "Заряжай шкалу, улучшай снаряжение и бей рекорды!",
+                soloTitle: "Рекорд (Соло)", soloDesc: "10 этапов, задачи этапа и напряжённый финал",
                 practiceTitle: "Свободная тренировка", practiceDesc: "Тренируй свайп-удары и дугу прицела без таймера",
-                pvpTitle: "Дуэль 1 на 1", pvpDesc: "Соперники с особыми приёмами",
+                pvpTitle: "Дуэль 1 на 1", pvpDesc: "Соперники с особыми приёмами и индикаторами",
                 tourneyTitle: "Турнир чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал за кубок",
                 menu: "Меню", tap: "Быстрый свайп = кручёный • Комбо x3 открывает дугу",
                 installBtn: "Установить", navAchieve: "Цели и награды", navLeaderboard: "Рекорды", navShop: "Магазин",
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш лучший результат:", lbSave: "Сохранить",
                 lbNamePlaceholder: "Введите имя...", lbRankPrefix: "Ваше место:",
                 lbConnectError: "Не удалось подключиться к таблице",
-                shopTitle: "Магазин", tabSkins: "Мячи", tabPaddles: "Ракетки", tabStadiums: "Стадионы", tabSongs: "Музыка",
+                shopTitle: "Магазин", tabUpgrades: "Улучшения", tabSkins: "Мячи", tabPaddles: "Ракетки", tabStadiums: "Стадионы", tabSongs: "Музыка",
                 achieveTitle: "Цели и достижения", milestonesTitle: "Вехи и титулы", achievementsSectionTitle: "Достижения",
                 gameOver: "Игра окончена!", timeUp: "Время вышло!",
                 duelWon: "Победа в дуэли!", duelLost: "Соперник победил!", tourneyWon: "Чемпион турнира!",
@@ -643,7 +674,7 @@
                 liveBestPrefix: "Рекорд: ", newRecordLive: "👑 НОВЫЙ РЕКОРД!",
                 nearMissMsg: "Почти рекорд! Не хватило всего {diff} очков!",
                 retry: "Играть снова", shareBtn: "Поделиться", sharedCopied: "Результат скопирован",
-                buy: "Купить", equip: "Выбрать", equipped: "Выбрано", claim: "Забрать", claimed: "Получено ✓", inProgress: "В процессе",
+                buy: "Улучшить / Купить", equip: "Выбрать", equipped: "Выбрано", maxed: "МАКС ★", claim: "Забрать", claimed: "Получено ✓", inProgress: "В процессе",
                 diffEasy: "Лёгкий", diffMedium: "Средний", diffHard: "Сложный",
                 levelPrefix: "Этап", practiceBadge: "🏋️ Тренировка", chargeLbl: "Заряд",
                 overdriveLbl: "🔥 ОВЕРДРАЙВ", hotMinuteLbl: "🔥 FEVER",
@@ -655,20 +686,23 @@
                 statJuggles: "Набиваний", statDuels: "Побед", statTrophies: "Кубков", statCombo: "Макс. комбо",
                 recentRunsTitle: "Последние игры", noRecentRuns: "Пока нет сохранённых игр",
                 pauseTitle: "Пауза", resumeBtn: "Продолжить", pauseMenuBtn: "В меню",
-                levelUpPhrases: ["Этап {lvl}!", "Новый поворот! Этап {lvl}", "Темп растёт! Этап {lvl}", "Полный контроль! Этап {lvl}"]
+                levelUpPhrases: ["Этап {lvl}!", "Новый поворот! Этап {lvl}", "Темп растёт! Этап {lvl}", "Полный контроль! Этап {lvl}"],
+                stageNextLbl: "Этап {lvl}: {pts} очк.",
+                stageTaskLbl: "Задача этапа: {cur}/{target} • +3 🪙",
+                nearTargetMsg: "✨ Рядом!"
             },
             fr: {
-                subtitle: "Charge la jauge, réussis les missions et bats des records !",
-                soloTitle: "Record (Solo)", soloDesc: "10 niveaux variés, cibles en chaîne et mode Fever",
+                subtitle: "Charge la jauge, améliore ton matériel et bats des records !",
+                soloTitle: "Record (Solo)", soloDesc: "10 niveaux, défis d'étape et final intense",
                 practiceTitle: "Entraînement libre", practiceDesc: "Entraîne le sweep et l'arc de visée sans chrono",
-                pvpTitle: "Duel 1v1", pvpDesc: "Rivaux avec coups spéciaux : Technique, Agressif, Gardien",
+                pvpTitle: "Duel 1v1", pvpDesc: "Rivaux avec coups spéciaux et repères visuels",
                 tourneyTitle: "Tournoi des champions", tourneyDesc: "Quart, demi-finale et finale pour le trophée",
                 menu: "Menu", tap: "Glissement rapide = Sweep • Combo x3 = Arc de visée",
                 installBtn: "Installer", navAchieve: "Objectifs & Succès", navLeaderboard: "Classement", navShop: "Boutique",
                 lbTitle: "Classement mondial", lbBest: "Votre meilleur score :", lbSave: "Enregistrer",
                 lbNamePlaceholder: "Entrez votre pseudo...", lbRankPrefix: "Votre rang :",
                 lbConnectError: "Connexion au classement impossible",
-                shopTitle: "Boutique", tabSkins: "Ballons", tabPaddles: "Raquettes", tabStadiums: "Stades", tabSongs: "Musique",
+                shopTitle: "Boutique", tabUpgrades: "Améliorations", tabSkins: "Ballons", tabPaddles: "Raquettes", tabStadiums: "Stades", tabSongs: "Musique",
                 achieveTitle: "Objectifs et Succès", milestonesTitle: "Jalons et Titres", achievementsSectionTitle: "Succès",
                 gameOver: "Partie terminée !", timeUp: "Temps écoulé !",
                 duelWon: "Victoire en duel !", duelLost: "Le rival a gagné !", tourneyWon: "Champion du tournoi !",
@@ -677,7 +711,7 @@
                 liveBestPrefix: "Record : ", newRecordLive: "👑 NOUVEAU RECORD !",
                 nearMissMsg: "Si proche ! Plus que {diff} pts du record !",
                 retry: "Rejouer", shareBtn: "Partager", sharedCopied: "Score copié",
-                buy: "Acheter", equip: "Équiper", equipped: "Équipé", claim: "Réclamer", claimed: "Réclamé ✓", inProgress: "En cours",
+                buy: "Améliorer / Acheter", equip: "Équiper", equipped: "Équipé", maxed: "MAX ★", claim: "Réclamer", claimed: "Réclamé ✓", inProgress: "En cours",
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
                 levelPrefix: "Niveau", practiceBadge: "🏋️ Entraînement", chargeLbl: "Charge",
                 overdriveLbl: "🔥 OVERDRIVE", hotMinuteLbl: "🔥 FEVER",
@@ -689,9 +723,30 @@
                 statJuggles: "Jonglages", statDuels: "Victoires", statTrophies: "Trophées", statCombo: "Combo max",
                 recentRunsTitle: "Parties récentes", noRecentRuns: "Aucune partie récente",
                 pauseTitle: "Pause", resumeBtn: "Reprendre", pauseMenuBtn: "Menu principal",
-                levelUpPhrases: ["Niveau {lvl} !", "Nouveau défi ! Niveau {lvl}", "Rythme en hausse ! Niveau {lvl}", "Maîtrise totale ! Niveau {lvl}"]
+                levelUpPhrases: ["Niveau {lvl} !", "Nouveau défi ! Niveau {lvl}", "Rythme en hausse ! Niveau {lvl}", "Maîtrise totale ! Niveau {lvl}"],
+                stageNextLbl: "Niveau {lvl} : {pts} pts",
+                stageTaskLbl: "Défi étape : {cur}/{target} • +3 🪙",
+                nearTargetMsg: "✨ Tout près !"
             }
         };
+
+        const upgradesData = [
+            {
+                key: 'paddleWidth', icon: '↔️', basePrice: 45, stepPrice: 35,
+                name: { he: 'רוחב פאדל מתקדם', en: 'Wide Paddle Gear', ru: 'Широкая ракетка', fr: 'Raquette Élargie' },
+                desc: { he: '+7px רוחב לכל רמה (עד 5)', en: '+7px width per level (max 5)', ru: '+7px ширины за уровень', fr: '+7px largeur par niveau' }
+            },
+            {
+                key: 'sweepPower', icon: '⚡', basePrice: 55, stepPrice: 40,
+                name: { he: 'עוצמת בעיטת סוויפ', en: 'Sweep Kick Power', ru: 'Сила кручёного удара', fr: 'Puissance Sweep' },
+                desc: { he: 'מהירות, ספין ושובל חזקים יותר', en: 'Faster sweep speed, spin & trail', ru: 'Больше скорости и подкрутки', fr: 'Plus de vitesse et d’effet' }
+            },
+            {
+                key: 'controlFocus', icon: '🎯', basePrice: 50, stepPrice: 38,
+                name: { he: 'שליטה ודיוק במטרות', en: 'Target Control & Focus', ru: 'Контроль и точность', fr: 'Contrôle & Précision' },
+                desc: { he: 'פחות איבוד טעינה ומטרות מהירות', en: 'Less charge decay & fast targets', ru: 'Меньше потери заряда', fr: 'Moins de perte de charge' }
+            }
+        ];
 
         const skinsData = [
             { id: 'classic', name: { he: 'כדור קלאסי', en: 'Classic Ball', ru: 'Классический', fr: 'Classique' }, price: 0, color: '#ffffff' },
@@ -804,7 +859,7 @@
                 'lbl-menu': t.menu, 'tap-instruction': t.tap, 'install-btn-text': t.installBtn,
                 'nav-achieve': t.navAchieve, 'nav-leaderboard': t.navLeaderboard, 'nav-shop': t.navShop,
                 'lb-best-lbl': t.lbBest, 'lb-save-btn': t.lbSave,
-                'tab-skins-btn': t.tabSkins, 'tab-paddles-btn': t.tabPaddles,
+                'tab-upgrades-btn': t.tabUpgrades, 'tab-skins-btn': t.tabSkins, 'tab-paddles-btn': t.tabPaddles,
                 'tab-stadiums-btn': t.tabStadiums, 'tab-songs-btn': t.tabSongs,
                 'pause-title': t.pauseTitle, 'pause-resume-btn': t.resumeBtn, 'pause-menu-btn': t.pauseMenuBtn,
                 'go-retry-btn': t.retry, 'go-menu-btn': t.menu, 'go-share-btn': t.shareBtn,
@@ -839,6 +894,7 @@
             updateDailyBadge();
             updateLevelBadge();
             updateStageModifierUI();
+            updateStageTrackUI();
             updateTimerBadge();
             updateChargeAndMissionUI();
             updateLiveScoreBoard();
@@ -871,6 +927,7 @@
             localStorage.setItem('juggle_unlocked_paddles', JSON.stringify(unlockedPaddles));
             localStorage.setItem('juggle_unlocked_stadiums', JSON.stringify(unlockedStadiums));
             localStorage.setItem('juggle_unlocked_songs', JSON.stringify(unlockedSongs));
+            localStorage.setItem('juggle_upgrades', JSON.stringify(upgrades));
             localStorage.setItem('juggle_career_stats', JSON.stringify(careerStats));
             localStorage.setItem('juggle_series_quest', JSON.stringify(seriesQuest));
             localStorage.setItem('juggle_daily_challenge', JSON.stringify(dailyChallenge));
@@ -945,7 +1002,7 @@
             if (!confirm(lang === 'he' ? 'לאפס את כל הנתונים המקומיים?' : 'Reset all local data?')) return;
             ['juggle_coins', 'juggle_active_skin', 'juggle_active_paddle', 'juggle_active_stadium',
                 'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
-                'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_career_stats',
+                'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_upgrades', 'juggle_career_stats',
                 'juggle_series_quest', 'juggle_daily_challenge', 'juggle_streak_data',
                 'juggle_total_purchases', 'juggle_achievements', 'juggle_claimed_milestones',
                 'juggle_personal_best', 'juggle_top_global_score', 'juggle_best_diff',
@@ -1198,7 +1255,8 @@
         const ctx = canvas.getContext('2d');
         let gameMode = 'solo', gameRunning = false, isPaused = false;
         let score = 0, runJuggles = 0, runBestCombo = 0, soloTimeRemaining = 65, lastFrameTime = 0, endReason = 'fall';
-        let currentLevel = 1, levelUpBanner = null, particles = [], ballTrail = [], floatingTexts = [];
+        let currentLevel = 1, stageTaskHits = 0, stageTaskTarget = 2, stageTaskRewarded = false;
+        let levelUpBanner = null, particles = [], ballTrail = [], floatingTexts = [];
         let animFrameId = null, screenShake = 0, hitstopFrames = 0, passedRecordLive = false;
         let opponentScore = 0, duelGoal = 5, tournamentRound = 0, tournamentWins = 0, currentBotStyle = 'technical';
         let combo = 0, isFireMode = false, chargeMeter = 0, overdriveEnd = 0;
@@ -1206,11 +1264,17 @@
         let bonusTargets = [], targetCooldown = 0, chainStep = 1, goldenTarget = null, hazardCard = null, hazardTimer = 0;
         let movingObstacle = null, extraSoloBall = null, bonusGate = null, gateCooldown = 520;
         let hotMinuteEnd = 0, powerups = [], powerupTimer = 0, widePaddleEnd = 0, slowMoEnd = 0;
-        let activePointerId = null, dragOffsetX = 0;
+        let activePointerId = null, dragOffsetX = 0, lastHitMarker = null, nearMissCooldown = 0;
 
         let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, spinRate: 0, hitFlash: 0, powerShot: false };
         let player = { x: 0, y: 0, prevX: 0, vx: 0, baseWidth: 92, width: 92, height: 26, recoil: 0 };
         let bot = { x: 0, y: 0, baseY: 35, width: 90, height: 26, specialUntil: 0, specialCooldown: 240 };
+
+        function clearAllArenaEntities() {
+            powerups = []; particles = []; ballTrail = []; floatingTexts = []; bonusTargets = [];
+            bonusGate = null; goldenTarget = null; hazardCard = null; movingObstacle = null; extraSoloBall = null;
+            lastHitMarker = null; levelUpBanner = null;
+        }
 
         function pushParticles(list) {
             for (const p of list) {
@@ -1251,9 +1315,30 @@
             pill.classList.remove('hidden');
         }
 
+        function updateStageTrackUI() {
+            const row = document.getElementById('stage-track-row');
+            if (!row) return;
+            if (!isSoloMode()) { row.classList.add('hidden'); return; }
+            row.classList.remove('hidden');
+            const t = translations[lang];
+            const prevMin = STAGE_DEFS.find(s => s.lvl === currentLevel)?.minScore ?? (220 + (currentLevel - 11) * 45);
+            const nextInfo = getNextStageThreshold(currentLevel);
+            const spanPts = Math.max(1, nextInfo.targetScore - prevMin);
+            const pct = Math.max(0, Math.min(100, Math.round(((score - prevMin) / spanPts) * 100)));
+
+            document.getElementById('stage-track-label').innerText = t.stageNextLbl
+                .replace('{lvl}', String(nextInfo.nextLvl))
+                .replace('{pts}', String(nextInfo.targetScore));
+            document.getElementById('stage-track-fill').style.width = `${pct}%`;
+            document.getElementById('stage-task-pill').innerText = stageTaskRewarded
+                ? '✓ +3 🪙'
+                : t.stageTaskLbl.replace('{cur}', String(Math.min(stageTaskTarget, stageTaskHits))).replace('{target}', String(stageTaskTarget));
+        }
+
         function updateTimerBadge() {
             const timerEl = document.getElementById('timer-badge');
             const hotEl = document.getElementById('hot-minute-badge');
+            const clutchActive = isSoloMode() && soloTimeRemaining > 0 && soloTimeRemaining <= 10;
             if (hotEl) {
                 if (isHotMinuteActive()) {
                     hotEl.innerText = `${translations[lang].hotMinuteLbl} ${Math.max(1, Math.ceil((hotMinuteEnd - Date.now()) / 1000))}s`;
@@ -1272,8 +1357,8 @@
             timerEl.classList.remove('hidden');
             const sec = Math.max(0, Math.ceil(soloTimeRemaining));
             timerEl.innerText = `⏱️ ${sec}s`;
-            timerEl.className = sec <= 10
-                ? 'text-xs font-black text-rose-300 bg-rose-950/90 px-2.5 py-1 rounded-xl border border-rose-500/50 animate-pulse'
+            timerEl.className = clutchActive
+                ? 'text-xs font-black text-rose-200 bg-rose-900/90 px-2.5 py-1 rounded-xl border border-rose-400 animate-pulse'
                 : 'text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-xl border border-amber-500/30';
         }
 
@@ -1299,7 +1384,7 @@
             return { speedScale: 0.98, gravityScale: 0.95, kickPower: 19.8, botTrack: 0.15, botSpeedCap: 6.2, widthBonus: 0 };
         }
 
-        const getBasePlayerWidth = () => Math.max(68, 90 + getDifficultyConfig().widthBonus);
+        const getBasePlayerWidth = () => Math.max(68, 90 + getDifficultyConfig().widthBonus + (upgrades.paddleWidth || 0) * 7);
         const getEscalationFactor = () => isPracticeMode() ? 1.0 : Math.min(1.38, 1 + (currentLevel - 1) * 0.042);
 
         function updateLevelBadge() {
@@ -1314,12 +1399,16 @@
 
         function applyStageSetupOnLevelUp(newLvl) {
             if (!isSoloMode()) return;
+            stageTaskHits = 0;
+            stageTaskTarget = newLvl % 2 === 0 ? 2 : 3;
+            stageTaskRewarded = false;
             const st = getCurrentStageDef();
             if (st.mod === 'chain_gold' || st.mod === 'champions_finale') spawnGoldenTarget();
             if (st.mod === 'double_targets' || st.mod === 'sprint_targets' || st.mod === 'champions_finale') ensureTargetCount(2);
             if (st.mod === 'moving_barrier' || st.mod === 'storm_barrier' || st.mod === 'champions_finale') ensureMovingObstacle(true);
             if (st.mod === 'turbo_gate' || st.mod === 'champions_finale') spawnBonusGate();
             if (st.mod === 'dual_balls' || st.mod === 'champions_finale') ensureExtraSoloBall(true);
+            updateStageTrackUI();
         }
 
         function triggerLevelUpCelebration(newLvl) {
@@ -1342,6 +1431,7 @@
         function handleScoreChanged() {
             updateLiveScoreBoard();
             if (isSoloMode()) {
+                updateStageTrackUI();
                 updateDailyProgress('score', score, true);
                 if (!passedRecordLive && personalBest > 0 && score > personalBest) {
                     passedRecordLive = true;
@@ -1452,7 +1542,8 @@
             if (!isSoloMode() && !isPracticeMode()) return;
             const cfg = getDifficultyConfig();
             const stMod = isSoloMode() ? getCurrentStageDef().mod : 'warmup';
-            const isFastSprint = stMod === 'sprint_targets' || stMod === 'champions_finale' || Math.random() < 0.45;
+            const focusChance = 0.45 + (upgrades.controlFocus || 0) * 0.08;
+            const isFastSprint = stMod === 'sprint_targets' || stMod === 'champions_finale' || Math.random() < focusChance;
             const stepNum = forcedChainStep || chainStep;
             bonusTargets.push({
                 x: Math.random() * Math.max(40, canvas.width - 96) + 48,
@@ -1522,6 +1613,7 @@
 
         function setupMatchForMode(mode, keepTournamentProgress = false) {
             syncDailyAndStreak();
+            clearAllArenaEntities();
             gameMode = mode; isPaused = false; releaseAllPointers();
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
@@ -1539,12 +1631,12 @@
             currentBotStyle = mode === 'tournament' ? styleOrder[Math.min(tournamentRound, 2)] : styleOrder[Math.floor(Math.random() * 3)];
 
             runJuggles = 0; runBestCombo = 0; soloTimeRemaining = 65; endReason = 'fall'; passedRecordLive = false;
+            stageTaskHits = 0; stageTaskTarget = 2; stageTaskRewarded = false; nearMissCooldown = 0;
             opponentScore = 0; duelGoal = mode === 'tournament' ? 3 + tournamentRound : 5;
-            currentLevel = 1; levelUpBanner = null; combo = 0; isFireMode = false; ball.powerShot = false; ball.spinRate = 0; ball.hitFlash = 0;
+            currentLevel = 1; combo = 0; isFireMode = false; ball.powerShot = false; ball.spinRate = 0; ball.hitFlash = 0;
             chargeMeter = 0; overdriveEnd = 0; hotMinuteEnd = 0; chainStep = 1;
-            bonusGate = null; gateCooldown = 520; powerups = []; particles = []; ballTrail = []; floatingTexts = [];
-            screenShake = 0; hitstopFrames = 0; widePaddleEnd = 0; slowMoEnd = 0; powerupTimer = 0;
-            targetCooldown = 0; hazardTimer = 0; goldenTarget = null; hazardCard = null; movingObstacle = null; extraSoloBall = null; bonusTargets = [];
+            gateCooldown = 520; screenShake = 0; hitstopFrames = 0; widePaddleEnd = 0; slowMoEnd = 0; powerupTimer = 0;
+            targetCooldown = 0; hazardTimer = 0;
 
             if (isSoloMode() || isPracticeMode()) ensureTargetCount(1);
             else {
@@ -1558,7 +1650,7 @@
                 };
             }
 
-            pickNextMission(); updateStageModifierUI(); updateTimerBadge();
+            pickNextMission(); updateStageModifierUI(); updateStageTrackUI(); updateTimerBadge();
             document.getElementById('combo-badge').classList.add('hidden');
             updateLiveScoreBoard(); updateLiveBestTargetUI(); updateLevelBadge(); saveGameData(); startBGM();
             lastFrameTime = performance.now();
@@ -1579,8 +1671,7 @@
             gameRunning = false; isPaused = false; combo = 0; isFireMode = false; releaseAllPointers();
             if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
             if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
-            powerups = []; particles = []; ballTrail = []; floatingTexts = []; bonusTargets = [];
-            bonusGate = null; goldenTarget = null; hazardCard = null; movingObstacle = null; extraSoloBall = null;
+            clearAllArenaEntities();
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
@@ -1675,9 +1766,10 @@
             const paddleCenter = player.x + player.width / 2;
             const offsetRatio = Math.max(-1, Math.min(1, (ballX - paddleCenter) / (player.width / 2)));
             const isSweep = Math.abs(player.vx) >= 7.5;
+            const sweepUp = upgrades.sweepPower || 0;
             const escalation = Math.min(1.20, getEscalationFactor());
-            const vy = -(cfg.kickPower + (isSweep ? 1.6 : 0)) * escalation;
-            const vx = offsetRatio * (isSweep ? 11.4 : 8.4) * cfg.speedScale * escalation + (isSweep ? Math.sign(player.vx) * 2.2 : 0);
+            const vy = -(cfg.kickPower + (isSweep ? 1.6 + sweepUp * 0.25 : 0)) * escalation;
+            const vx = offsetRatio * (isSweep ? 11.4 + sweepUp * 0.65 : 8.4) * cfg.speedScale * escalation + (isSweep ? Math.sign(player.vx) * (2.2 + sweepUp * 0.3) : 0);
             return { vx, vy, isSweep, offsetRatio };
         }
 
@@ -1689,16 +1781,18 @@
             const isHeelSpin = distFromCenter >= player.width * 0.36;
             const traj = computeKickTrajectory(targetBall.x);
             const triggerPowerShot = isPrimaryBall && isOverdriveActive() && isSweetSpot;
+            const sweepUp = upgrades.sweepPower || 0;
 
             runJuggles++;
             careerStats.totalJuggles = (careerStats.totalJuggles || 0) + 1;
             updateDailyProgress('juggles', 1, false);
 
             if (isPrimaryBall) {
+                lastHitMarker = { x: Math.max(player.x + 8, Math.min(player.x + player.width - 8, targetBall.x)), alpha: 1.0, color: traj.isSweep ? '#38bdf8' : isSweetSpot ? '#fde047' : '#ffffff' };
                 targetBall.powerShot = triggerPowerShot;
                 targetBall.hitFlash = 1.0;
                 const dirSign = traj.isSweep ? Math.sign(player.vx) : (targetBall.x >= paddleCenter ? 1 : -1);
-                targetBall.spinRate = dirSign * (traj.isSweep ? 0.42 : isHeelSpin ? 0.34 : 0.14);
+                targetBall.spinRate = dirSign * (traj.isSweep ? 0.42 + sweepUp * 0.04 : isHeelSpin ? 0.34 : 0.14);
                 player.recoil = isSweetSpot || isHeelSpin || triggerPowerShot || traj.isSweep ? 11 : 6;
                 screenShake = Math.max(screenShake, triggerPowerShot ? 7.5 : (isFireMode || isOverdriveActive() || traj.isSweep ? 5.2 : 2.2));
                 if (triggerPowerShot || isFireMode || isOverdriveActive() || traj.isSweep) hitstopFrames = 1;
@@ -1709,7 +1803,7 @@
                 } else if (traj.isSweep) {
                     combo++; runBestCombo = Math.max(runBestCombo, combo);
                     careerStats.bestCombo = Math.max(careerStats.bestCombo || 0, combo);
-                    addCharge(25);
+                    addCharge(25 + sweepUp * 2);
                     addFloatingText('⚡ SWEEP KICK!', targetBall.x, targetBall.y - 36, '#38bdf8');
                     playSound('spin');
                 } else if (isHeelSpin) {
@@ -1730,7 +1824,9 @@
                     advanceMission('combo', combo, true);
                     playSound(isFireMode ? 'firekick' : 'kick');
                 } else {
-                    combo = 0; isFireMode = false; chargeMeter = Math.max(0, chargeMeter - 12);
+                    combo = 0; isFireMode = false;
+                    const chargeLoss = Math.max(4, 12 - (upgrades.controlFocus || 0) * 2);
+                    chargeMeter = Math.max(0, chargeMeter - chargeLoss);
                     document.getElementById('combo-badge').classList.add('hidden');
                     playSound('kick');
                 }
@@ -1813,11 +1909,17 @@
 
             player.vx = player.x - player.prevX;
             player.prevX = player.x;
+            if (nearMissCooldown > 0) nearMissCooldown--;
+            if (lastHitMarker) {
+                lastHitMarker.alpha -= 0.055;
+                if (lastHitMarker.alpha <= 0) lastHitMarker = null;
+            }
 
             if (hitstopFrames > 0) { hitstopFrames--; animFrameId = requestAnimationFrame(gameLoop); return; }
 
             const cfg = getDifficultyConfig();
             const stMod = isSoloMode() ? getCurrentStageDef().mod : 'warmup';
+            const clutchActive = isSoloMode() && soloTimeRemaining > 0 && soloTimeRemaining <= 10;
 
             if (isSoloMode()) {
                 soloTimeRemaining = Math.max(0, soloTimeRemaining - dtSec);
@@ -1841,8 +1943,8 @@
 
             player.baseWidth = getBasePlayerWidth();
             player.width = now < widePaddleEnd ? player.baseWidth * 1.42 : player.baseWidth;
-            const moveScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.speedScale * Math.min(1.26, getEscalationFactor());
-            const gravScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.gravityScale * Math.min(1.22, getEscalationFactor());
+            const moveScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.speedScale * Math.min(1.26, getEscalationFactor()) * (clutchActive ? 1.06 : 1.0);
+            const gravScale = (now < slowMoEnd ? 0.66 : 1.0) * cfg.gravityScale * Math.min(1.22, getEscalationFactor()) * (clutchActive ? 1.05 : 1.0);
 
             if (++powerupTimer > 520 && powerups.length < 1) { spawnPowerup(); powerupTimer = 0; }
 
@@ -1874,7 +1976,7 @@
             }
 
             if (isSoloMode() || isPracticeMode()) {
-                const wantedTargets = (isSoloMode() && (stMod === 'double_targets' || stMod === 'sprint_targets' || stMod === 'champions_finale')) ? 2 : 1;
+                const wantedTargets = (isSoloMode() && (stMod === 'double_targets' || stMod === 'sprint_targets' || stMod === 'champions_finale' || clutchActive)) ? 2 : 1;
                 if (bonusTargets.length < wantedTargets && ++targetCooldown > (bonusTargets.length === 0 ? 90 : 45)) {
                     spawnSingleBonusTarget(chainStep); targetCooldown = 0;
                 }
@@ -1885,14 +1987,26 @@
                     if (bt.x - bt.radius < 12) { bt.x = 12 + bt.radius; bt.vx *= -1; }
                     else if (bt.x + bt.radius > canvas.width - 12) { bt.x = canvas.width - 12 - bt.radius; bt.vx *= -1; }
 
-                    if (Math.hypot(ball.x - bt.x, ball.y - bt.y) < ball.radius + bt.radius) {
+                    const distTarget = Math.hypot(ball.x - bt.x, ball.y - bt.y);
+                    if (distTarget < ball.radius + bt.radius) {
                         playSound('target');
                         const hotMult = isHotMinuteActive() ? 2 : 1;
                         const chainBonus = bt.chain || 1;
                         const targetPts = (2 + chainBonus) * (isOverdriveActive() ? 2 : 1) * hotMult;
                         const targetCoins = (1 + chainBonus) * hotMult;
                         score += targetPts; coins += targetCoins;
-                        if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + (bt.fast ? 4 : 2));
+                        if (isSoloMode()) {
+                            soloTimeRemaining = Math.min(90, soloTimeRemaining + (bt.fast || clutchActive ? 4 : 2));
+                            if (!stageTaskRewarded) {
+                                stageTaskHits++;
+                                if (stageTaskHits >= stageTaskTarget) {
+                                    stageTaskRewarded = true;
+                                    coins += 3;
+                                    addFloatingText('🏅 יעד שלב הושלם! +3 🪙', canvas.width / 2, canvas.height * 0.28, '#34d399');
+                                }
+                            }
+                            updateStageTrackUI();
+                        }
                         updateTimerBadge(); addCharge(32); advanceMission('targets', 1, false);
                         saveGameData(); handleScoreChanged();
                         addFloatingText(`🔗 #${chainBonus} +${targetPts} | +${targetCoins} 🪙`, bt.x, bt.y - 10, '#fde047');
@@ -1904,6 +2018,9 @@
                         bonusTargets.splice(tIdx, 1);
                         spawnSingleBonusTarget(chainStep);
                         targetCooldown = 0;
+                    } else if (distTarget < ball.radius + bt.radius + 13 && nearMissCooldown === 0) {
+                        nearMissCooldown = 48;
+                        addFloatingText(translations[lang].nearTargetMsg, bt.x, bt.y - 22, '#e2e8f0');
                     }
                 }
 
@@ -1961,8 +2078,9 @@
             ball.rot += ball.vx * 0.04 + ball.spinRate * 1.4;
 
             if (Math.hypot(ball.vx, ball.vy) > 6.5 || Math.abs(ball.spinRate) > 0.12 || isFireMode || isOverdriveActive() || ball.powerShot) {
-                ballTrail.push({ x: ball.x, y: ball.y, r: ball.radius * (ball.powerShot || isOverdriveActive() ? 0.92 : 0.68), alpha: ball.powerShot || isOverdriveActive() ? 0.65 : 0.35 });
-                const maxTrail = ball.powerShot || isOverdriveActive() ? 9 : 5;
+                const trailBoost = 1 + (upgrades.sweepPower || 0) * 0.08;
+                ballTrail.push({ x: ball.x, y: ball.y, r: ball.radius * (ball.powerShot || isOverdriveActive() ? 0.95 : 0.70) * trailBoost, alpha: ball.powerShot || isOverdriveActive() ? 0.68 : 0.38 });
+                const maxTrail = (ball.powerShot || isOverdriveActive() ? 9 : 5) + Math.min(3, upgrades.sweepPower || 0);
                 while (ballTrail.length > maxTrail) ballTrail.shift();
             }
 
@@ -2015,6 +2133,8 @@
                 if (--bot.specialCooldown <= 0) {
                     bot.specialUntil = now + 2200;
                     bot.specialCooldown = 360;
+                    const tag = currentBotStyle === 'aggressive' ? '⚡ הסתערות!' : currentBotStyle === 'technical' ? '🌀 ספין!' : '🛡️ חומה!';
+                    addFloatingText(tag, canvas.width / 2, 106, '#fbbf24');
                 }
                 const botSpecialActive = now < bot.specialUntil;
                 bot.width = (difficulty === 'hard' ? 96 : difficulty === 'easy' ? 78 : 88) * (botSpecialActive && currentBotStyle === 'guardian' ? 1.45 : 1.0);
@@ -2056,7 +2176,12 @@
             if (screenShake > 0) ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
             drawStadiumBackground();
 
-            if (isHotMinuteActive()) {
+            if (clutchActive) {
+                const pulseA = 0.35 + Math.sin(now * 0.016) * 0.25;
+                ctx.strokeStyle = `rgba(244, 63, 94, ${pulseA.toFixed(2)})`;
+                ctx.lineWidth = 6;
+                ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
+            } else if (isHotMinuteActive()) {
                 ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
                 ctx.lineWidth = 5;
                 ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
@@ -2132,6 +2257,16 @@
             ctx.fillStyle = paddleMainColor; ctx.beginPath(); ctx.roundRect(player.x, drawPlayerY, player.width, player.height, 12); ctx.fill();
             ctx.fillStyle = paddleObj.accent; ctx.beginPath(); ctx.roundRect(player.x + player.width * 0.3, drawPlayerY + 3, player.width * 0.4, 4, 2); ctx.fill();
 
+            if (lastHitMarker) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, lastHitMarker.alpha);
+                ctx.fillStyle = lastHitMarker.color;
+                ctx.beginPath();
+                ctx.arc(lastHitMarker.x, drawPlayerY + 3, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
             if (now < widePaddleEnd || now < slowMoEnd) {
                 const isWide = now < widePaddleEnd;
                 ctx.fillStyle = isWide ? '#34d399' : '#38bdf8';
@@ -2139,7 +2274,15 @@
             }
 
             if (isDuelMode()) {
-                ctx.fillStyle = now < bot.specialUntil ? '#f59e0b' : '#6366f1';
+                const botSpecial = now < bot.specialUntil;
+                if (botSpecial) {
+                    ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.roundRect(bot.x - 4, bot.y - 4, bot.width + 8, bot.height + 8, 15);
+                    ctx.stroke();
+                }
+                ctx.fillStyle = botSpecial ? '#f59e0b' : '#6366f1';
                 ctx.beginPath(); ctx.roundRect(bot.x, bot.y, bot.width, bot.height, 12); ctx.fill();
             }
 
@@ -2240,24 +2383,64 @@
             if (navigator.clipboard) { try { await navigator.clipboard.writeText(text); document.getElementById('go-copied').innerText = t.sharedCopied; } catch {} }
         }
 
-        let currentShopTab = 'skins';
+        let currentShopTab = 'upgrades';
         function openShopModal() { releaseAllPointers(); switchShopTab(currentShopTab); document.getElementById('shop-modal').classList.remove('hidden'); }
         function closeShopModal() { document.getElementById('shop-modal').classList.add('hidden'); }
 
         function switchShopTab(tab) {
             currentShopTab = tab;
-            ['skins', 'paddles', 'stadiums', 'songs'].forEach(k => {
+            ['upgrades', 'skins', 'paddles', 'stadiums', 'songs'].forEach(k => {
                 const el = document.getElementById(`tab-${k}-btn`);
                 if (el) el.className = k === tab
-                    ? 'py-2 px-1 text-xs font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate'
-                    : 'py-2 px-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
+                    ? 'py-2 px-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate'
+                    : 'py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
             });
             renderShop(tab);
+        }
+
+        function buyUpgrade(key) {
+            const def = upgradesData.find(u => u.key === key);
+            if (!def) return;
+            const curLvl = Number(upgrades[key]) || 0;
+            if (curLvl >= 5) return;
+            const cost = def.basePrice + curLvl * def.stepPrice;
+            if (coins < cost) { alert(lang === 'he' ? 'אין לך מספיק מטבעות!' : 'Not enough coins!'); return; }
+            coins -= cost;
+            upgrades[key] = curLvl + 1;
+            if (gameRunning) {
+                player.baseWidth = getBasePlayerWidth();
+                if (Date.now() >= widePaddleEnd) player.width = player.baseWidth;
+            }
+            saveGameData();
+            renderShop('upgrades');
         }
 
         function renderShop(type) {
             const container = document.getElementById('shop-items-container');
             const t = translations[lang];
+
+            if (type === 'upgrades') {
+                container.innerHTML = upgradesData.map(u => {
+                    const curLvl = Number(upgrades[u.key]) || 0;
+                    const isMax = curLvl >= 5;
+                    const cost = u.basePrice + curLvl * u.stepPrice;
+                    const btn = isMax
+                        ? `<span class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-xl font-black">${t.maxed}</span>`
+                        : `<button type="button" onclick="buyUpgrade('${u.key}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer">${t.buy} (${cost} 🪙)</button>`;
+                    return `<div class="bg-slate-800/80 border border-slate-700/80 p-3 rounded-2xl flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-11 h-11 bg-slate-900 rounded-xl flex items-center justify-center border border-slate-700 text-xl shrink-0">${u.icon}</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-sm truncate">${u.name[lang] || u.name.en} <span class="text-cyan-300 text-xs">(${curLvl}/5)</span></div>
+                                <div class="text-[11px] text-slate-400 truncate">${u.desc[lang] || u.desc.en}</div>
+                            </div>
+                        </div>
+                        <div class="shrink-0">${btn}</div>
+                    </div>`;
+                }).join('');
+                return;
+            }
+
             const configs = {
                 skins: [skinsData, unlockedSkins, activeSkin, 'buySkin', 'equipSkin', it => `<div class="w-10 h-10 rounded-xl border border-slate-600 shrink-0" style="background:${it.color}"></div>`],
                 paddles: [paddlesData, unlockedPaddles, activePaddle, 'buyPaddle', 'equipPaddle', it => `<div class="w-12 h-10 bg-slate-900 rounded-xl flex items-center justify-center border border-slate-700 shrink-0 px-1.5"><div class="w-full h-3 rounded-full flex items-center justify-center" style="background:${it.color}"><span class="w-3 h-1 rounded-full" style="background:${it.accent}"></span></div></div>`],
@@ -2370,7 +2553,7 @@
             const t = translations[lang];
             const list = [
                 ['juggles_50', { he: 'שולט בכדור (50 נקודות/הקפצות)', en: 'Ball Master (50 score)', ru: 'Мастер (50)', fr: 'Maître (50)' }],
-                ['shop_2', { he: 'אספן עשיר (2 רכישות בחנות)', en: 'Rich Collector (2 shop buys)', ru: 'Коллекционер (2)', fr: 'Collectionneur (2)' }],
+                ['shop_2', { he: 'אספן עשיר (2 רכישות/שדרוגים)', en: 'Rich Collector (2 buys/upgrades)', ru: 'Коллекционер (2)', fr: 'Collectionneur (2)' }],
                 ['score_100', { he: 'אגדת הקפצות (100 נקודות)', en: 'Legend (100 score)', ru: 'Легенда (100)', fr: 'Légende (100)' }]
             ];
             container.innerHTML = list.map(([id, title]) => {
