@@ -744,17 +744,17 @@
 
         const upgradesData = [
             {
-                key: 'paddleWidth', icon: '↔️', basePrice: 45, stepPrice: 35,
+                key: 'paddleWidth', icon: '↔️', basePrice: 300, stepPrice: 250,
                 name: { he: 'רוחב פאדל מתקדם', en: 'Wide Paddle Gear', ru: 'Широкая ракетка', fr: 'Raquette Élargie' },
                 desc: { he: '+7px רוחב לכל רמה (עד 5)', en: '+7px width per level (max 5)', ru: '+7px ширины за уровень', fr: '+7px largeur par niveau' }
             },
             {
-                key: 'sweepPower', icon: '⚡', basePrice: 55, stepPrice: 40,
+                key: 'sweepPower', icon: '⚡', basePrice: 400, stepPrice: 300,
                 name: { he: 'עוצמת בעיטת סוויפ', en: 'Sweep Kick Power', ru: 'Сила кручёного удара', fr: 'Puissance Sweep' },
                 desc: { he: 'מהירות, ספין ושובל חזקים יותר', en: 'Faster sweep speed, spin & trail', ru: 'Больше скорости и подкрутки', fr: 'Plus de vitesse et d’effet' }
             },
             {
-                key: 'controlFocus', icon: '🎯', basePrice: 50, stepPrice: 38,
+                key: 'controlFocus', icon: '🎯', basePrice: 350, stepPrice: 275,
                 name: { he: 'שליטה ודיוק במטרות', en: 'Target Control & Focus', ru: 'Контроль и точность', fr: 'Contrôle & Précision' },
                 desc: { he: 'פחות איבוד טעינה ומטרות מהירות', en: 'Less charge decay & fast targets', ru: 'Меньше потери заряда', fr: 'Moins de perte de charge' }
             }
@@ -1280,7 +1280,7 @@
 
         let ball = { x: 0, y: 0, prevY: 0, vx: 0, vy: 0, radius: 20, rot: 0, spinRate: 0, hitFlash: 0, powerShot: false };
         let player = { x: 0, y: 0, prevX: 0, vx: 0, baseWidth: 92, width: 92, height: 26, recoil: 0 };
-        let bot = { x: 0, y: 0, baseY: 35, width: 90, height: 26, specialUntil: 0, specialCooldown: 240 };
+        let bot = { x: 0, y: 0, baseY: 35, width: 90, height: 26, specialUntil: 0, specialCooldown: 220 };
 
         function clearAllArenaEntities() {
             powerups = []; particles = []; ballTrail = []; floatingTexts = []; bonusTargets = [];
@@ -1685,7 +1685,7 @@
         }
 
         function returnToMenu() {
-            gameRunning = false; isPaused = false; combo = 0; isFireMode = false; releaseAllPointers();
+            gameRunning = false; isPaused = false; combo = 0; isFireMode = false; overdriveEnd = 0; hotMinuteEnd = 0; releaseAllPointers();
             if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
             if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
             clearAllArenaEntities();
@@ -2174,7 +2174,13 @@
                 const stepX = Math.max(-cap, Math.min(cap, ((ball.x + waveBias) - bot.width / 2 - bot.x) * cfg.botTrack * roundFactor * styleTrackMult));
                 bot.x = Math.max(0, Math.min(canvas.width - bot.width, bot.x + stepX));
 
-                if (ball.y - ball.radius <= bot.y + bot.height + 16 && ball.vy < 0) {
+                if (
+                    ball.y - ball.radius <= bot.y + bot.height + 10 &&
+                    ball.y + ball.radius >= bot.y &&
+                    ball.x >= bot.x - 18 &&
+                    ball.x <= bot.x + bot.width + 18 &&
+                    ball.vy < 0
+                ) {
                     playSound('kick');
                     pushParticles(Array.from({ length: 10 }, () => ({
                         x: ball.x, y: ball.y, vx: (Math.random() - 0.5) * 11, vy: (Math.random() - 0.5) * 11, life: 1.0, color: '#6366f1'
