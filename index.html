@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
     <title>מלך ההקפצות — משחק כדורגל</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -58,7 +59,9 @@
                     מלא את מד האנרגיה, שדרג את הציוד ושבור שיאים!
                 </p>
 
-                <div class="inline-flex items-center gap-2.5 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3.5 py-1.5 text-xs flex-wrap justify-center">
+                <div class="inline-flex items-center gap-2 bg-slate-800/85 border border-slate-700/80 rounded-2xl px-3 py-1.5 text-xs flex-wrap justify-center">
+                    <span id="menu-club-badge" class="font-black text-amber-300">🛡️ מועדון קלאסי</span>
+                    <span class="text-slate-600">|</span>
                     <span id="menu-title-badge" class="font-black text-cyan-300">🏅 חובב הקפצות</span>
                     <span class="text-slate-600">|</span>
                     <div><span id="menu-my-best-lbl" class="text-slate-400">השיא שלי: </span><span id="menu-my-best-val" class="font-black text-emerald-400">0</span></div>
@@ -139,6 +142,7 @@
             <div class="flex items-center gap-1.5 flex-wrap justify-center">
                 <div id="level-badge" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-xl text-xs font-extrabold">שלב 1</div>
                 <div id="timer-badge" class="text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-xl border border-amber-500/30">⏱️ 65s</div>
+                <div id="weather-badge" class="hidden text-[11px] font-bold text-sky-200 bg-sky-950/80 px-2 py-0.5 rounded-xl border border-sky-500/30"></div>
                 <div id="hot-minute-badge" class="hidden text-xs font-black text-orange-200 bg-orange-600/30 px-2.5 py-1 rounded-xl border border-orange-400/50">🔥 FEVER</div>
                 <div id="stage-modifier-pill" class="hidden text-[11px] font-bold text-cyan-200 bg-cyan-950/80 px-2 py-0.5 rounded-xl border border-cyan-500/30"></div>
                 <div id="combo-badge" class="hidden bg-orange-500/20 text-orange-400 border border-orange-500/40 px-2 py-1 rounded-xl text-xs font-black animate-pulse">🔥 x2</div>
@@ -245,12 +249,13 @@
                 <h2 id="shop-title" class="text-lg font-black flex items-center gap-2">🏪 חנות</h2>
                 <button type="button" onclick="closeShopModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
-            <div class="grid grid-cols-5 gap-1 p-2 bg-slate-950/50 border-b border-slate-800">
-                <button id="tab-upgrades-btn" type="button" onclick="switchShopTab('upgrades')" class="py-2 px-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">שדרוגים</button>
-                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">כדורים</button>
-                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
-                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
-                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
+            <div class="grid grid-cols-6 gap-1 p-2 bg-slate-950/50 border-b border-slate-800">
+                <button id="tab-upgrades-btn" type="button" onclick="switchShopTab('upgrades')" class="py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate">שדרוגים</button>
+                <button id="tab-clubs-btn" type="button" onclick="switchShopTab('clubs')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מועדונים</button>
+                <button id="tab-skins-btn" type="button" onclick="switchShopTab('skins')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">כדורים</button>
+                <button id="tab-paddles-btn" type="button" onclick="switchShopTab('paddles')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">פאדלים</button>
+                <button id="tab-stadiums-btn" type="button" onclick="switchShopTab('stadiums')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">אצטדיונים</button>
+                <button id="tab-songs-btn" type="button" onclick="switchShopTab('songs')" class="py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate">מוזיקה</button>
             </div>
             <div id="shop-items-container" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"></div>
         </div>
@@ -327,6 +332,12 @@
             if (btn) { btn.classList.add('hidden'); btn.classList.remove('flex'); }
         });
 
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch(() => {});
+            });
+        }
+
         let playerId = localStorage.getItem('juggle_player_id');
         if (!playerId) {
             playerId = 'p_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now().toString(36);
@@ -376,11 +387,13 @@
         }
 
         let coins = Math.max(0, Number(localStorage.getItem('juggle_coins')) || 0);
+        let activeClub = localStorage.getItem('juggle_active_club') || 'classic_club';
         let activeSkin = localStorage.getItem('juggle_active_skin') || 'classic';
         let activePaddle = localStorage.getItem('juggle_active_paddle') || 'emerald_classic';
         let activeStadium = localStorage.getItem('juggle_active_stadium') || 'night_pro';
         let activeSong = localStorage.getItem('juggle_active_song') || 'none';
 
+        let unlockedClubs = ensureUnlocked(safeParseJSON('juggle_unlocked_clubs', ['classic_club']), 'classic_club');
         let unlockedSkins = ensureUnlocked(safeParseJSON('juggle_unlocked_skins', ['classic']), 'classic');
         let unlockedPaddles = ensureUnlocked(safeParseJSON('juggle_unlocked_paddles', ['emerald_classic']), 'emerald_classic');
         let unlockedStadiums = ensureUnlocked(safeParseJSON('juggle_unlocked_stadiums', ['night_pro']), 'night_pro');
@@ -425,6 +438,10 @@
                 ? { he: 'שחקן ליגה', en: 'League Star', ru: 'Игрок лиги', fr: 'Joueur de ligue' }
                 : { he: 'חובב הקפצות', en: 'Juggler', ru: 'Новичок', fr: 'Jongleur' };
             return titles[lang] || titles.en;
+        }
+
+        function getActiveClubObj() {
+            return clubsData.find(c => c.id === activeClub) || clubsData[0];
         }
 
         function dateKeyOffset(daysAgo = 0) {
@@ -491,7 +508,7 @@
         }
 
         function syncAchievementProgress() {
-            const itemPurchases = [unlockedSkins, unlockedPaddles, unlockedStadiums, unlockedSongs]
+            const itemPurchases = [unlockedClubs, unlockedSkins, unlockedPaddles, unlockedStadiums, unlockedSongs]
                 .reduce((acc, list) => acc + Math.max(0, list.length - 1), 0);
             const upgradePurchases = (upgrades.paddleWidth || 0) + (upgrades.sweepPower || 0) + (upgrades.controlFocus || 0);
             totalPurchasesCount = itemPurchases + upgradePurchases;
@@ -582,7 +599,7 @@
         const translations = {
             he: {
                 subtitle: "מלא את מד האנרגיה, שדרג את הציוד ושבור שיאים!",
-                soloTitle: "שבירת שיא (סולו)", soloDesc: "10 שלבים מתחלפים, אתגרי שלב ורגעי לחץ",
+                soloTitle: "שבירת שיא (סולו)", soloDesc: "10 שלבים מתחלפים, מזג אוויר ואתגרי שלב",
                 practiceTitle: "אימון חופשי", practiceDesc: "תרגול סוויפ, קשת כיוון ומטרות בלי שעון",
                 pvpTitle: "תחרות 1 נגד 1", pvpDesc: "יריבים עם מהלך מיוחד, קאמבק וסימון ויזואלי",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
@@ -591,7 +608,7 @@
                 lbTitle: "טבלת שיאים עולמית", lbBest: "השיא האישי שלך:", lbSave: "שמור שם",
                 lbNamePlaceholder: "הכנס שם לתצוגה...", lbRankPrefix: "הדירוג שלך:",
                 lbConnectError: "לא ניתן להתחבר לטבלה כרגע",
-                shopTitle: "חנות", tabUpgrades: "שדרוגים", tabSkins: "כדורים", tabPaddles: "פאדלים", tabStadiums: "אצטדיונים", tabSongs: "מוזיקה",
+                shopTitle: "חנות", tabUpgrades: "שדרוגים", tabClubs: "מועדונים", tabSkins: "כדורים", tabPaddles: "פאדלים", tabStadiums: "אצטדיונים", tabSongs: "מוזיקה",
                 achieveTitle: "יעדים והישגים", achievementsSectionTitle: "הישגים",
                 gameOver: "המשחק נגמר!", timeUp: "הזמן נגמר!",
                 duelWon: "ניצחת בדו-קרב!", duelLost: "היריב ניצח!", tourneyWon: "אלוף הטורניר!",
@@ -604,6 +621,7 @@
                 diffEasy: "קל", diffMedium: "בינוני", diffHard: "קשה",
                 levelPrefix: "שלב", practiceBadge: "🏋️ אימון", chargeLbl: "מד טעינה",
                 overdriveLbl: "🔥 אוברדרייב", hotMinuteLbl: "🔥 FEVER",
+                weatherRain: "🌧️ גשם (קפיצה חדה)", weatherWind: "🌬️ רוח צד",
                 mJuggles: "השלם {n} הקפצות", mTargets: "פגע ב-{n} מטרות", mCombo: "הגע לקומבו x{n}",
                 duelMission: "{style} • {p}-{b} (יעד {goal}) • הקפצות {j}",
                 botStyles: { technical: "טכני", aggressive: "אגרסיבי", guardian: "שומר" },
@@ -622,7 +640,7 @@
             },
             en: {
                 subtitle: "Charge up, upgrade gear, and break records!",
-                soloTitle: "High Score (Solo)", soloDesc: "10 unique stages, stage tasks & clutch finale",
+                soloTitle: "High Score (Solo)", soloDesc: "10 stages, weather shifts & stage tasks",
                 practiceTitle: "Free Practice", practiceDesc: "Practice sweep kicks & aim arc without timer",
                 pvpTitle: "1v1 Duel", pvpDesc: "Rivals with signature moves, comebacks & visual cues",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
@@ -631,7 +649,7 @@
                 lbTitle: "Global Leaderboard", lbBest: "Your personal best:", lbSave: "Save Name",
                 lbNamePlaceholder: "Enter display name...", lbRankPrefix: "Your rank:",
                 lbConnectError: "Unable to connect to leaderboard",
-                shopTitle: "Shop", tabUpgrades: "Upgrades", tabSkins: "Balls", tabPaddles: "Paddles", tabStadiums: "Stadiums", tabSongs: "Music",
+                shopTitle: "Shop", tabUpgrades: "Upgrades", tabClubs: "Clubs", tabSkins: "Balls", tabPaddles: "Paddles", tabStadiums: "Stadiums", tabSongs: "Music",
                 achieveTitle: "Goals & Achievements", achievementsSectionTitle: "Achievements",
                 gameOver: "Game Over!", timeUp: "Time's Up!",
                 duelWon: "Duel Victory!", duelLost: "Rival Won!", tourneyWon: "Tournament Champion!",
@@ -644,6 +662,7 @@
                 diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard",
                 levelPrefix: "Stage", practiceBadge: "🏋️ Practice", chargeLbl: "Charge",
                 overdriveLbl: "🔥 OVERDRIVE", hotMinuteLbl: "🔥 FEVER",
+                weatherRain: "🌧️ Rain (Snappy bounce)", weatherWind: "🌬️ Crosswind",
                 mJuggles: "Do {n} juggles", mTargets: "Hit {n} targets", mCombo: "Reach x{n} combo",
                 duelMission: "{style} • {p}-{b} (Goal {goal}) • Juggles {j}",
                 botStyles: { technical: "Technical", aggressive: "Aggressive", guardian: "Guardian" },
@@ -662,7 +681,7 @@
             },
             ru: {
                 subtitle: "Заряжай шкалу, улучшай снаряжение и бей рекорды!",
-                soloTitle: "Рекорд (Соло)", soloDesc: "10 этапов, задачи этапа и напряжённый финал",
+                soloTitle: "Рекорд (Соло)", soloDesc: "10 этапов, погода и задачи этапа",
                 practiceTitle: "Свободная тренировка", practiceDesc: "Тренируй свайп-удары и дугу прицела без таймера",
                 pvpTitle: "Дуэль 1 на 1", pvpDesc: "Соперники с особыми приёмами и индикаторами",
                 tourneyTitle: "Турнир чемпионов", tourneyDesc: "Четвертьфинал, полуфинал и финал за кубок",
@@ -671,7 +690,7 @@
                 lbTitle: "Мировой рейтинг", lbBest: "Ваш лучший результат:", lbSave: "Сохранить",
                 lbNamePlaceholder: "Введите имя...", lbRankPrefix: "Ваше место:",
                 lbConnectError: "Не удалось подключиться к таблице",
-                shopTitle: "Магазин", tabUpgrades: "Улучшения", tabSkins: "Мячи", tabPaddles: "Ракетки", tabStadiums: "Стадионы", tabSongs: "Музыка",
+                shopTitle: "Магазин", tabUpgrades: "Улучшения", tabClubs: "Клубы", tabSkins: "Мячи", tabPaddles: "Ракетки", tabStadiums: "Стадионы", tabSongs: "Музыка",
                 achieveTitle: "Цели и достижения", achievementsSectionTitle: "Достижения",
                 gameOver: "Игра окончена!", timeUp: "Время вышло!",
                 duelWon: "Победа в дуэли!", duelLost: "Соперник победил!", tourneyWon: "Чемпион турнира!",
@@ -684,6 +703,7 @@
                 diffEasy: "Лёгкий", diffMedium: "Средний", diffHard: "Сложный",
                 levelPrefix: "Этап", practiceBadge: "🏋️ Тренировка", chargeLbl: "Заряд",
                 overdriveLbl: "🔥 ОВЕРДРАЙВ", hotMinuteLbl: "🔥 FEVER",
+                weatherRain: "🌧️ Дождь (резкий отскок)", weatherWind: "🌬️ Боковой ветер",
                 mJuggles: "Сделай {n} набиваний", mTargets: "Попади в {n} целей", mCombo: "Комбо x{n}",
                 duelMission: "{style} • {p}-{b} (Цель {goal}) • Набиваний {j}",
                 botStyles: { technical: "Техничный", aggressive: "Агрессивный", guardian: "Защитник" },
@@ -702,7 +722,7 @@
             },
             fr: {
                 subtitle: "Charge la jauge, améliore ton matériel et bats des records !",
-                soloTitle: "Record (Solo)", soloDesc: "10 niveaux, défis d'étape et final intense",
+                soloTitle: "Record (Solo)", soloDesc: "10 niveaux, météo et défis d'étape",
                 practiceTitle: "Entraînement libre", practiceDesc: "Entraîne le sweep et l'arc de visée sans chrono",
                 pvpTitle: "Duel 1v1", pvpDesc: "Rivaux avec coups spéciaux et repères visuels",
                 tourneyTitle: "Tournoi des champions", tourneyDesc: "Quart, demi-finale et finale pour le trophée",
@@ -711,7 +731,7 @@
                 lbTitle: "Classement mondial", lbBest: "Votre meilleur score :", lbSave: "Enregistrer",
                 lbNamePlaceholder: "Entrez votre pseudo...", lbRankPrefix: "Votre rang :",
                 lbConnectError: "Connexion au classement impossible",
-                shopTitle: "Boutique", tabUpgrades: "Améliorations", tabSkins: "Ballons", tabPaddles: "Raquettes", tabStadiums: "Stades", tabSongs: "Musique",
+                shopTitle: "Boutique", tabUpgrades: "Améliorations", tabClubs: "Clubs", tabSkins: "Ballons", tabPaddles: "Raquettes", tabStadiums: "Stades", tabSongs: "Musique",
                 achieveTitle: "Objectifs et Succès", achievementsSectionTitle: "Succès",
                 gameOver: "Partie terminée !", timeUp: "Temps écoulé !",
                 duelWon: "Victoire en duel !", duelLost: "Le rival a gagné !", tourneyWon: "Champion du tournoi !",
@@ -724,6 +744,7 @@
                 diffEasy: "Facile", diffMedium: "Moyen", diffHard: "Difficile",
                 levelPrefix: "Niveau", practiceBadge: "🏋️ Entraînement", chargeLbl: "Charge",
                 overdriveLbl: "🔥 OVERDRIVE", hotMinuteLbl: "🔥 FEVER",
+                weatherRain: "🌧️ Pluie (rebond vif)", weatherWind: "🌬️ Vent latéral",
                 mJuggles: "Fais {n} jonglages", mTargets: "Touche {n} cibles", mCombo: "Combo x{n}",
                 duelMission: "{style} • {p}-{b} (But {goal}) • Jonglages {j}",
                 botStyles: { technical: "Technique", aggressive: "Agressif", guardian: "Gardien" },
@@ -741,6 +762,16 @@
                 nearTargetMsg: "✨ Tout près !"
             }
         };
+
+        const clubsData = [
+            { id: 'classic_club', badge: '🛡️', primary: '#10b981', secondary: '#fbbf24', name: { he: 'מועדון קלאסי', en: 'Classic Club', ru: 'Классик', fr: 'Club Classique' }, price: 0 },
+            { id: 'real_royal', badge: '👑', primary: '#f8fafc', secondary: '#7c3aed', name: { he: 'ריאל רויאל', en: 'Real Royal', ru: 'Реал Роял', fr: 'Real Royal' }, price: 120 },
+            { id: 'bayern_red', badge: '🔴', primary: '#dc2626', secondary: '#1d4ed8', name: { he: 'באיירן אדום', en: 'Bayern Red', ru: 'Бавария Красный', fr: 'Bayern Rouge' }, price: 150 },
+            { id: 'villa_claret', badge: '🦁', primary: '#7e22ce', secondary: '#38bdf8', name: { he: 'וילה קלארט', en: 'Villa Claret', ru: 'Вилла', fr: 'Villa Grenat' }, price: 180 },
+            { id: 'haifa_green', badge: '🟢', primary: '#15803d', secondary: '#ffffff', name: { he: 'חיפה ירוק', en: 'Haifa Green', ru: 'Хайфа Зелёный', fr: 'Haïfa Vert' }, price: 200 },
+            { id: 'netanya_yellow', badge: '🟡', primary: '#eab308', secondary: '#111827', name: { he: 'נתניה צהוב-שחור', en: 'Netanya Gold', ru: 'Нетания', fr: 'Netanya Or-Noir' }, price: 220 },
+            { id: 'acre_crimson', badge: '⚔️', primary: '#e11d48', secondary: '#f8fafc', name: { he: 'עכו ארגמן', en: 'Acre Crimson', ru: 'Акко', fr: 'Acre Cramoisi' }, price: 240 }
+        ];
 
         const upgradesData = [
             {
@@ -818,8 +849,10 @@
         function updateMenuRecordsStrip() {
             const t = translations[lang];
             const cyc = getCycleInfo();
+            const club = getActiveClubObj();
             const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
             setTxt('menu-cycle-pill', t.cyclePill.replace('{c}', String(cyc.cycleNumber)).replace('{d}', String(cyc.daysLeft)));
+            setTxt('menu-club-badge', `${club.badge} ${club.name[lang] || club.name.en}`);
             setTxt('menu-my-best-lbl', t.myBestLbl);
             setTxt('menu-my-best-val', String(personalBest));
             setTxt('menu-top1-lbl', t.top1Lbl);
@@ -873,8 +906,8 @@
                 'lbl-menu': t.menu, 'tap-instruction': t.tap, 'install-btn-text': t.installBtn,
                 'nav-achieve': t.navAchieve, 'nav-leaderboard': t.navLeaderboard, 'nav-shop': t.navShop,
                 'lb-best-lbl': t.lbBest, 'lb-save-btn': t.lbSave,
-                'tab-upgrades-btn': t.tabUpgrades, 'tab-skins-btn': t.tabSkins, 'tab-paddles-btn': t.tabPaddles,
-                'tab-stadiums-btn': t.tabStadiums, 'tab-songs-btn': t.tabSongs,
+                'tab-upgrades-btn': t.tabUpgrades, 'tab-clubs-btn': t.tabClubs, 'tab-skins-btn': t.tabSkins,
+                'tab-paddles-btn': t.tabPaddles, 'tab-stadiums-btn': t.tabStadiums, 'tab-songs-btn': t.tabSongs,
                 'pause-title': t.pauseTitle, 'pause-resume-btn': t.resumeBtn, 'pause-menu-btn': t.pauseMenuBtn,
                 'go-retry-btn': t.retry, 'go-menu-btn': t.menu, 'go-share-btn': t.shareBtn,
                 'hot-minute-badge': t.hotMinuteLbl,
@@ -906,6 +939,7 @@
             updateMenuRecordsStrip();
             updateDailyBadge();
             updateLevelBadge();
+            updateWeatherBadge();
             updateStageModifierUI();
             updateStageTrackUI();
             updateTimerBadge();
@@ -932,10 +966,12 @@
         function saveGameData() {
             syncAchievementProgress();
             localStorage.setItem('juggle_coins', String(coins));
+            localStorage.setItem('juggle_active_club', activeClub);
             localStorage.setItem('juggle_active_skin', activeSkin);
             localStorage.setItem('juggle_active_paddle', activePaddle);
             localStorage.setItem('juggle_active_stadium', activeStadium);
             localStorage.setItem('juggle_active_song', activeSong);
+            localStorage.setItem('juggle_unlocked_clubs', JSON.stringify(unlockedClubs));
             localStorage.setItem('juggle_unlocked_skins', JSON.stringify(unlockedSkins));
             localStorage.setItem('juggle_unlocked_paddles', JSON.stringify(unlockedPaddles));
             localStorage.setItem('juggle_unlocked_stadiums', JSON.stringify(unlockedStadiums));
@@ -1012,11 +1048,11 @@
         }
         function adminResetAllData() {
             if (!confirm(lang === 'he' ? 'לאפס את כל הנתונים המקומיים?' : 'Reset all local data?')) return;
-            ['juggle_coins', 'juggle_active_skin', 'juggle_active_paddle', 'juggle_active_stadium',
-                'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
-                'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_upgrades', 'juggle_career_stats',
-                'juggle_series_quest', 'juggle_daily_challenge', 'juggle_streak_data',
-                'juggle_total_purchases', 'juggle_achievements',
+            ['juggle_coins', 'juggle_active_club', 'juggle_active_skin', 'juggle_active_paddle',
+                'juggle_active_stadium', 'juggle_active_song', 'juggle_unlocked_clubs', 'juggle_unlocked_skins',
+                'juggle_unlocked_paddles', 'juggle_unlocked_stadiums', 'juggle_unlocked_songs',
+                'juggle_upgrades', 'juggle_career_stats', 'juggle_series_quest', 'juggle_daily_challenge',
+                'juggle_streak_data', 'juggle_total_purchases', 'juggle_achievements',
                 'juggle_personal_best', 'juggle_top_global_score', 'juggle_best_diff',
                 'juggle_last_synced_score', 'juggle_diff_bests', 'juggle_recent_runs'].forEach(k => localStorage.removeItem(k));
             location.reload();
@@ -1034,8 +1070,11 @@
         async function syncScoreToFirebase(scoreToSync, retries = 2) {
             const validScore = Math.max(Number(scoreToSync) || 0, Number(personalBest) || 0);
             if (validScore <= 0) return false;
+            const club = getActiveClubObj();
             const payload = {
                 name: (playerName || '').trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player'),
+                club: club.badge,
+                clubName: club.name[lang] || club.name.en,
                 title: getPlayerTitleLabel(),
                 score: validScore,
                 difficulty: bestDifficulty || difficulty,
@@ -1068,6 +1107,8 @@
                 .map(p => ({
                     id: String(p.id || ''),
                     name: String(p.name || 'Player'),
+                    club: String(p.club || ''),
+                    clubName: String(p.clubName || ''),
                     title: String(p.title || ''),
                     score: Number(p.score) || 0,
                     diff: String(p.difficulty || '')
@@ -1100,6 +1141,7 @@
                     : `<span class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">${rank}</span>`;
 
                 const metaParts = [];
+                if (p.club || p.clubName) metaParts.push(`${p.club} ${p.clubName}`.trim());
                 if (p.title) metaParts.push(`🏅 ${p.title}`);
                 if (p.diff && diffLabels[p.diff]) metaParts.push(diffLabels[p.diff]);
 
@@ -1170,6 +1212,8 @@
                     ? Object.entries(data).filter(([, v]) => v && typeof v === 'object').map(([id, v]) => ({
                         id,
                         name: String(v.name || 'Player'),
+                        club: String(v.club || ''),
+                        clubName: String(v.clubName || ''),
                         title: String(v.title || ''),
                         score: Number(v.score) || 0,
                         difficulty: String(v.difficulty || '')
@@ -1268,6 +1312,7 @@
         let gameMode = 'solo', gameRunning = false, isPaused = false;
         let score = 0, runJuggles = 0, runBestCombo = 0, soloTimeRemaining = 65, lastFrameTime = 0, endReason = 'fall';
         let currentLevel = 1, stageTaskHits = 0, stageTaskTarget = 2, stageTaskRewarded = false;
+        let weatherMode = 'clear', rainDrops = [];
         let levelUpBanner = null, particles = [], ballTrail = [], floatingTexts = [];
         let animFrameId = null, screenShake = 0, hitstopFrames = 0, passedRecordLive = false;
         let opponentScore = 0, duelGoal = 5, tournamentRound = 0, tournamentWins = 0, currentBotStyle = 'technical', comebackAwarded = false;
@@ -1283,9 +1328,43 @@
         let bot = { x: 0, y: 0, baseY: 35, width: 90, height: 26, specialUntil: 0, specialCooldown: 220 };
 
         function clearAllArenaEntities() {
-            powerups = []; particles = []; ballTrail = []; floatingTexts = []; bonusTargets = [];
+            powerups = []; particles = []; ballTrail = []; floatingTexts = []; bonusTargets = []; rainDrops = [];
             bonusGate = null; goldenTarget = null; hazardCard = null; movingObstacle = null; extraSoloBall = null;
-            lastHitMarker = null; levelUpBanner = null;
+            lastHitMarker = null; levelUpBanner = null; weatherMode = 'clear';
+        }
+
+        function updateWeatherState() {
+            const t = translations[lang];
+            const el = document.getElementById('weather-badge');
+            let nextWeather = 'clear';
+            if (isSoloMode() && currentLevel >= 5) {
+                nextWeather = currentLevel % 2 === 0 ? 'wind' : 'rain';
+            } else if (gameMode === 'tournament' && tournamentRound >= 1) {
+                nextWeather = 'rain';
+            }
+            if (nextWeather !== weatherMode) {
+                weatherMode = nextWeather;
+                if (weatherMode === 'rain') {
+                    rainDrops = Array.from({ length: 24 }, () => ({
+                        x: Math.random() * Math.max(200, canvas.width),
+                        y: Math.random() * Math.max(240, canvas.height),
+                        len: 10 + Math.random() * 8,
+                        spd: 7 + Math.random() * 4
+                    }));
+                } else {
+                    rainDrops = [];
+                }
+            }
+            if (!el) return;
+            if (weatherMode === 'rain') {
+                el.innerText = t.weatherRain;
+                el.classList.remove('hidden');
+            } else if (weatherMode === 'wind') {
+                el.innerText = t.weatherWind;
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
         }
 
         function pushParticles(list) {
@@ -1416,6 +1495,7 @@
             stageTaskHits = 0;
             stageTaskTarget = newLvl % 2 === 0 ? 2 : 3;
             stageTaskRewarded = false;
+            updateWeatherState();
             const st = getCurrentStageDef();
             if (st.mod === 'chain_gold' || st.mod === 'champions_finale') spawnGoldenTarget();
             if (st.mod === 'double_targets' || st.mod === 'sprint_targets' || st.mod === 'champions_finale') ensureTargetCount(2);
@@ -1667,6 +1747,7 @@
                 };
             }
 
+            updateWeatherState();
             pickNextMission(); updateStageModifierUI(); updateStageTrackUI(); updateTimerBadge();
             document.getElementById('combo-badge').classList.add('hidden');
             updateLiveScoreBoard(); updateLiveBestTargetUI(); updateLevelBadge(); saveGameData(); startBGM();
@@ -1689,6 +1770,7 @@
             if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
             if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
             clearAllArenaEntities();
+            updateWeatherState();
             document.getElementById('combo-badge').classList.add('hidden');
             document.getElementById('pause-overlay').classList.add('hidden');
             document.getElementById('game-over-overlay').classList.add('hidden');
@@ -1790,13 +1872,13 @@
             const isSweep = Math.abs(player.vx) >= 7.5;
             const sweepUp = upgrades.sweepPower || 0;
             const escalation = Math.min(1.20, getEscalationFactor());
-            const vy = -(cfg.kickPower + (isSweep ? 1.6 + sweepUp * 0.25 : 0)) * escalation;
+            const rainBoost = weatherMode === 'rain' ? 1.1 : 0;
+            const vy = -(cfg.kickPower + rainBoost + (isSweep ? 1.6 + sweepUp * 0.25 : 0)) * escalation;
             const vx = offsetRatio * (isSweep ? 11.4 + sweepUp * 0.65 : 8.4) * cfg.speedScale * escalation + (isSweep ? Math.sign(player.vx) * (2.2 + sweepUp * 0.3) : 0);
             return { vx, vy, isSweep, offsetRatio };
         }
 
         function applyKickToBall(targetBall, isPrimaryBall) {
-            const cfg = getDifficultyConfig();
             const paddleCenter = player.x + player.width / 2;
             const distFromCenter = Math.abs(targetBall.x - paddleCenter);
             const isSweetSpot = distFromCenter <= player.width * 0.28;
@@ -1887,6 +1969,7 @@
 
         function drawStadiumBackground() {
             const st = stadiumsData.find(s => s.id === activeStadium) || stadiumsData[0];
+            const club = getActiveClubObj();
             const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
             grad.addColorStop(0, st.bgTop); grad.addColorStop(0.5, st.bgMid); grad.addColorStop(1, st.bgBot);
             ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1897,10 +1980,50 @@
             ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(54, canvas.width * 0.15), 0, Math.PI * 2); ctx.stroke();
             ctx.strokeRect(14, 14, canvas.width - 28, canvas.height - 28);
 
+            if (activeClub !== 'classic_club') {
+                ctx.globalAlpha = 0.08;
+                ctx.fillStyle = club.primary;
+                ctx.fillRect(14, canvas.height * 0.55, canvas.width - 28, canvas.height * 0.43);
+                ctx.globalAlpha = 1.0;
+            }
+
             const lightGrad = ctx.createRadialGradient(canvas.width / 2, 0, 10, canvas.width / 2, 0, canvas.height * 0.55);
             lightGrad.addColorStop(0, st.glow); lightGrad.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = lightGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.restore();
+        }
+
+        function drawWeatherOverlay(now) {
+            if (weatherMode === 'rain') {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(125, 211, 252, 0.32)';
+                ctx.lineWidth = 1.5;
+                rainDrops.forEach(d => {
+                    d.x -= 1.2;
+                    d.y += d.spd;
+                    if (d.y > canvas.height) { d.y = -12; d.x = Math.random() * canvas.width; }
+                    if (d.x < 0) d.x = canvas.width;
+                    ctx.beginPath();
+                    ctx.moveTo(d.x, d.y);
+                    ctx.lineTo(d.x - 2, d.y + d.len);
+                    ctx.stroke();
+                });
+                ctx.restore();
+            } else if (weatherMode === 'wind') {
+                const dir = Math.sin(now * 0.004) >= 0 ? 1 : -1;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(226, 232, 240, 0.22)';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 4; i++) {
+                    const yLine = canvas.height * (0.22 + i * 0.16);
+                    const shift = ((now * 0.18 * dir + i * 95) % (canvas.width + 80)) - 40;
+                    ctx.beginPath();
+                    ctx.moveTo(shift, yLine);
+                    ctx.lineTo(shift + 38 * dir, yLine);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
         }
 
         function drawAimPredictionArc() {
@@ -2090,8 +2213,9 @@
                 }
             }
 
-            if (isSoloMode() && (stMod === 'crosswind' || stMod === 'storm_barrier' || stMod === 'champions_finale')) {
-                ball.vx += Math.sin(now * 0.003) * 0.085 * moveScale;
+            if (weatherMode === 'wind' || (isSoloMode() && (stMod === 'crosswind' || stMod === 'storm_barrier' || stMod === 'champions_finale'))) {
+                const windStrength = weatherMode === 'wind' ? 0.095 : 0.085;
+                ball.vx += Math.sin(now * 0.0035) * windStrength * moveScale;
             }
 
             ball.prevY = ball.y;
@@ -2207,6 +2331,7 @@
             ctx.save();
             if (screenShake > 0) ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
             drawStadiumBackground();
+            drawWeatherOverlay(now);
 
             if (clutchActive) {
                 const pulseA = 0.35 + Math.sin(now * 0.016) * 0.25;
@@ -2284,10 +2409,12 @@
             ctx.globalAlpha = 1.0;
 
             const paddleObj = paddlesData.find(p => p.id === activePaddle) || paddlesData[0];
-            const paddleMainColor = now < widePaddleEnd ? '#34d399' : paddleObj.color;
+            const clubObj = getActiveClubObj();
+            const paddleMainColor = now < widePaddleEnd ? '#34d399' : (activePaddle === 'emerald_classic' && activeClub !== 'classic_club' ? clubObj.primary : paddleObj.color);
+            const paddleAccentColor = activePaddle === 'emerald_classic' && activeClub !== 'classic_club' ? clubObj.secondary : paddleObj.accent;
             const drawPlayerY = player.y + player.recoil;
             ctx.fillStyle = paddleMainColor; ctx.beginPath(); ctx.roundRect(player.x, drawPlayerY, player.width, player.height, 12); ctx.fill();
-            ctx.fillStyle = paddleObj.accent; ctx.beginPath(); ctx.roundRect(player.x + player.width * 0.3, drawPlayerY + 3, player.width * 0.4, 4, 2); ctx.fill();
+            ctx.fillStyle = paddleAccentColor; ctx.beginPath(); ctx.roundRect(player.x + player.width * 0.3, drawPlayerY + 3, player.width * 0.4, 4, 2); ctx.fill();
 
             if (lastHitMarker) {
                 ctx.save();
@@ -2423,11 +2550,11 @@
 
         function switchShopTab(tab) {
             currentShopTab = tab;
-            ['upgrades', 'skins', 'paddles', 'stadiums', 'songs'].forEach(k => {
+            ['upgrades', 'clubs', 'skins', 'paddles', 'stadiums', 'songs'].forEach(k => {
                 const el = document.getElementById(`tab-${k}-btn`);
                 if (el) el.className = k === tab
-                    ? 'py-2 px-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate'
-                    : 'py-2 px-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
+                    ? 'py-2 px-1 text-[10px] font-bold rounded-lg bg-emerald-600 text-white transition cursor-pointer truncate'
+                    : 'py-2 px-1 text-[10px] font-bold rounded-lg text-slate-400 hover:text-white transition cursor-pointer truncate';
             });
             renderShop(tab);
         }
@@ -2476,6 +2603,7 @@
             }
 
             const configs = {
+                clubs: [clubsData, unlockedClubs, activeClub, 'buyClub', 'equipClub', it => `<div class="w-11 h-10 rounded-xl border border-slate-600 shrink-0 flex items-center justify-center text-lg" style="background:linear-gradient(135deg, ${it.primary} 55%, ${it.secondary} 55%)"><span>${it.badge}</span></div>`],
                 skins: [skinsData, unlockedSkins, activeSkin, 'buySkin', 'equipSkin', it => `<div class="w-10 h-10 rounded-xl border border-slate-600 shrink-0" style="background:${it.color}"></div>`],
                 paddles: [paddlesData, unlockedPaddles, activePaddle, 'buyPaddle', 'equipPaddle', it => `<div class="w-12 h-10 bg-slate-900 rounded-xl flex items-center justify-center border border-slate-700 shrink-0 px-1.5"><div class="w-full h-3 rounded-full flex items-center justify-center" style="background:${it.color}"><span class="w-3 h-1 rounded-full" style="background:${it.accent}"></span></div></div>`],
                 stadiums: [stadiumsData, unlockedStadiums, activeStadium, 'buyStadium', 'equipStadium', it => `<div class="w-12 h-10 rounded-xl border border-slate-600 shrink-0" style="background:linear-gradient(180deg, ${it.bgTop}, ${it.bgMid})"></div>`],
@@ -2497,6 +2625,8 @@
             coins -= price; list.push(onEquip);
             saveGameData(); renderShop(tab);
         }
+        const buyClub = (id, p) => { purchaseItem(unlockedClubs, p, id, 'clubs'); if (unlockedClubs.includes(id)) equipClub(id); };
+        const equipClub = id => { activeClub = id; saveGameData(); if (personalBest > 0) syncScoreToFirebase(personalBest); renderShop('clubs'); };
         const buySkin = (id, p) => { purchaseItem(unlockedSkins, p, id, 'skins'); if (unlockedSkins.includes(id)) equipSkin(id); };
         const equipSkin = id => { activeSkin = id; saveGameData(); renderShop('skins'); };
         const buyPaddle = (id, p) => { purchaseItem(unlockedPaddles, p, id, 'paddles'); if (unlockedPaddles.includes(id)) equipPaddle(id); };
