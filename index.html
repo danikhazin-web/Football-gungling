@@ -27,7 +27,7 @@
     <!-- Main Menu -->
     <div id="main-menu" class="flex-1 flex flex-col justify-between p-4 max-w-md w-full mx-auto overflow-y-auto no-scrollbar">
         <div>
-            <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pt-1">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-3 pt-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
                     <button type="button" onclick="toggleLang()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-700 cursor-pointer min-h-[34px] whitespace-nowrap">
                         <span>🌐</span><span id="lang-text">עברית</span>
@@ -47,14 +47,14 @@
                 </div>
             </div>
 
-            <div class="text-center mb-4">
-                <div class="inline-flex items-center gap-1.5 bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                    <span>⚡ 10 שלבים • שדרוגים • קשת כיוון • Fever</span>
+            <div class="text-center mb-3.5">
+                <div id="menu-cycle-pill" class="inline-flex items-center gap-1.5 bg-cyan-500/15 border border-cyan-400/35 text-cyan-200 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                    <span>🔄 סבב #1 • מתחלף בעוד 3 ימים</span>
                 </div>
                 <h1 onclick="registerSecretAdminTap()" class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 mb-1 cursor-pointer select-none">
                     מלך ההקפצות
                 </h1>
-                <p id="menu-subtitle" class="text-slate-400 text-xs font-medium mb-3">
+                <p id="menu-subtitle" class="text-slate-400 text-xs font-medium mb-2.5">
                     מלא את מד האנרגיה, שדרג את הציוד ושבור שיאים!
                 </p>
 
@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="space-y-2.5 mb-4">
+            <div class="space-y-2.5 mb-3.5">
                 <button type="button" onclick="startGame('solo')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 p-3.5 rounded-2xl shadow-lg shadow-emerald-950/50 flex items-center justify-between transition active:scale-95 cursor-pointer border border-emerald-400/20">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">⚽</div>
@@ -95,7 +95,7 @@
                         <div class="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center text-2xl shrink-0">🤖</div>
                         <div class="text-right">
                             <div id="btn-pvp-title" class="font-extrabold text-base">תחרות 1 נגד 1</div>
-                            <div id="btn-pvp-desc" class="text-indigo-100/80 text-xs">יריבים עם מהלך מיוחד וסימון ויזואלי בזמן אמת</div>
+                            <div id="btn-pvp-desc" class="text-indigo-100/80 text-xs">יריבים עם מהלך מיוחד, קאמבק וסימון ויזואלי</div>
                         </div>
                     </div>
                     <span class="text-white/80 text-lg">›</span>
@@ -256,23 +256,22 @@
         </div>
     </div>
 
-    <!-- Achievements & Milestones Modal -->
+    <!-- Achievements & Challenges Modal -->
     <div id="achievements-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
             <div class="p-4 border-b border-slate-800 flex justify-between items-center">
                 <h2 id="achieve-title" class="text-lg font-black flex items-center gap-2">🏅 יעדים והישגים</h2>
                 <button type="button" onclick="closeAchievementsModal()" class="bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white cursor-pointer">✕</button>
             </div>
-            <div class="p-3.5 border-b border-slate-800 bg-slate-950/40 space-y-2.5 overflow-y-auto max-h-[42vh] no-scrollbar">
+            <div class="p-3.5 border-b border-slate-800 bg-slate-950/40 space-y-2.5 overflow-y-auto max-h-[44vh] no-scrollbar">
+                <div id="cycle-rotation-box" class="bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border border-emerald-400/35 rounded-2xl p-3"></div>
                 <div id="daily-challenge-box" class="bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-400/35 rounded-2xl p-3"></div>
                 <div id="series-quest-box" class="bg-gradient-to-r from-cyan-500/15 to-indigo-500/15 border border-cyan-400/35 rounded-2xl p-3"></div>
                 <div id="career-stats-box" class="grid grid-cols-4 gap-1.5"></div>
                 <div id="recent-runs-box" class="space-y-1"></div>
             </div>
             <div class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
-                <div id="milestones-section-title" class="text-xs font-black text-amber-300">מסלול יעדים ותארים</div>
-                <div id="milestones-container" class="space-y-2.5"></div>
-                <div id="achievements-section-title" class="text-xs font-black text-emerald-300 pt-2">הישגים</div>
+                <div id="achievements-section-title" class="text-xs font-black text-emerald-300">הישגים</div>
                 <div id="achievements-container" class="space-y-2.5"></div>
             </div>
         </div>
@@ -299,6 +298,7 @@
     <script>
         const FIREBASE_DB_URL = 'https://football-juggling-default-rtdb.firebaseio.com';
         const MAX_PARTICLES = 70;
+        const CYCLE_DAYS = 3;
 
         let deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -343,6 +343,38 @@
             return Array.isArray(arr) && arr.includes(defId) ? arr : [defId];
         }
 
+        const CYCLE_THEMES = [
+            {
+                id: 'targets_rush',
+                coinMult: 1.25,
+                badge: { he: '🎯 סבב מטרות ושרשרת', en: '🎯 Target & Chain Cycle', ru: '🎯 Цикл целей', fr: '🎯 Cycle Cibles' },
+                desc: { he: 'מטרות מופיעות מהר יותר ותגמול מטבעות מוגבר בסולו', en: 'Faster target spawns & boosted solo coin rewards', ru: 'Больше целей и монет в соло', fr: 'Cibles rapides et plus de pièces' }
+            },
+            {
+                id: 'sweep_turbo',
+                coinMult: 1.2,
+                badge: { he: '⚡ סבב סוויפ וקומבו', en: '⚡ Sweep & Combo Cycle', ru: '⚡ Цикл свайпа', fr: '⚡ Cycle Sweep' },
+                desc: { he: 'דגש על בעיטות סוויפ, קשת כיוון וטעינת אוברדרייב מהירה', en: 'Focus on sweep kicks, aim arc & fast overdrive charge', ru: 'Упор на кручёные удары и заряд', fr: 'Focus sweep, arc et charge rapide' }
+            },
+            {
+                id: 'duel_clash',
+                coinMult: 1.3,
+                badge: { he: '⚔️ סבב דו-קרב וטורניר', en: '⚔️ Duel & Cup Cycle', ru: '⚔️ Цикл дуэлей', fr: '⚔️ Cycle Duels' },
+                desc: { he: 'יריבים חדים יותר ובונוס מטבעות מוגדל על ניצחונות וקאמבקים', en: 'Sharper rivals & extra coins on wins and comebacks', ru: 'Сильнее соперники и больше монет', fr: 'Rivaux plus vifs et bonus victoires' }
+            }
+        ];
+
+        function getCycleInfo(nowMs = Date.now()) {
+            const cycleMs = CYCLE_DAYS * 86400000;
+            const cycleIndex = Math.floor(nowMs / cycleMs);
+            const nextChangeMs = (cycleIndex + 1) * cycleMs;
+            const remMs = Math.max(0, nextChangeMs - nowMs);
+            const daysLeft = Math.max(1, Math.ceil(remMs / 86400000));
+            const hoursLeft = Math.max(1, Math.ceil(remMs / 3600000));
+            const theme = CYCLE_THEMES[Math.abs(cycleIndex) % CYCLE_THEMES.length];
+            return { cycleNumber: cycleIndex + 1, daysLeft, hoursLeft, theme };
+        }
+
         let coins = Math.max(0, Number(localStorage.getItem('juggle_coins')) || 0);
         let activeSkin = localStorage.getItem('juggle_active_skin') || 'classic';
         let activePaddle = localStorage.getItem('juggle_active_paddle') || 'emerald_classic';
@@ -371,6 +403,7 @@
 
         const rawSeries = safeParseJSON('juggle_series_quest', {});
         let seriesQuest = {
+            tier: Math.max(1, Number(rawSeries.tier) || 1),
             step: Math.min(2, Math.max(0, Number(rawSeries.step) || 0)),
             progress: Number(rawSeries.progress) || 0,
             claimedSteps: Array.isArray(rawSeries.claimedSteps)
@@ -382,50 +415,16 @@
         let streakData = safeParseJSON('juggle_streak_data', { count: 1, lastDate: '' });
         let dailyChallenge = safeParseJSON('juggle_daily_challenge', null);
 
-        const milestoneDefs = [
-            {
-                id: 'ms_25', type: 'best_score', target: 25, reward: 25,
-                title: { he: 'הגע ל-25 נקודות בסולו', en: 'Reach 25 Solo Score', ru: '25 очков в соло', fr: '25 pts en solo' },
-                badge: { he: 'חובב הקפצות', en: 'Juggler', ru: 'Новичок', fr: 'Jongleur' }
-            },
-            {
-                id: 'ms_60', type: 'best_score', target: 60, reward: 45,
-                title: { he: 'הגע ל-60 נקודות בסולו', en: 'Reach 60 Solo Score', ru: '60 очков в соло', fr: '60 pts en solo' },
-                badge: { he: 'שחקן ליגה', en: 'League Star', ru: 'Игрок лиги', fr: 'Joueur de ligue' }
-            },
-            {
-                id: 'ms_120', type: 'best_score', target: 120, reward: 75,
-                title: { he: 'הגע ל-120 נקודות בסולו', en: 'Reach 120 Solo Score', ru: '120 очков в соло', fr: '120 pts en solo' },
-                badge: { he: 'אשף טכני', en: 'Tech Wizard', ru: 'Мастер техники', fr: 'As technique' }
-            },
-            {
-                id: 'ms_200', type: 'best_score', target: 200, reward: 120,
-                title: { he: 'הגע ל-200 נקודות בסולו', en: 'Reach 200 Solo Score', ru: '200 очков в соло', fr: '200 pts en solo' },
-                badge: { he: 'מלך האצטדיון', en: 'Stadium King', ru: 'Король арены', fr: 'Roi du stade' }
-            },
-            {
-                id: 'ms_cup', type: 'trophies', target: 1, reward: 90,
-                title: { he: 'זכה בגביע טורניר אלופים', en: 'Win a Champions Cup', ru: 'Выиграй кубок турнира', fr: 'Gagne la coupe' },
-                badge: { he: 'אלוף הגביע', en: 'Cup Champion', ru: 'Чемпион кубка', fr: 'Champion coupe' }
-            }
-        ];
-
-        let claimedMilestones = Array.isArray(safeParseJSON('juggle_claimed_milestones', []))
-            ? safeParseJSON('juggle_claimed_milestones', []).map(String)
-            : [];
-
-        function getMilestoneProgress(ms) {
-            return ms.type === 'trophies' ? (Number(careerStats.tourneyTrophies) || 0) : (Number(personalBest) || 0);
-        }
-
-        function getHighestUnlockedTitle() {
-            let active = { he: 'מתחיל', en: 'Rookie', ru: 'Новичок', fr: 'Débutant' };
-            for (const ms of milestoneDefs) {
-                if (claimedMilestones.includes(ms.id) || getMilestoneProgress(ms) >= ms.target) {
-                    active = ms.badge;
-                }
-            }
-            return active[lang] || active.en;
+        function getPlayerTitleLabel() {
+            const best = Number(personalBest) || 0;
+            const titles = best >= 180
+                ? { he: 'מלך המגרש', en: 'Arena King', ru: 'Король арены', fr: 'Roi de l’arène' }
+                : best >= 100
+                ? { he: 'אשף טכני', en: 'Tech Wizard', ru: 'Мастер техники', fr: 'As technique' }
+                : best >= 45
+                ? { he: 'שחקן ליגה', en: 'League Star', ru: 'Игрок лиги', fr: 'Joueur de ligue' }
+                : { he: 'חובב הקפצות', en: 'Juggler', ru: 'Новичок', fr: 'Jongleur' };
+            return titles[lang] || titles.en;
         }
 
         function dateKeyOffset(daysAgo = 0) {
@@ -434,9 +433,11 @@
         }
 
         function buildDailyForDate(dateKey) {
+            const cyc = getCycleInfo();
+            const scale = 1 + Math.min(0.6, (cyc.cycleNumber % 5) * 0.1);
             const templates = [
-                { type: 'juggles', target: 30, reward: 45, label: { he: 'בצע 30 הקפצות היום', en: 'Do 30 juggles today', ru: 'Сделай 30 набиваний', fr: 'Fais 30 jonglages' } },
-                { type: 'score', target: 40, reward: 55, label: { he: 'הגע ל-40 נקודות בריצת סולו', en: 'Reach 40 score in Solo', ru: 'Набери 40 очков в соло', fr: 'Atteins 40 pts en solo' } },
+                { type: 'juggles', target: Math.round(30 * scale), reward: 45, label: { he: 'בצע {n} הקפצות היום', en: 'Do {n} juggles today', ru: 'Сделай {n} набиваний', fr: 'Fais {n} jonglages' } },
+                { type: 'score', target: Math.round(40 * scale), reward: 55, label: { he: 'הגע ל-{n} נקודות בריצת סולו', en: 'Reach {n} score in Solo', ru: 'Набери {n} очков в соло', fr: 'Atteins {n} pts en solo' } },
                 { type: 'duel_win', target: 1, reward: 50, label: { he: 'נצח קרב אחד (1 נגד 1 או טורניר)', en: 'Win 1 duel or tournament match', ru: 'Выиграй 1 дуэль', fr: 'Gagne 1 duel' } }
             ];
             let hash = 0;
@@ -530,7 +531,8 @@
         }
 
         function getCurrentStageDef() {
-            const idx = Math.min(STAGE_DEFS.length - 1, Math.max(0, currentLevel - 1));
+            const cycShift = (getCycleInfo().cycleNumber - 1) % STAGE_DEFS.length;
+            const idx = (Math.max(1, currentLevel) - 1 + cycShift) % STAGE_DEFS.length;
             return STAGE_DEFS[idx];
         }
 
@@ -541,11 +543,13 @@
             return { targetScore: base, nextLvl: lvl + 1 };
         }
 
-        function getSeriesStepDefinition(stepIdx) {
+        function getSeriesStepDefinition(stepIdx, tier = 1) {
+            const tMult = 1 + (Math.max(1, tier) - 1) * 0.45;
+            const rMult = 1 + (Math.max(1, tier) - 1) * 0.25;
             const steps = [
-                { target: 35, reward: 35, label: { he: 'שלב 1: צבור 35 הקפצות סה"כ', en: 'Step 1: Reach 35 total juggles', ru: 'Шаг 1: 35 набиваний всего', fr: 'Étape 1 : 35 jonglages au total' } },
-                { target: 2, reward: 60, label: { he: 'שלב 2: נצח 2 קרבות (1 נגד 1 או טורניר)', en: 'Step 2: Win 2 duels / tournament matches', ru: 'Шаг 2: Выиграй 2 дуэли', fr: 'Étape 2 : Gagne 2 duels' } },
-                { target: 7, reward: 100, label: { he: 'שלב 3: הגע לקומבו 7 בריצה', en: 'Step 3: Reach a 7x combo in a run', ru: 'Шаг 3: Комбо 7x за забег', fr: 'Étape 3 : Combo 7x en une partie' } }
+                { target: Math.round(35 * tMult), reward: Math.round(35 * rMult), label: { he: 'שלב 1: צבור {n} הקפצות', en: 'Step 1: {n} juggles', ru: 'Шаг 1: {n} набиваний', fr: 'Étape 1 : {n} jonglages' } },
+                { target: Math.max(2, Math.round(2 * tMult)), reward: Math.round(60 * rMult), label: { he: 'שלב 2: נצח {n} קרבות', en: 'Step 2: Win {n} duels', ru: 'Шаг 2: {n} побед', fr: 'Étape 2 : {n} victoires' } },
+                { target: Math.min(12, Math.round(7 + (tier - 1) * 1.5)), reward: Math.round(100 * rMult), label: { he: 'שלב 3: הגע לקומבו x{n}', en: 'Step 3: Reach x{n} combo', ru: 'Шаг 3: Комбо x{n}', fr: 'Étape 3 : Combo x{n}' } }
             ];
             return steps[Math.min(2, Math.max(0, Number(stepIdx) || 0))];
         }
@@ -558,25 +562,21 @@
         function claimSeriesStep() {
             syncSeriesQuestProgress();
             const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
-            const sDef = getSeriesStepDefinition(sIdx);
+            const tier = Math.max(1, Number(seriesQuest.tier) || 1);
+            const sDef = getSeriesStepDefinition(sIdx, tier);
             if (seriesQuest.claimedSteps[sIdx] || seriesQuest.progress < sDef.target) return;
             seriesQuest.claimedSteps[sIdx] = true;
             coins += sDef.reward;
-            if (sIdx < 2) { seriesQuest.step = sIdx + 1; syncSeriesQuestProgress(); }
+            if (sIdx < 2) {
+                seriesQuest.step = sIdx + 1;
+            } else {
+                seriesQuest.tier = tier + 1;
+                seriesQuest.step = 0;
+                seriesQuest.claimedSteps = [false, false, false];
+            }
+            syncSeriesQuestProgress();
             saveGameData();
             renderDailyAndStats();
-        }
-
-        function claimMilestone(msId) {
-            const ms = milestoneDefs.find(m => m.id === msId);
-            if (!ms || claimedMilestones.includes(ms.id)) return;
-            if (getMilestoneProgress(ms) < ms.target) return;
-            claimedMilestones.push(ms.id);
-            coins += ms.reward;
-            saveGameData();
-            if (personalBest > 0) syncScoreToFirebase(personalBest);
-            renderMilestones();
-            updateMenuRecordsStrip();
         }
 
         const translations = {
@@ -584,7 +584,7 @@
                 subtitle: "מלא את מד האנרגיה, שדרג את הציוד ושבור שיאים!",
                 soloTitle: "שבירת שיא (סולו)", soloDesc: "10 שלבים מתחלפים, אתגרי שלב ורגעי לחץ",
                 practiceTitle: "אימון חופשי", practiceDesc: "תרגול סוויפ, קשת כיוון ומטרות בלי שעון",
-                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "יריבים עם מהלך מיוחד וסימון ויזואלי בזמן אמת",
+                pvpTitle: "תחרות 1 נגד 1", pvpDesc: "יריבים עם מהלך מיוחד, קאמבק וסימון ויזואלי",
                 tourneyTitle: "טורניר אלופים", tourneyDesc: "רבע גמר, חצי גמר וגמר עד הגביע",
                 menu: "תפריט", tap: "החלקה מהירה = סוויפ • קומבו x3 פותח קשת כיוון",
                 installBtn: "התקן", navAchieve: "יעדים והישגים", navLeaderboard: "טבלת שיאים", navShop: "חנות",
@@ -592,7 +592,7 @@
                 lbNamePlaceholder: "הכנס שם לתצוגה...", lbRankPrefix: "הדירוג שלך:",
                 lbConnectError: "לא ניתן להתחבר לטבלה כרגע",
                 shopTitle: "חנות", tabUpgrades: "שדרוגים", tabSkins: "כדורים", tabPaddles: "פאדלים", tabStadiums: "אצטדיונים", tabSongs: "מוזיקה",
-                achieveTitle: "יעדים והישגים", milestonesTitle: "מסלול יעדים ותארים", achievementsSectionTitle: "הישגים",
+                achieveTitle: "יעדים והישגים", achievementsSectionTitle: "הישגים",
                 gameOver: "המשחק נגמר!", timeUp: "הזמן נגמר!",
                 duelWon: "ניצחת בדו-קרב!", duelLost: "היריב ניצח!", tourneyWon: "אלוף הטורניר!",
                 tourneyStages: ["רבע גמר", "חצי גמר", "גמר"],
@@ -607,7 +607,10 @@
                 mJuggles: "השלם {n} הקפצות", mTargets: "פגע ב-{n} מטרות", mCombo: "הגע לקומבו x{n}",
                 duelMission: "{style} • {p}-{b} (יעד {goal}) • הקפצות {j}",
                 botStyles: { technical: "טכני", aggressive: "אגרסיבי", guardian: "שומר" },
-                dailyTitle: "אתגר יומי", seriesTitle: "סדרת משימות", streakLbl: "רצף", dailyProgLbl: "אתגר יומי",
+                cyclePill: "🔄 סבב #{c} • משתנה בעוד {d} ימים",
+                cycleBoxTitle: "רוטציית סבב #{c} (מתחלף כל {days} ימים)",
+                cycleNextIn: "מתחלף בעוד {d} ימים ({h} שעות)",
+                dailyTitle: "אתגר יומי מתחדש", seriesTitle: "סדרת משימות מתגלגלת (דרגה {t})", streakLbl: "רצף", dailyProgLbl: "אתגר יומי",
                 runJugglesLbl: "הקפצות", runComboLbl: "קומבו שיא",
                 statJuggles: "הקפצות", statDuels: "ניצחונות", statTrophies: "גביעים", statCombo: "קומבו שיא",
                 recentRunsTitle: "ריצות אחרונות", noRecentRuns: "אין עדיין ריצות שמורות",
@@ -621,7 +624,7 @@
                 subtitle: "Charge up, upgrade gear, and break records!",
                 soloTitle: "High Score (Solo)", soloDesc: "10 unique stages, stage tasks & clutch finale",
                 practiceTitle: "Free Practice", practiceDesc: "Practice sweep kicks & aim arc without timer",
-                pvpTitle: "1v1 Duel", pvpDesc: "Rivals with signature moves & live visual cues",
+                pvpTitle: "1v1 Duel", pvpDesc: "Rivals with signature moves, comebacks & visual cues",
                 tourneyTitle: "Champions Tournament", tourneyDesc: "Quarterfinal, Semifinal & Final for the cup",
                 menu: "Menu", tap: "Fast swipe = Sweep • x3 Combo unlocks Aim Arc",
                 installBtn: "Install", navAchieve: "Goals & Awards", navLeaderboard: "Leaderboard", navShop: "Shop",
@@ -629,7 +632,7 @@
                 lbNamePlaceholder: "Enter display name...", lbRankPrefix: "Your rank:",
                 lbConnectError: "Unable to connect to leaderboard",
                 shopTitle: "Shop", tabUpgrades: "Upgrades", tabSkins: "Balls", tabPaddles: "Paddles", tabStadiums: "Stadiums", tabSongs: "Music",
-                achieveTitle: "Goals & Achievements", milestonesTitle: "Milestones & Titles", achievementsSectionTitle: "Achievements",
+                achieveTitle: "Goals & Achievements", achievementsSectionTitle: "Achievements",
                 gameOver: "Game Over!", timeUp: "Time's Up!",
                 duelWon: "Duel Victory!", duelLost: "Rival Won!", tourneyWon: "Tournament Champion!",
                 tourneyStages: ["Quarterfinal", "Semifinal", "Final"],
@@ -644,7 +647,10 @@
                 mJuggles: "Do {n} juggles", mTargets: "Hit {n} targets", mCombo: "Reach x{n} combo",
                 duelMission: "{style} • {p}-{b} (Goal {goal}) • Juggles {j}",
                 botStyles: { technical: "Technical", aggressive: "Aggressive", guardian: "Guardian" },
-                dailyTitle: "Daily Challenge", seriesTitle: "Quest Series", streakLbl: "Streak", dailyProgLbl: "Daily",
+                cyclePill: "🔄 Cycle #{c} • Rotates in {d}d",
+                cycleBoxTitle: "Cycle #{c} Rotation (Every {days} days)",
+                cycleNextIn: "Rotates in {d}d ({h}h)",
+                dailyTitle: "Daily Challenge", seriesTitle: "Rolling Quest Series (Tier {t})", streakLbl: "Streak", dailyProgLbl: "Daily",
                 runJugglesLbl: "Juggles", runComboLbl: "Best Combo",
                 statJuggles: "Juggles", statDuels: "Duel Wins", statTrophies: "Trophies", statCombo: "Max Combo",
                 recentRunsTitle: "Recent Runs", noRecentRuns: "No recent runs yet",
@@ -666,7 +672,7 @@
                 lbNamePlaceholder: "Введите имя...", lbRankPrefix: "Ваше место:",
                 lbConnectError: "Не удалось подключиться к таблице",
                 shopTitle: "Магазин", tabUpgrades: "Улучшения", tabSkins: "Мячи", tabPaddles: "Ракетки", tabStadiums: "Стадионы", tabSongs: "Музыка",
-                achieveTitle: "Цели и достижения", milestonesTitle: "Вехи и титулы", achievementsSectionTitle: "Достижения",
+                achieveTitle: "Цели и достижения", achievementsSectionTitle: "Достижения",
                 gameOver: "Игра окончена!", timeUp: "Время вышло!",
                 duelWon: "Победа в дуэли!", duelLost: "Соперник победил!", tourneyWon: "Чемпион турнира!",
                 tourneyStages: ["1/4 финала", "1/2 финала", "Финал"],
@@ -681,7 +687,10 @@
                 mJuggles: "Сделай {n} набиваний", mTargets: "Попади в {n} целей", mCombo: "Комбо x{n}",
                 duelMission: "{style} • {p}-{b} (Цель {goal}) • Набиваний {j}",
                 botStyles: { technical: "Техничный", aggressive: "Агрессивный", guardian: "Защитник" },
-                dailyTitle: "Задание дня", seriesTitle: "Серия заданий", streakLbl: "Серия", dailyProgLbl: "День",
+                cyclePill: "🔄 Цикл #{c} • Смена через {d} д.",
+                cycleBoxTitle: "Ротация цикла #{c} (каждые {days} д.)",
+                cycleNextIn: "Смена через {d} д. ({h} ч.)",
+                dailyTitle: "Задание дня", seriesTitle: "Серия заданий (Ур. {t})", streakLbl: "Серия", dailyProgLbl: "День",
                 runJugglesLbl: "Набиваний", runComboLbl: "Макс. комбо",
                 statJuggles: "Набиваний", statDuels: "Побед", statTrophies: "Кубков", statCombo: "Макс. комбо",
                 recentRunsTitle: "Последние игры", noRecentRuns: "Пока нет сохранённых игр",
@@ -703,7 +712,7 @@
                 lbNamePlaceholder: "Entrez votre pseudo...", lbRankPrefix: "Votre rang :",
                 lbConnectError: "Connexion au classement impossible",
                 shopTitle: "Boutique", tabUpgrades: "Améliorations", tabSkins: "Ballons", tabPaddles: "Raquettes", tabStadiums: "Stades", tabSongs: "Musique",
-                achieveTitle: "Objectifs et Succès", milestonesTitle: "Jalons et Titres", achievementsSectionTitle: "Succès",
+                achieveTitle: "Objectifs et Succès", achievementsSectionTitle: "Succès",
                 gameOver: "Partie terminée !", timeUp: "Temps écoulé !",
                 duelWon: "Victoire en duel !", duelLost: "Le rival a gagné !", tourneyWon: "Champion du tournoi !",
                 tourneyStages: ["Quart", "Demi-finale", "Finale"],
@@ -718,7 +727,10 @@
                 mJuggles: "Fais {n} jonglages", mTargets: "Touche {n} cibles", mCombo: "Combo x{n}",
                 duelMission: "{style} • {p}-{b} (But {goal}) • Jonglages {j}",
                 botStyles: { technical: "Technique", aggressive: "Agressif", guardian: "Gardien" },
-                dailyTitle: "Défi du jour", seriesTitle: "Série de quêtes", streakLbl: "Série", dailyProgLbl: "Jour",
+                cyclePill: "🔄 Cycle #{c} • Dans {d}j",
+                cycleBoxTitle: "Rotation Cycle #{c} (Tous les {days}j)",
+                cycleNextIn: "Changement dans {d}j ({h}h)",
+                dailyTitle: "Défi du jour", seriesTitle: "Série de quêtes (Niv. {t})", streakLbl: "Série", dailyProgLbl: "Jour",
                 runJugglesLbl: "Jonglages", runComboLbl: "Combo max",
                 statJuggles: "Jonglages", statDuels: "Victoires", statTrophies: "Trophées", statCombo: "Combo max",
                 recentRunsTitle: "Parties récentes", noRecentRuns: "Aucune partie récente",
@@ -805,13 +817,15 @@
 
         function updateMenuRecordsStrip() {
             const t = translations[lang];
+            const cyc = getCycleInfo();
             const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+            setTxt('menu-cycle-pill', t.cyclePill.replace('{c}', String(cyc.cycleNumber)).replace('{d}', String(cyc.daysLeft)));
             setTxt('menu-my-best-lbl', t.myBestLbl);
             setTxt('menu-my-best-val', String(personalBest));
             setTxt('menu-top1-lbl', t.top1Lbl);
             const effTop = Math.max(personalBest, topGlobalScore);
             setTxt('menu-top1-val', effTop > 0 ? String(effTop) : '--');
-            setTxt('menu-title-badge', `🏅 ${getHighestUnlockedTitle()}`);
+            setTxt('menu-title-badge', `🏅 ${getPlayerTitleLabel()}`);
         }
 
         function updateDailyBadge() {
@@ -823,10 +837,10 @@
             if (dot) {
                 const dailyReady = dailyChallenge && !dailyChallenge.claimed && dailyChallenge.progress >= dailyChallenge.target;
                 const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
-                const sDef = getSeriesStepDefinition(sIdx);
+                const tier = Math.max(1, Number(seriesQuest.tier) || 1);
+                const sDef = getSeriesStepDefinition(sIdx, tier);
                 const seriesReady = !seriesQuest.claimedSteps[sIdx] && seriesQuest.progress >= sDef.target;
-                const msReady = milestoneDefs.some(ms => !claimedMilestones.includes(ms.id) && getMilestoneProgress(ms) >= ms.target);
-                dot.classList.toggle('hidden', !(dailyReady || seriesReady || msReady));
+                dot.classList.toggle('hidden', !(dailyReady || seriesReady));
             }
         }
 
@@ -864,7 +878,6 @@
                 'pause-title': t.pauseTitle, 'pause-resume-btn': t.resumeBtn, 'pause-menu-btn': t.pauseMenuBtn,
                 'go-retry-btn': t.retry, 'go-menu-btn': t.menu, 'go-share-btn': t.shareBtn,
                 'hot-minute-badge': t.hotMinuteLbl,
-                'milestones-section-title': t.milestonesTitle,
                 'achievements-section-title': t.achievementsSectionTitle
             };
             Object.entries(map).forEach(([id, val]) => setTxt(id, val));
@@ -934,7 +947,6 @@
             localStorage.setItem('juggle_streak_data', JSON.stringify(streakData));
             localStorage.setItem('juggle_total_purchases', String(totalPurchasesCount));
             localStorage.setItem('juggle_achievements', JSON.stringify(achievements));
-            localStorage.setItem('juggle_claimed_milestones', JSON.stringify(claimedMilestones));
             localStorage.setItem('juggle_personal_best', String(personalBest));
             localStorage.setItem('juggle_top_global_score', String(topGlobalScore));
             localStorage.setItem('juggle_best_diff', bestDifficulty);
@@ -1004,7 +1016,7 @@
                 'juggle_active_song', 'juggle_unlocked_skins', 'juggle_unlocked_paddles',
                 'juggle_unlocked_stadiums', 'juggle_unlocked_songs', 'juggle_upgrades', 'juggle_career_stats',
                 'juggle_series_quest', 'juggle_daily_challenge', 'juggle_streak_data',
-                'juggle_total_purchases', 'juggle_achievements', 'juggle_claimed_milestones',
+                'juggle_total_purchases', 'juggle_achievements',
                 'juggle_personal_best', 'juggle_top_global_score', 'juggle_best_diff',
                 'juggle_last_synced_score', 'juggle_diff_bests', 'juggle_recent_runs'].forEach(k => localStorage.removeItem(k));
             location.reload();
@@ -1024,7 +1036,7 @@
             if (validScore <= 0) return false;
             const payload = {
                 name: (playerName || '').trim() || (lang === 'he' ? 'שחקן אורח' : 'Guest Player'),
-                title: getHighestUnlockedTitle(),
+                title: getPlayerTitleLabel(),
                 score: validScore,
                 difficulty: bestDifficulty || difficulty,
                 updatedAt: Date.now()
@@ -1070,7 +1082,7 @@
 
             const myIdx = normalized.findIndex(p => p.id === playerId);
             document.getElementById('lb-your-rank').innerText = myIdx >= 0 ? `${t.lbRankPrefix} #${myIdx + 1} / ${normalized.length}` : `${t.lbRankPrefix} -`;
-            document.getElementById('lb-active-title').innerText = `🏅 ${getHighestUnlockedTitle()}`;
+            document.getElementById('lb-active-title').innerText = `🏅 ${getPlayerTitleLabel()}`;
             const diffLabels = { easy: t.diffEasy, medium: t.diffMedium, hard: t.diffHard };
 
             listEl.innerHTML = '';
@@ -1129,7 +1141,7 @@
             const refreshIcon = document.getElementById('lb-refresh-icon');
             document.getElementById('player-name-input').value = playerName;
             document.getElementById('lb-personal-best').innerText = personalBest;
-            document.getElementById('lb-active-title').innerText = `🏅 ${getHighestUnlockedTitle()}`;
+            document.getElementById('lb-active-title').innerText = `🏅 ${getPlayerTitleLabel()}`;
             renderDiffBestsBox();
             setSyncStatusMessage('');
             if (refreshBtn) refreshBtn.disabled = true;
@@ -1258,7 +1270,7 @@
         let currentLevel = 1, stageTaskHits = 0, stageTaskTarget = 2, stageTaskRewarded = false;
         let levelUpBanner = null, particles = [], ballTrail = [], floatingTexts = [];
         let animFrameId = null, screenShake = 0, hitstopFrames = 0, passedRecordLive = false;
-        let opponentScore = 0, duelGoal = 5, tournamentRound = 0, tournamentWins = 0, currentBotStyle = 'technical';
+        let opponentScore = 0, duelGoal = 5, tournamentRound = 0, tournamentWins = 0, currentBotStyle = 'technical', comebackAwarded = false;
         let combo = 0, isFireMode = false, chargeMeter = 0, overdriveEnd = 0;
         let currentMission = { kind: 'juggles', target: 14, progress: 0 };
         let bonusTargets = [], targetCooldown = 0, chainStep = 1, goldenTarget = null, hazardCard = null, hazardTimer = 0;
@@ -1379,9 +1391,11 @@
         }
 
         function getDifficultyConfig() {
-            if (difficulty === 'easy') return { speedScale: 0.85, gravityScale: 0.84, kickPower: 18.8, botTrack: 0.095, botSpeedCap: 4.4, widthBonus: 12 };
-            if (difficulty === 'hard') return { speedScale: 1.18, gravityScale: 1.15, kickPower: 21.4, botTrack: 0.22, botSpeedCap: 8.5, widthBonus: -8 };
-            return { speedScale: 0.98, gravityScale: 0.95, kickPower: 19.8, botTrack: 0.15, botSpeedCap: 6.2, widthBonus: 0 };
+            const cycId = getCycleInfo().theme.id;
+            const duelBoost = cycId === 'duel_clash' ? 1.07 : 1.0;
+            if (difficulty === 'easy') return { speedScale: 0.85, gravityScale: 0.84, kickPower: 18.8, botTrack: 0.095 * duelBoost, botSpeedCap: 4.4 * duelBoost, widthBonus: 12 };
+            if (difficulty === 'hard') return { speedScale: 1.18, gravityScale: 1.15, kickPower: 21.4, botTrack: 0.22 * duelBoost, botSpeedCap: 8.5 * duelBoost, widthBonus: -8 };
+            return { speedScale: 0.98, gravityScale: 0.95, kickPower: 19.8, botTrack: 0.15 * duelBoost, botSpeedCap: 6.2 * duelBoost, widthBonus: 0 };
         }
 
         const getBasePlayerWidth = () => Math.max(68, 90 + getDifficultyConfig().widthBonus + (upgrades.paddleWidth || 0) * 7);
@@ -1460,20 +1474,22 @@
 
         function pickNextMission() {
             if (!isSoloMode()) { updateChargeAndMissionUI(); return; }
+            const cycShift = getCycleInfo().cycleNumber;
             const s = Math.min(1.5, 1 + (currentLevel - 1) * 0.08);
             const pool = [
                 { kind: 'juggles', target: Math.round((12 + Math.floor(Math.random() * 6)) * s), progress: 0 },
                 { kind: 'targets', target: Math.max(3, Math.round((3 + Math.floor(Math.random() * 2)) * Math.min(1.3, s))), progress: 0 },
                 { kind: 'combo', target: Math.min(7, 4 + Math.floor(Math.random() * 2) + Math.floor((currentLevel - 1) / 3)), progress: Math.min(4, combo) }
             ];
-            currentMission = pool[Math.floor(Math.random() * pool.length)];
+            currentMission = pool[(cycShift + Math.floor(Math.random() * pool.length)) % pool.length];
             if (currentMission.kind === 'combo') currentMission.progress = Math.min(currentMission.target, combo);
             updateChargeAndMissionUI();
         }
 
         function addCharge(amount) {
             if (isOverdriveActive()) return;
-            chargeMeter = Math.min(100, chargeMeter + amount);
+            const sweepMult = getCycleInfo().theme.id === 'sweep_turbo' ? 1.2 : 1.0;
+            chargeMeter = Math.min(100, chargeMeter + amount * sweepMult);
             if (chargeMeter >= 100) {
                 chargeMeter = 0;
                 overdriveEnd = Date.now() + 7500;
@@ -1487,15 +1503,16 @@
             if (!isSoloMode() || !currentMission || currentMission.kind !== kind) return;
             currentMission.progress = isAbsolute ? Math.max(currentMission.progress, amountOrSet) : currentMission.progress + amountOrSet;
             if (currentMission.progress >= currentMission.target) {
+                const bonusCoins = Math.round(5 * getCycleInfo().theme.coinMult);
                 score += 4;
-                coins += 5;
+                coins += bonusCoins;
                 soloTimeRemaining = Math.min(90, soloTimeRemaining + 5);
                 hotMinuteEnd = Date.now() + 8000;
                 widePaddleEnd = Math.max(widePaddleEnd, Date.now() + 8000);
                 updateTimerBadge();
                 saveGameData();
                 handleScoreChanged();
-                addFloatingText('🔥 FEVER x2! +4 | +5 🪙 | +5s', canvas.width / 2, canvas.height * 0.25, '#fde047');
+                addFloatingText(`🔥 FEVER x2! +4 | +${bonusCoins} 🪙 | +5s`, canvas.width / 2, canvas.height * 0.25, '#fde047');
                 pickNextMission();
             } else updateChargeAndMissionUI();
         }
@@ -1542,7 +1559,7 @@
             if (!isSoloMode() && !isPracticeMode()) return;
             const cfg = getDifficultyConfig();
             const stMod = isSoloMode() ? getCurrentStageDef().mod : 'warmup';
-            const focusChance = 0.45 + (upgrades.controlFocus || 0) * 0.08;
+            const focusChance = 0.45 + (upgrades.controlFocus || 0) * 0.08 + (getCycleInfo().theme.id === 'targets_rush' ? 0.15 : 0);
             const isFastSprint = stMod === 'sprint_targets' || stMod === 'champions_finale' || Math.random() < focusChance;
             const stepNum = forcedChainStep || chainStep;
             bonusTargets.push({
@@ -1630,7 +1647,7 @@
             const styleOrder = ['technical', 'aggressive', 'guardian'];
             currentBotStyle = mode === 'tournament' ? styleOrder[Math.min(tournamentRound, 2)] : styleOrder[Math.floor(Math.random() * 3)];
 
-            runJuggles = 0; runBestCombo = 0; soloTimeRemaining = 65; endReason = 'fall'; passedRecordLive = false;
+            runJuggles = 0; runBestCombo = 0; soloTimeRemaining = 65; endReason = 'fall'; passedRecordLive = false; comebackAwarded = false;
             stageTaskHits = 0; stageTaskTarget = 2; stageTaskRewarded = false; nearMissCooldown = 0;
             opponentScore = 0; duelGoal = mode === 'tournament' ? 3 + tournamentRound : 5;
             currentLevel = 1; combo = 0; isFireMode = false; ball.powerShot = false; ball.spinRate = 0; ball.hitFlash = 0;
@@ -1734,6 +1751,11 @@
         function awardDuelPointToPlayer(reasonText = '⚡ נקודה!') {
             const pts = (isOverdriveActive() || ball.powerShot) ? 2 : 1;
             score += pts;
+            if (!comebackAwarded && opponentScore >= score + 2) {
+                comebackAwarded = true;
+                coins += 3;
+                addFloatingText('🔥 קאמבק! +3 🪙', canvas.width / 2, canvas.height * 0.30, '#fde047');
+            }
             addFloatingText(`${reasonText} (+${pts})`, canvas.width / 2, canvas.height * 0.36, '#34d399');
             handleScoreChanged();
             if (score >= duelGoal) {
@@ -1966,7 +1988,7 @@
                     if (withinX && crossedGate) {
                         playSound('powerup');
                         const gPts = isHotMinuteActive() ? 6 : 4;
-                        const gCoins = isHotMinuteActive() ? 5 : 3;
+                        const gCoins = Math.round((isHotMinuteActive() ? 5 : 3) * getCycleInfo().theme.coinMult);
                         score += gPts; coins += gCoins; addCharge(25);
                         saveGameData(); handleScoreChanged();
                         addFloatingText(`🥅 +${gPts} | +${gCoins} 🪙`, bonusGate.x + bonusGate.width / 2, bonusGate.y - 10, '#34d399');
@@ -1977,7 +1999,8 @@
 
             if (isSoloMode() || isPracticeMode()) {
                 const wantedTargets = (isSoloMode() && (stMod === 'double_targets' || stMod === 'sprint_targets' || stMod === 'champions_finale' || clutchActive)) ? 2 : 1;
-                if (bonusTargets.length < wantedTargets && ++targetCooldown > (bonusTargets.length === 0 ? 90 : 45)) {
+                const spawnRate = getCycleInfo().theme.id === 'targets_rush' ? 0.75 : 1.0;
+                if (bonusTargets.length < wantedTargets && ++targetCooldown > Math.round((bonusTargets.length === 0 ? 90 : 45) * spawnRate)) {
                     spawnSingleBonusTarget(chainStep); targetCooldown = 0;
                 }
 
@@ -1991,9 +2014,10 @@
                     if (distTarget < ball.radius + bt.radius) {
                         playSound('target');
                         const hotMult = isHotMinuteActive() ? 2 : 1;
+                        const cycMult = getCycleInfo().theme.coinMult;
                         const chainBonus = bt.chain || 1;
                         const targetPts = (2 + chainBonus) * (isOverdriveActive() ? 2 : 1) * hotMult;
-                        const targetCoins = (1 + chainBonus) * hotMult;
+                        const targetCoins = Math.max(1, Math.round((1 + chainBonus) * hotMult * cycMult));
                         score += targetPts; coins += targetCoins;
                         if (isSoloMode()) {
                             soloTimeRemaining = Math.min(90, soloTimeRemaining + (bt.fast || clutchActive ? 4 : 2));
@@ -2028,10 +2052,12 @@
                     goldenTarget.pulse += 0.1; goldenTarget.x += goldenTarget.vx * moveScale;
                     if (goldenTarget.x - goldenTarget.radius < 14 || goldenTarget.x + goldenTarget.radius > canvas.width - 14) goldenTarget.vx *= -1;
                     if (Math.hypot(ball.x - goldenTarget.x, ball.y - goldenTarget.y) < ball.radius + goldenTarget.radius) {
-                        playSound('powerup'); score += 5; coins += 6;
+                        playSound('powerup');
+                        const gCoins = Math.round(6 * getCycleInfo().theme.coinMult);
+                        score += 5; coins += gCoins;
                         if (isSoloMode()) soloTimeRemaining = Math.min(90, soloTimeRemaining + 4);
                         updateTimerBadge(); addCharge(45); saveGameData(); handleScoreChanged();
-                        addFloatingText('🌟 +5 | +6 🪙 | +4s', goldenTarget.x, goldenTarget.y - 12, '#fde047');
+                        addFloatingText(`🌟 +5 | +${gCoins} 🪙 | +4s`, goldenTarget.x, goldenTarget.y - 12, '#fde047');
                         goldenTarget = null;
                     }
                 }
@@ -2343,8 +2369,10 @@
                 }
             }
             recentRuns = [{ mode: gameMode, diff: difficulty, score, juggles: runJuggles, ts: Date.now() }, ...recentRuns].slice(0, 8);
+            const cycMult = getCycleInfo().theme.coinMult;
             const baseCoinReward = isDuelMode() ? Math.floor(runJuggles / 5) : Math.floor(score / 4);
-            const earnedCoins = baseCoinReward + (endReason === 'duel_win' ? 6 : endReason === 'tourney_next' ? 5 : endReason === 'tourney_win' ? 15 : 0);
+            const winBonus = endReason === 'duel_win' ? 6 : endReason === 'tourney_next' ? 5 : endReason === 'tourney_win' ? 15 : 0;
+            const earnedCoins = Math.round((baseCoinReward + winBonus) * (endReason.startsWith('duel_') || endReason.startsWith('tourney_') ? cycMult : 1));
             if (earnedCoins > 0) coins += earnedCoins;
             saveGameData();
             if (isSoloMode() && personalBest > 0) syncScoreToFirebase(personalBest);
@@ -2475,22 +2503,36 @@
         function renderDailyAndStats() {
             syncDailyAndStreak(); syncSeriesQuestProgress();
             const t = translations[lang];
+            const cyc = getCycleInfo();
+
+            document.getElementById('cycle-rotation-box').innerHTML = `
+                <div class="flex justify-between items-center mb-1 gap-2">
+                    <span class="text-xs font-black text-emerald-300">${t.cycleBoxTitle.replace('{c}', String(cyc.cycleNumber)).replace('{days}', String(CYCLE_DAYS))}</span>
+                    <span class="text-[11px] font-bold text-cyan-200 bg-cyan-500/15 px-2 py-0.5 rounded-lg shrink-0">${t.cycleNextIn.replace('{d}', String(cyc.daysLeft)).replace('{h}', String(cyc.hoursLeft))}</span>
+                </div>
+                <div class="text-xs font-bold text-white">${cyc.theme.badge[lang] || cyc.theme.badge.en}</div>
+                <div class="text-[11px] text-slate-300">${cyc.theme.desc[lang] || cyc.theme.desc.en}</div>
+            `;
+
             const prog = Math.min(dailyChallenge.target, Number(dailyChallenge.progress) || 0);
             const totalReward = dailyChallenge.reward + Math.min(20, ((streakData.count || 1) - 1) * 5);
+            const dailyLabel = (dailyChallenge.label[lang] || dailyChallenge.label.en).replace('{n}', String(dailyChallenge.target));
 
             document.getElementById('daily-challenge-box').innerHTML = `
                 <div class="flex justify-between items-center mb-1.5"><span class="text-xs font-black text-amber-300">${t.dailyTitle}</span><span class="text-[11px] font-bold text-orange-300 bg-orange-500/15 px-2 py-0.5 rounded-lg">🔥 ${t.streakLbl}: ${streakData.count}</span></div>
-                <div class="flex justify-between items-center gap-2 text-xs mb-2"><span class="text-white font-semibold">${dailyChallenge.label[lang] || dailyChallenge.label.en}</span><span class="text-amber-400 font-black shrink-0">+${totalReward} 🪙</span></div>
+                <div class="flex justify-between items-center gap-2 text-xs mb-2"><span class="text-white font-semibold">${dailyLabel}</span><span class="text-amber-400 font-black shrink-0">+${totalReward} 🪙</span></div>
                 <div class="flex justify-between items-center text-xs"><span class="text-slate-300 font-bold">${prog} / ${dailyChallenge.target}</span>${dailyChallenge.claimed ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` : prog >= dailyChallenge.target ? `<button type="button" onclick="claimDailyChallenge()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-1 rounded-xl cursor-pointer transition">${t.claim}</button>` : `<span class="text-slate-400">${t.inProgress}</span>`}</div>
             `;
 
+            const tier = Math.max(1, Number(seriesQuest.tier) || 1);
             const sIdx = Math.min(2, Math.max(0, Number(seriesQuest.step) || 0));
-            const sDef = getSeriesStepDefinition(sIdx);
+            const sDef = getSeriesStepDefinition(sIdx, tier);
             const sProg = Math.min(sDef.target, Number(seriesQuest.progress) || 0);
+            const sLabel = (sDef.label[lang] || sDef.label.en).replace('{n}', String(sDef.target));
             document.getElementById('series-quest-box').innerHTML = `
-                <div class="flex justify-between items-center mb-1"><span class="text-xs font-black text-cyan-300">${t.seriesTitle}</span><span class="text-xs font-black text-amber-400">+${sDef.reward} 🪙</span></div>
-                <div class="text-xs text-white font-semibold mb-1.5">${sDef.label[lang] || sDef.label.en}</div>
-                <div class="flex justify-between items-center text-xs"><span class="text-slate-300 font-bold">${sProg} / ${sDef.target}</span>${seriesQuest.claimedSteps[2] ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` : (!seriesQuest.claimedSteps[sIdx] && sProg >= sDef.target) ? `<button type="button" onclick="claimSeriesStep()" class="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black px-3 py-1 rounded-xl cursor-pointer transition">${t.claim}</button>` : `<span class="text-slate-400">${t.inProgress}</span>`}</div>
+                <div class="flex justify-between items-center mb-1"><span class="text-xs font-black text-cyan-300">${t.seriesTitle.replace('{t}', String(tier))}</span><span class="text-xs font-black text-amber-400">+${sDef.reward} 🪙</span></div>
+                <div class="text-xs text-white font-semibold mb-1.5">${sLabel}</div>
+                <div class="flex justify-between items-center text-xs"><span class="text-slate-300 font-bold">${sProg} / ${sDef.target}</span>${(!seriesQuest.claimedSteps[sIdx] && sProg >= sDef.target) ? `<button type="button" onclick="claimSeriesStep()" class="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black px-3 py-1 rounded-xl cursor-pointer transition">${t.claim}</button>` : `<span class="text-slate-400">${t.inProgress}</span>`}</div>
             `;
 
             document.getElementById('career-stats-box').innerHTML = [
@@ -2516,37 +2558,10 @@
 
         function openAchievementsModal() {
             releaseAllPointers(); syncAchievementProgress(); saveGameData();
-            renderDailyAndStats(); renderMilestones(); renderAchievements();
+            renderDailyAndStats(); renderAchievements();
             document.getElementById('achievements-modal').classList.remove('hidden');
         }
         function closeAchievementsModal() { document.getElementById('achievements-modal').classList.add('hidden'); }
-
-        function renderMilestones() {
-            const container = document.getElementById('milestones-container');
-            if (!container) return;
-            const t = translations[lang];
-            container.innerHTML = milestoneDefs.map(ms => {
-                const cur = Math.min(ms.target, Math.max(0, getMilestoneProgress(ms)));
-                const pct = Math.min(100, Math.round((cur / ms.target) * 100));
-                const claimed = claimedMilestones.includes(ms.id);
-                const ready = !claimed && getMilestoneProgress(ms) >= ms.target;
-                const badgeText = ms.badge[lang] || ms.badge.en;
-                return `<div class="bg-slate-800/80 border border-amber-500/25 p-3.5 rounded-2xl flex flex-col gap-2">
-                    <div class="flex justify-between items-center gap-2">
-                        <div class="min-w-0">
-                            <div class="font-bold text-sm truncate">${ms.title[lang] || ms.title.en}</div>
-                            <div class="text-[11px] text-cyan-300 font-bold">🏅 ${badgeText}</div>
-                        </div>
-                        <div class="text-xs text-amber-400 font-bold shrink-0">+${ms.reward} 🪙</div>
-                    </div>
-                    <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div class="bg-amber-400 h-full transition-all duration-300" style="width:${pct}%"></div></div>
-                    <div class="flex justify-between items-center text-xs text-slate-400">
-                        <span>${cur} / ${ms.target}</span>
-                        ${claimed ? `<span class="text-emerald-400 font-bold">${t.claimed}</span>` : ready ? `<button type="button" onclick="claimMilestone('${ms.id}')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-3 py-1 rounded-xl transition cursor-pointer">${t.claim}</button>` : `<span class="text-slate-500">${t.inProgress}</span>`}
-                    </div>
-                </div>`;
-            }).join('');
-        }
 
         function renderAchievements() {
             const container = document.getElementById('achievements-container');
